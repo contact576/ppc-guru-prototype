@@ -646,6 +646,15 @@ North-star goal: answer *"what's my highest priority right now?"* at a glance.
   (`TaskModalRail`: Project · Assignee · Date · Deadline `type=date` · Priority P1–P3 · Labels add/remove · Reminders).
   Esc/scrim close. The meta grid was removed from `TaskBody` (the rail owns it). **Hooks rule:** `useStore()` +
   the Esc `useEffect` run BEFORE the `if (!task) return null` guards — keep all hooks above the early returns.
+- **Compact-capture polish + date/time everywhere:** (1) **`NewTaskModal` is now viewport-safe** — `.t6-newtask`
+  has `max-height: calc(100vh-56px)` and `.t6-nt-body` scrolls (`overflow-y:auto; flex:1`), foot pinned — fixes the
+  "opens off the bottom, can't scroll" flex-center-overflow trap. (2) **Widget pills are icon-only** (`.t6-nt-pill.icon`,
+  36px) with `title=` hover tooltips — the field name shows on hover, not inline. (3) **Tasks gained `deadlineTime`**;
+  Date AND Deadline are `datetime-local` (date+time) in the card `TwsCardMenu`, the `TaskModalRail`, and the
+  `TaskFieldZone` deadline editor — deadline mirrors the due date's time. Card/row deadline label shows the time too.
+  (4) **Watchers + Reminders are editable** in the task modal rail (chips with ✕ + "Add watcher" select / reminder
+  input) — the read-only watchers sub-card was removed from `TaskBody`. (5) **`PERSIST_VERSION` bumped to 3** — old
+  saved task/project data is discarded on boot so everyone gets the clean reseed (back to just the `team` project).
 - Still stubs: real Google Calendar/Workspace sync.
 
 ## Local memory (persistence) — `src/persist.js`

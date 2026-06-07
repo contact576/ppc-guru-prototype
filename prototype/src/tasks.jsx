@@ -249,7 +249,8 @@ function taskSvcBadge(task) {
   return <span className={`t6-svc svc-${task.service}`}>{task.service.toUpperCase()}</span>;
 }
 function taskDeadlineLabel(task) {
-  return task.deadlineISO && window.PPC.isoToDueLabel ? window.PPC.isoToDueLabel(task.deadlineISO) : null;
+  if (!task.deadlineISO || !window.PPC.isoToDueLabel) return null;
+  return window.PPC.isoToDueLabel(task.deadlineISO) + (task.deadlineTime && window.PPC.fmtTime12 ? " " + window.PPC.fmtTime12(task.deadlineTime) : "");
 }
 function taskDueText(task) {
   if (!task.due) return null;

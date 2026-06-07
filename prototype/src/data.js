@@ -2031,6 +2031,7 @@
         timeSpentMin: 0,
         timerStartedAt: null,
         deadlineISO: null,
+        deadlineTime: null,
         recur: null,
         reminders: [],
         projectId: null,

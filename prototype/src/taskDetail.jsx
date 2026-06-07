@@ -50,7 +50,7 @@ function TaskDetailPanel({ taskId, role, onClose }) {
 
 /* Right rail — Project · Assignee · Date · Deadline · Priority · Labels · Reminders */
 function TaskModalRail({ task, role }) {
-  const { store, userMap } = window.PPC;
+  const { store, userMap, USERS, isoToDueLabel, shiftDate, realToday } = window.PPC;
   const [labelDraft, setLabelDraft] = React.useState("");
   const addLabel = () => {
     const l = labelDraft.trim().replace(/^#/, "");
@@ -59,6 +59,21 @@ function TaskModalRail({ task, role }) {
     store.updateTask(task.id, { labels }); setLabelDraft("");
   };
   const removeLabel = (l) => store.updateTask(task.id, { labels: (task.labels || []).filter(x => x !== l) });
+  const setDue = (v) => {
+    if (!v) { store.updateTask(task.id, { due: "No date", dueISO: null, dueTime: null }); return; }
+    const [iso, time] = v.split("T");
+    store.updateTask(task.id, { dueISO: iso, due: (isoToDueLabel && isoToDueLabel(iso)) || iso, dueTime: time || "09:00" });
+  };
+  const setDeadline = (v) => {
+    if (!v) { store.updateTask(task.id, { deadlineISO: null, deadlineTime: null }); return; }
+    const [iso, time] = v.split("T");
+    store.updateTask(task.id, { deadlineISO: iso, deadlineTime: time || "17:00" });
+  };
+  const [newReminder, setNewReminder] = React.useState("");
+  const addReminder = () => { const r = newReminder.trim(); if (!r) return; store.updateTask(task.id, { reminders: [...(task.reminders || []), r] }); setNewReminder(""); };
+  const removeReminder = (i) => store.updateTask(task.id, { reminders: (task.reminders || []).filter((_, x) => x !== i) });
+  const addWatcher = (id) => { if (!id) return; store.updateTask(task.id, { watchers: Array.from(new Set([...(task.watchers || []), id])) }); };
+  const removeWatcher = (id) => store.updateTask(task.id, { watchers: (task.watchers || []).filter(x => x !== id) });
 
   return (
     <div className="t6-tm-railinner">
@@ -72,12 +87,10 @@ function TaskModalRail({ task, role }) {
       <UserSelect value={task.assignee} onChange={(id) => store.updateTask(task.id, { assignee: id })} />
 
       <div className="field-label">Date</div>
-      <SelectInput value={task.due || ""} onChange={(e) => store.updateTask(task.id, { due: e.target.value })}>
-        {["Today", "Tomorrow", "Wed", "Thu", "Fri", "Next Mon", "Overdue", "No date"].map(o => <option key={o}>{o}</option>)}
-      </SelectInput>
+      <input type="datetime-local" className="t6-rail-date" value={task.dueISO ? `${task.dueISO}T${task.dueTime || "09:00"}` : ""} onChange={(e) => setDue(e.target.value)} />
 
       <div className="field-label">Deadline</div>
-      <input type="date" className="t6-rail-date" value={task.deadlineISO || ""} onChange={(e) => store.updateTask(task.id, { deadlineISO: e.target.value || null })} />
+      <input type="datetime-local" className="t6-rail-date" value={task.deadlineISO ? `${task.deadlineISO}T${task.deadlineTime || "17:00"}` : ""} onChange={(e) => setDeadline(e.target.value)} />
 
       <div className="field-label">Priority</div>
       <SelectInput value={task.priority} onChange={(e) => store.updateTask(task.id, { priority: e.target.value })}>
@@ -93,11 +106,22 @@ function TaskModalRail({ task, role }) {
       </div>
       <TextInput placeholder="Add label + Enter" value={labelDraft} onChange={e => setLabelDraft(e.target.value)} onKeyDown={e => e.key === "Enter" && addLabel()} />
 
+      <div className="field-label">Watchers</div>
+      <div className="row" style={{ flexWrap: "wrap", gap: 6, marginBottom: 6 }}>
+        {(task.watchers || []).map(id => { const wu = userMap[id]; return wu ? <span key={id} className="pill outline"><Avatar user={wu} size="sm" /> {wu.name.split(" ")[0]} <span style={{ cursor: "pointer", marginLeft: 2 }} onClick={() => removeWatcher(id)}>×</span></span> : null; })}
+        {(task.watchers || []).length === 0 && <span className="muted" style={{ fontSize: 12 }}>None</span>}
+      </div>
+      <SelectInput value="" onChange={e => addWatcher(e.target.value)}>
+        <option value="">+ Add watcher</option>
+        {USERS.filter(u => u.id !== "client" && u.id !== task.assignee && !(task.watchers || []).includes(u.id)).map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+      </SelectInput>
+
       <div className="field-label">Reminders</div>
-      <div className="row" style={{ flexWrap: "wrap", gap: 6 }}>
-        {(task.reminders || []).map((r, i) => <Pill key={i} kind="warn">🔔 {r}</Pill>)}
+      <div className="row" style={{ flexWrap: "wrap", gap: 6, marginBottom: 6 }}>
+        {(task.reminders || []).map((r, i) => <span key={i} className="pill warn">🔔 {r} <span style={{ cursor: "pointer", marginLeft: 2 }} onClick={() => removeReminder(i)}>×</span></span>)}
         {(task.reminders || []).length === 0 && <span className="muted" style={{ fontSize: 12 }}>None</span>}
       </div>
+      <TextInput placeholder="e.g. 1 day before + Enter" value={newReminder} onChange={e => setNewReminder(e.target.value)} onKeyDown={e => e.key === "Enter" && addReminder()} />
 
       <div className="t6-tm-railmeta">Created {task.createdAt} · by {userMap[task.reporter]?.name?.split(" ")[0] || task.reporter || "—"}</div>
     </div>
@@ -217,22 +241,6 @@ function TaskBody({ task, role }) {
             </div>
           </div>
         ))}
-      </div>
-
-      {/* watchers */}
-      <div className="sub-card">
-        <div className="sub-card-title">Watchers</div>
-        <div className="row gap-2" style={{ flexWrap: "wrap" }}>
-          {(task.watchers || []).map(id => {
-            const wu = userMap[id];
-            return wu ? (
-              <span key={id} className="pill outline">
-                <Avatar user={wu} size="sm" /> {wu.name.split(" ")[0]}
-              </span>
-            ) : null;
-          })}
-          {(task.watchers || []).length === 0 && <span className="muted" style={{ fontSize: 12.5 }}>None.</span>}
-        </div>
       </div>
 
       {/* comments */}
@@ -363,7 +371,7 @@ function tdBlankForm(d, role) {
     client: d?.client || "", service: d?.service || "", services: d?.services || [],
     links: d?.links || [], checklist: [], labels: d?.labels || [], reminders: [],
     timeEstimateMin: d?.timeEstimateMin != null ? d.timeEstimateMin : null,
-    deadlineISO: d?.deadlineISO || null, recur: d?.recur || null,
+    deadlineISO: d?.deadlineISO || null, deadlineTime: d?.deadlineTime || null, recur: d?.recur || null,
     projectId: d?.projectId || null
   };
 }
@@ -435,7 +443,7 @@ function TaskFieldZone({ form, setForm, role, activeField, setActiveField }) {
   if (form.dueISO) chips.push({ k: "date", field: "date", kind: "accent", label: "📅 " + window.PPC.isoToDueLabel(form.dueISO) + (form.dueTime ? " " + window.PPC.fmtTime12(form.dueTime) : ""), clear: () => setF({ dueISO: null, dueTime: null, due: "No date" }) });
   if (form.priority && form.priority !== "med") chips.push({ k: "prio", field: "priority", kind: "warn", label: "🚩 " + (form.priority === "high" ? "High" : "Low"), clear: () => setF({ priority: "med" }) });
   if (form.timeEstimateMin != null) chips.push({ k: "dur", field: "duration", kind: "ok", label: "⏱ " + ((window.PPC.bucketFor(form.timeEstimateMin) || {}).label || form.timeEstimateMin + "m"), clear: () => setF({ timeEstimateMin: null }) });
-  if (form.deadlineISO) chips.push({ k: "dl", field: "deadline", kind: "danger", label: "⚑ " + window.PPC.isoToDueLabel(form.deadlineISO), clear: () => setF({ deadlineISO: null }) });
+  if (form.deadlineISO) chips.push({ k: "dl", field: "deadline", kind: "danger", label: "⚑ " + window.PPC.isoToDueLabel(form.deadlineISO) + (form.deadlineTime ? " " + window.PPC.fmtTime12(form.deadlineTime) : ""), clear: () => setF({ deadlineISO: null, deadlineTime: null }) });
   if (form.recur) chips.push({ k: "rec", field: null, kind: "accent", label: "🔁 " + form.recur, clear: () => setF({ recur: null }) });
   if (form.assignee && form.assignee !== role.id) chips.push({ k: "asg", field: "assignee", kind: "accent", label: "+ " + ((userMap[form.assignee] || {}).name || form.assignee).split(" ")[0], clear: () => setF({ assignee: role.id }) });
   if (form.client) chips.push({ k: "cli", field: "client", kind: "outline", label: "# " + form.client, clear: () => setF({ client: "" }) });
@@ -467,7 +475,7 @@ function TaskFieldZone({ form, setForm, role, activeField, setActiveField }) {
       case "date": return <input type="datetime-local" className="input" autoFocus value={form.dueISO ? `${form.dueISO}T${form.dueTime || "09:00"}` : ""} onChange={e => { const v = e.target.value; if (!v) { setF({ dueISO: null, dueTime: null, due: "No date" }); return; } const [iso, time] = v.split("T"); setF({ dueISO: iso, dueTime: time || "09:00", due: window.PPC.isoToDueLabel(iso) || iso }); }} />;
       case "priority": return <PriorityPick value={form.priority} onChange={(p) => setF({ priority: p })} />;
       case "duration": return <DurationPick value={form.timeEstimateMin} onChange={(min) => setF({ timeEstimateMin: min })} />;
-      case "deadline": return <input type="date" className="input" autoFocus value={form.deadlineISO || ""} onChange={e => setF({ deadlineISO: e.target.value || null })} />;
+      case "deadline": return <input type="datetime-local" className="input" autoFocus value={form.deadlineISO ? `${form.deadlineISO}T${form.deadlineTime || "17:00"}` : ""} onChange={e => { const v = e.target.value; if (!v) { setF({ deadlineISO: null, deadlineTime: null }); return; } const [iso, time] = v.split("T"); setF({ deadlineISO: iso, deadlineTime: time || "17:00" }); }} />;
       case "assignee": return <UserSelect value={form.assignee} onChange={(id) => setF({ assignee: id })} />;
       case "client": return <SelectInput value={form.client} onChange={e => setF({ client: e.target.value })}><option value="">— No client —</option>{clientOptions.map(c => <option key={c} value={c}>{c}</option>)}</SelectInput>;
       case "project": return <SelectInput value={form.projectId || ""} onChange={e => setF({ projectId: e.target.value || null })}><option value="">— No project —</option>{(window.PPC.store.projects || []).filter(p => !p.system).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</SelectInput>;
@@ -490,8 +498,8 @@ function TaskFieldZone({ form, setForm, role, activeField, setActiveField }) {
           </span>
         ))}
         {FIELD_PILLS.filter(f => !(f.single && fieldSet[f.key])).map(f => (
-          <button key={f.key} className={`t6-nt-pill ${activeField === f.key ? "on" : ""}`} onClick={() => setActiveField(a => a === f.key ? null : f.key)}>
-            <span className="t6-nt-pemoji">{f.emoji}</span>{f.name}
+          <button key={f.key} className={`t6-nt-pill icon ${activeField === f.key ? "on" : ""}`} title={f.name} aria-label={f.name} onClick={() => setActiveField(a => a === f.key ? null : f.key)}>
+            <span className="t6-nt-pemoji">{f.emoji}</span>
           </button>
         ))}
       </div>
@@ -546,7 +554,7 @@ function NewTaskModal({ open, defaults, role, onClose }) {
       service: (form.services || [])[0] || null, services: form.services || [], projectId: form.projectId || null,
       links: form.links, checklist: form.checklist, labels: form.labels, reminders: form.reminders,
       timeEstimateMin: form.timeEstimateMin != null ? form.timeEstimateMin : null,
-      deadlineISO: form.deadlineISO || null, recur: form.recur || null, status: "open"
+      deadlineISO: form.deadlineISO || null, deadlineTime: form.deadlineISO ? (form.deadlineTime || null) : null, recur: form.recur || null, status: "open"
     });
     window.toast?.(`Task added${userMap[form.assignee] ? " · " + userMap[form.assignee].name.split(" ")[0] : ""}`, { icon: "✓" });
     onClose();

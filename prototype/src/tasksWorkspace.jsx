@@ -163,11 +163,11 @@ function TwsCardMenu({ menu, store, today, onClose }) {
     return () => document.removeEventListener("keydown", onKey);
   }, []);
   const live = store.tasks.find(x => x.id === t.id) || t;   // reflect latest after each mutation
-  const setDue = (label, iso) => { store.updateTask(t.id, { due: label, dueISO: iso }); window.toast?.(`Due · ${label}`, { icon: "📅" }); onClose(); };
-  const pickDate = (iso) => { if (!iso) return; const label = PPC.isoToDueLabel ? PPC.isoToDueLabel(iso) : iso; store.updateTask(t.id, { due: label, dueISO: iso }); window.toast?.(`Due · ${label}`, { icon: "📅" }); onClose(); };
-  const clearDate = () => { store.updateTask(t.id, { due: "No date", dueISO: null }); window.toast?.("Date cleared", { icon: "📅" }); onClose(); };
+  const setDue = (label, iso) => { store.updateTask(t.id, { due: label, dueISO: iso, dueTime: null }); window.toast?.(`Due · ${label}`, { icon: "📅" }); onClose(); };
+  const pickDate = (v) => { if (!v) return; const [iso, time] = v.split("T"); const label = PPC.isoToDueLabel ? PPC.isoToDueLabel(iso) : iso; store.updateTask(t.id, { due: label, dueISO: iso, dueTime: time || "09:00" }); window.toast?.(`Due · ${label}`, { icon: "📅" }); onClose(); };
+  const clearDate = () => { store.updateTask(t.id, { due: "No date", dueISO: null, dueTime: null }); window.toast?.("Date cleared", { icon: "📅" }); onClose(); };
   const setPrio = (p) => { store.updateTask(t.id, { priority: p }); window.toast?.(`Priority · ${p || "none"}`, { icon: "⚑" }); onClose(); };
-  const setDeadline = (iso) => { store.updateTask(t.id, { deadlineISO: iso || null }); window.toast?.(iso ? "Deadline set" : "Deadline cleared", { icon: "⛳" }); onClose(); };
+  const setDeadline = (v) => { if (!v) { store.updateTask(t.id, { deadlineISO: null, deadlineTime: null }); window.toast?.("Deadline cleared", { icon: "⛳" }); onClose(); return; } const [iso, time] = v.split("T"); store.updateTask(t.id, { deadlineISO: iso, deadlineTime: time || "17:00" }); window.toast?.("Deadline set", { icon: "⛳" }); onClose(); };
   const dup = () => { store.duplicateTask(t.id); window.toast?.("Task duplicated", { icon: "⧉" }); onClose(); };
   const del = () => { store.deleteTask(t.id); window.toast?.("Task deleted", { icon: "🗑" }); onClose(); };
   const moveToProject = (pid) => { store.setTaskProject(t.id, pid || null); store.setTaskSection(t.id, null); window.toast?.("Moved to project", { icon: "→" }); };
@@ -194,7 +194,7 @@ function TwsCardMenu({ menu, store, today, onClose }) {
           <button onClick={() => setDue("Next week", PPC.shiftDate(today, 7))}>Next wk</button>
           <button onClick={clearDate}>No date</button>
         </div>
-        <input type="date" className="t6-menu-date" value={live.dueISO || ""} onChange={(e) => pickDate(e.target.value)} />
+        <input type="datetime-local" className="t6-menu-date" value={live.dueISO ? `${live.dueISO}T${live.dueTime || "09:00"}` : ""} onChange={(e) => pickDate(e.target.value)} />
         <div className="t6-menu-div" />
         <div className="t6-menu-label">Priority</div>
         <div className="t6-menu-prio">
@@ -209,7 +209,7 @@ function TwsCardMenu({ menu, store, today, onClose }) {
           <span className="t6-menu-label" style={{ flex: 1, padding: 0 }}>Deadline</span>
           {live.deadlineISO && <button className="t6-menu-clear" onClick={() => setDeadline(null)}>clear</button>}
         </div>
-        <input type="date" className="t6-menu-date" value={live.deadlineISO || ""} onChange={(e) => setDeadline(e.target.value)} />
+        <input type="datetime-local" className="t6-menu-date" value={live.deadlineISO ? `${live.deadlineISO}T${live.deadlineTime || "17:00"}` : ""} onChange={(e) => setDeadline(e.target.value)} />
         <div className="t6-menu-div" />
         <div className="t6-menu-label">Move to project</div>
         <select className="t6-menu-sel" value={live.projectId || ""} onChange={(e) => moveToProject(e.target.value)}>
