@@ -21,7 +21,7 @@
   const KEY = "ppc.demo.state";
   const SYNC_LS = "ppc.sync.code";
   const REMOTE = "/.netlify/functions/state";
-  const PERSIST_VERSION = 1;   // bump on any seed/schema change to invalidate old saves
+  const PERSIST_VERSION = 2;   // bump on any seed/schema change to invalidate old saves (v2 = fresh task DB)
 
   const replaceArr = (target, v) => { if (Array.isArray(target) && Array.isArray(v)) { target.length = 0; target.push(...v); } };
   const mergeObj = (target, v) => { if (target && v && typeof v === "object") Object.keys(v).forEach(k => { target[k] = v[k]; }); };

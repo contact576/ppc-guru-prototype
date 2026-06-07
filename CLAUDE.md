@@ -572,6 +572,14 @@ North-star goal: answer *"what's my highest priority right now?"* at a glance.
 - **Gating (LOCKED):** the **Team** board + admin team-report = **owners only** (`jaydeep`, `dhaval`), hidden in
   `TaskSubNav` and guarded in the view router (non-admins requesting `project:team` fall back to `today`).
   Everything else is for everyone; no money in this module.
+- **Fresh task database (real-clock, 2026-06):** the old hand-authored `TASKS_RICH`/`TASK_HISTORY` seed was
+  replaced by a generated set — **5 fully-widgeted tasks per employee** (`TASK_SPECS`, 3 today / 1 tomorrow / 1 later)
+  + completed-today/this-week tasks (`_doneSpec`) for Reporting. Anchored to the real date via `rISO()` (`new Date()`),
+  so Today/Upcoming/Calendar/board all show current data. `DURATION_BUCKETS`/`bucketFor`/`DUE_OFFSET`/`dueLabelToISO`
+  live right after this block. **`PERSIST_VERSION` bumped to 2** (`persist.js`) so old saved task data is discarded.
+- **"Start here" = top-3 ranked suggestions:** `TwsToday` scores each of today's tasks (`twsScore` — priority +
+  overdue/due-today + deadline + earlier-time + quick-win) and shows the **top 3 with #1/#2/#3 + reason chips**
+  (`twsReasons`). Per-person (each role sees their own). CSS `.t6-suggest*`.
 - **Data (`data.js`, additive):** tasks gain **`projectId`** (default null); `store.projects` seeds a virtual
   **`team`** project; mutations **`addProject`**, **`setTaskProject`**; reporting helper **`store.tasksCompleted(roleId, sinceISO)`**.
 - **Project assignment (move tasks into projects):** the shared `TaskFieldZone` has a **Project** pill, the

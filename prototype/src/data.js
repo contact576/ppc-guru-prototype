@@ -1618,220 +1618,139 @@
      The id-prefixed `auto-…` legacy id format from tasks.jsx still works because
      we merge auto-generated card-tasks at read time.
      ───────────────────────────────────────────────────────────────── */
-  const TASKS_RICH = [
-    {
-      id: "tk-1", title: "Pause underperforming keywords — Mosaic Dental",
-      description: "CPA on the 'family dentist' ad group has crept from $24 to $44 over the last 14 days. Audit the keyword report, identify the top spenders with no conversions in the last 21 days, and pause them. Don't kill the broad matches — just the long-tail offenders.",
-      assignee: "harsh", watchers: ["vihar"], reporter: "vihar",
-      due: "Today", priority: "high", status: "open",
-      client: "Mosaic Dental", service: "google",
-      links: [
-        { label: "Google Ads — kw report", url: "ads.google.com/aw/keywords" },
-        { label: "Looker — Mosaic CPA trend", url: "lookerstudio.google.com/mosaic" }
-      ],
-      checklist: [
-        { id: "c1", text: "Export last-21d keyword report", done: true },
-        { id: "c2", text: "Filter: ≥$50 spend, 0 conv", done: true },
-        { id: "c3", text: "Pause offenders, label 'paused-cpa-Nov'", done: false },
-        { id: "c4", text: "Log in Optimization Log", done: false }
-      ],
-      attachments: [{ name: "kw-report-Oct.csv", size: "42 KB", kind: "csv" }],
-      comments: [
-        { who: "vihar", when: "Today, 09:14", text: "Mike asked about CPA on the call — flag in your next weekly update." },
-        { who: "harsh", when: "Today, 10:02", text: "Started. Will post results in optimization log by EOD." }
-      ],
-      labels: ["optimization", "urgent"],
-      createdAt: "Today, 08:30"
-    },
-    {
-      id: "tk-2", title: "Draft November content calendar — Wildflower",
-      description: "Lina wants a winter-sourdough theme. 6 posts: 2 reels + 4 statics. First post Nov 4, last Nov 28. Include 1 wholesale-targeted post.",
-      assignee: "vanshika", watchers: ["vihar"], reporter: "vihar",
-      due: "Tomorrow", priority: "med", status: "in-progress",
-      client: "Wildflower Bakery", service: "smm",
-      links: [
-        { label: "Brand kit", url: "drive.google.com/wildflower" },
-        { label: "Last month's calendar", url: "drive.google.com/wildflower-oct" }
-      ],
-      checklist: [
-        { id: "c1", text: "Pick 6 dates", done: true },
-        { id: "c2", text: "Draft hooks for each", done: true },
-        { id: "c3", text: "Send to Lina for approval", done: false },
-        { id: "c4", text: "Hand off to Rayu for production", done: false }
-      ],
-      attachments: [],
-      comments: [
-        { who: "vanshika", when: "Yesterday", text: "Going with 'Hearth' as the visual thread. Will test 'tarte tatin' reel as opener since the last one did 12k views." }
-      ],
-      labels: ["content"],
-      createdAt: "Oct 29, 14:20"
-    },
-    {
-      id: "tk-3", title: "Unblock Stonebridge Homes (client review)",
-      description: "Stonebridge has been sitting at Client Approval for 8 days. Reach out — phone is faster than email for this client. Find out what's holding it up.",
-      assignee: "vihar", watchers: ["vanshika"], reporter: "system",
-      due: "Today", priority: "high", status: "open",
-      client: "Stonebridge Homes", service: "smm",
-      links: [],
-      checklist: [
-        { id: "c1", text: "Call Stonebridge", done: false },
-        { id: "c2", text: "Update card with reason", done: false },
-        { id: "c3", text: "If still stuck, escalate to Vanshika", done: false }
-      ],
-      attachments: [],
-      comments: [{ who: "system", when: "Today, 08:00", text: "Auto-created — card sitting 8 days in stage." }],
-      labels: ["blocker"],
-      createdAt: "Today, 08:00"
-    },
-    {
-      id: "tk-4", title: "Deliver 6 reels — Saffron & Spice",
-      description: "6 reels for November cycle. Brand kit on Drive. Use last-month's pacing reference — 15-22s per reel, ends with logo card.",
-      assignee: "rayu", watchers: ["vanshika"], reporter: "vanshika",
-      due: "Fri", priority: "med", status: "in-progress",
-      client: "Saffron & Spice", service: "smm",
-      links: [{ label: "Brand kit", url: "drive.google.com/saffron" }],
-      checklist: [
-        { id: "c1", text: "Reel 1 — biryani close-up", done: true },
-        { id: "c2", text: "Reel 2 — naan dance", done: true },
-        { id: "c3", text: "Reel 3 — chef intro", done: true },
-        { id: "c4", text: "Reel 4 — Sunday family deal", done: false },
-        { id: "c5", text: "Reel 5 — weekday lunch combo", done: false },
-        { id: "c6", text: "Reel 6 — catering inquiry", done: false }
-      ],
-      attachments: [{ name: "Saffron — Reels script.docx", size: "28 KB", kind: "doc" }],
-      comments: [],
-      labels: ["design"],
-      createdAt: "Oct 27"
-    },
-    {
-      id: "tk-5", title: "Static set (8) — Lumiere Skin Clinic",
-      description: "8-static set, mix of single-product features and lifestyle. Keep medical-clean look. Reference last month's top performer (HydraFacial card).",
-      assignee: "aadil", watchers: ["vanshika"], reporter: "vanshika",
-      due: "Thu", priority: "med", status: "open",
-      client: "Lumiere Skin Clinic", service: "smm",
-      links: [],
-      checklist: [{ id: "c1", text: "Statics 1-4", done: false }, { id: "c2", text: "Statics 5-8", done: false }],
-      attachments: [],
-      comments: [{ who: "aadil", when: "Yesterday", text: "Heads up — I'm at 41h this week. Will start Thu morning." }],
-      labels: ["design"],
-      createdAt: "Oct 27"
-    },
-    {
-      id: "tk-6", title: "Follow up — GlobalFinancials proposal",
-      description: "Proposal sent Oct 24. No response yet. Anita usually replies in 2-3 days, so the silence is unusual. Try a soft check-in email + add value (recent industry case study).",
-      assignee: "abhishek", watchers: ["jaydeep"], reporter: "abhishek",
-      due: "Today", priority: "high", status: "open",
-      client: "GlobalFinancials", service: "sales",
-      links: [{ label: "Sent proposal", url: "drive.google.com/proposals/globalfinancials" }],
-      checklist: [
-        { id: "c1", text: "Draft check-in email", done: true },
-        { id: "c2", text: "Attach case study", done: false },
-        { id: "c3", text: "Send by 4 PM ET", done: false }
-      ],
-      attachments: [],
-      comments: [],
-      labels: ["sales", "urgent"],
-      createdAt: "Today, 09:00"
-    },
-    {
-      id: "tk-7", title: "Build Looker dashboard — BlueCrest HVAC",
-      description: "Build the Looker monthly view following the Maritime Realty template. Send share link to BlueCrest contact (Janet) once verified.",
-      assignee: "harsh", watchers: ["vihar"], reporter: "harsh",
-      due: "Wed", priority: "med", status: "done",
-      client: "BlueCrest HVAC", service: "meta",
-      links: [{ label: "Maritime template", url: "lookerstudio.google.com/maritime" }],
-      checklist: [
-        { id: "c1", text: "Copy Maritime template", done: true },
-        { id: "c2", text: "Connect ad account", done: true },
-        { id: "c3", text: "Add cost-per-call widget", done: true },
-        { id: "c4", text: "Share with Janet (view-only)", done: true }
-      ],
-      attachments: [],
-      comments: [{ who: "harsh", when: "Yesterday", text: "Done. Janet confirmed she can view." }],
-      labels: ["work"],
-      createdAt: "Oct 26"
-    }
-  ];
+  /* ── Fresh task database (real-clock anchored). 5 fully-widgeted tasks per
+     employee, spread across today / tomorrow / this week so Today, Upcoming,
+     Calendar and the board all show real, current data. Rebuilt 2026-06. ──── */
+  const _RT0 = new Date(); _RT0.setHours(0, 0, 0, 0);
+  const rISO = (days) => { const d = new Date(_RT0); d.setDate(d.getDate() + days); return d.toISOString().slice(0, 10); };
+  const rLabel = (days) => days === 0 ? "Today" : days === 1 ? "Tomorrow" : new Date(rISO(days) + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const _mkTask = (id, who, s) => ({
+    id, title: s.t, description: s.desc || "",
+    assignee: who, reporter: s.rep || who, watchers: s.w || [],
+    due: rLabel(s.dueOff), dueISO: rISO(s.dueOff), dueTime: s.time || null,
+    priority: s.p || "med", status: "open",
+    client: s.c || null, service: s.svc || null, services: s.svc ? [s.svc] : [],
+    links: [], checklist: (s.subs || []).map((x, i) => ({ id: id + "-c" + i, text: x, done: false })),
+    attachments: [], comments: [], labels: s.lbl || [], reminders: [],
+    timeEstimateMin: s.est != null ? s.est : null, timeSpentMin: 0, timerStartedAt: null,
+    deadlineISO: s.dlOff != null ? rISO(s.dlOff) : null, recur: null, projectId: null,
+    createdISO: rISO(0), completedISO: null, createdAt: "Today"
+  });
+  /* per employee: 3 due today (varied → clean #1/#2/#3 ranking), 1 tomorrow, 1 later */
+  const TASK_SPECS = {
+    jaydeep: [
+      { t: "Approve May commission payouts", p: "high", dueOff: 0, time: "10:00", est: 30, lbl: ["urgent"], w: ["dhaval"], dlOff: 0, subs: ["Review Abhishek's sheet", "Confirm 3x target", "Sign off"], desc: "Finance needs sign-off before the payroll run." },
+      { t: "Owners sync — Q3 priorities", p: "high", dueOff: 0, time: "09:00", est: 60, w: ["dhaval", "shrikant"] },
+      { t: "Review GlobalFinancials proposal", p: "med", dueOff: 0, time: "15:00", est: 20, c: "GlobalFinancials", svc: "sales" },
+      { t: "Interview — senior PM candidate", p: "med", dueOff: 1, time: "14:00", est: 45 },
+      { t: "Draft investor update", p: "low", dueOff: 3, time: "11:00", est: 90, lbl: ["work"], subs: ["MRR chart", "Churn note", "Hiring plan"] }
+    ],
+    dhaval: [
+      { t: "Reconcile May P&L", p: "high", dueOff: 0, time: "10:00", est: 90, lbl: ["urgent"], dlOff: 0, subs: ["Pull Zoho books", "Match bank", "Flag variances"] },
+      { t: "Approve new vendor contract", p: "med", dueOff: 0, time: "13:00", est: 20 },
+      { t: "Ops standup", p: "med", dueOff: 0, time: "09:30", est: 15, w: ["shrikant"] },
+      { t: "Renew software licenses", p: "low", dueOff: 1, time: "11:00", est: 30 },
+      { t: "Quarterly capacity plan", p: "med", dueOff: 4, time: "14:00", est: 60, w: ["shrikant", "vihar"] }
+    ],
+    shrikant: [
+      { t: "Escalation — Stonebridge approval stuck", p: "high", dueOff: 0, time: "11:00", est: 30, c: "Stonebridge Homes", svc: "smm", w: ["vihar"], dlOff: 0, subs: ["Call client", "Reset SLA clock"] },
+      { t: "QA — Maritime Meta creative pack", p: "high", dueOff: 0, time: "14:00", est: 45, c: "Maritime Realty", svc: "meta" },
+      { t: "Delivery sync + capacity", p: "med", dueOff: 0, time: "09:30", est: 30, w: ["vihar", "vanshika", "harsh"] },
+      { t: "Review onboarding SLA misses", p: "med", dueOff: 1, time: "10:00", est: 45 },
+      { t: "Update service catalog stages", p: "low", dueOff: 5, est: 60 }
+    ],
+    vihar: [
+      { t: "Churn-risk check-in — Northern Lights", p: "high", dueOff: 0, time: "11:00", est: 30, c: "Northern Lights Auto", svc: "meta", dlOff: 0, subs: ["Review pause reason", "Draft win-back"] },
+      { t: "Monthly review — FreshLeaf", p: "high", dueOff: 0, time: "15:00", est: 60, c: "FreshLeaf Cannabis Co.", svc: "meta", w: ["harsh"] },
+      { t: "Onboarding kickoff — Harbour Auto Body", p: "med", dueOff: 0, time: "13:00", est: 30, c: "Harbour Auto Body", svc: "google" },
+      { t: "Prep Maritime monthly review", p: "med", dueOff: 1, time: "10:00", est: 45, c: "Maritime Realty" },
+      { t: "Cedarwood win-back call", p: "med", dueOff: 2, time: "14:00", est: 20, c: "Cedarwood Physio" }
+    ],
+    abhishek: [
+      { t: "Demo call — Aurora Wellness", p: "high", dueOff: 0, time: "13:00", est: 30, c: "Aurora Wellness", svc: "sales", dlOff: 0, subs: ["Prep deck", "Send recap"] },
+      { t: "Send proposal — Pinecrest Dental", p: "high", dueOff: 0, time: "11:00", est: 30, c: "Pinecrest Dental", svc: "sales", lbl: ["urgent"] },
+      { t: "Follow up — GlobalFinancials", p: "med", dueOff: 0, time: "16:00", est: 15, c: "GlobalFinancials", svc: "sales" },
+      { t: "Qualify new Meta leads (5)", p: "med", dueOff: 1, time: "10:00", est: 45, svc: "sales" },
+      { t: "Pipeline review prep", p: "low", dueOff: 3, est: 30, w: ["jaydeep"] }
+    ],
+    vanshika: [
+      { t: "Creative refresh — Maritime Meta", p: "high", dueOff: 0, time: "10:00", est: 45, c: "Maritime Realty", svc: "meta", dlOff: 0, subs: ["Brief new angle", "Assign editor"] },
+      { t: "Approve Wildflower June calendar", p: "high", dueOff: 0, time: "14:00", est: 30, c: "Wildflower Bakery", svc: "smm", w: ["rayu"] },
+      { t: "Internal review — Aurora reels", p: "med", dueOff: 0, time: "16:00", est: 30, c: "Aurora Wellness", svc: "smm", w: ["aadil"] },
+      { t: "Plan July content themes", p: "med", dueOff: 1, time: "11:00", est: 60, svc: "smm" },
+      { t: "Editor workload check", p: "low", dueOff: 2, est: 20, w: ["rayu", "aadil"] }
+    ],
+    harsh: [
+      { t: "Pause underperforming keywords — Pinecrest", p: "high", dueOff: 0, time: "10:00", est: 30, c: "Pinecrest Dental", svc: "google", lbl: ["optimization", "urgent"], dlOff: 0, subs: ["Export 21d report", "Pause 0-conv", "Log opt"] },
+      { t: "Fix Maritime Meta overpacing", p: "high", dueOff: 0, time: "13:00", est: 45, c: "Maritime Realty", svc: "meta" },
+      { t: "Pull MTD spend report", p: "med", dueOff: 0, time: "16:00", est: 15, lbl: ["report"] },
+      { t: "Weekly Google opt log — 3 accounts", p: "med", dueOff: 1, time: "11:00", est: 45, svc: "google" },
+      { t: "Northern Lights budget reset", p: "med", dueOff: 3, est: 30, c: "Northern Lights Auto", svc: "meta" }
+    ],
+    rayu: [
+      { t: "Edit Aurora reel 1", p: "high", dueOff: 0, time: "10:00", est: 270, c: "Aurora Wellness", svc: "smm", dlOff: 1, subs: ["Rough cut", "Captions", "Color"] },
+      { t: "Edit Aurora reel 2", p: "med", dueOff: 0, time: "14:00", est: 270, c: "Aurora Wellness", svc: "smm" },
+      { t: "Wildflower statics 1–2", p: "med", dueOff: 0, time: "16:00", est: 45, c: "Wildflower Bakery", svc: "smm" },
+      { t: "Maritime reel revisions", p: "med", dueOff: 1, time: "11:00", est: 120, c: "Maritime Realty", svc: "meta" },
+      { t: "FreshLeaf statics batch", p: "low", dueOff: 2, est: 90, c: "FreshLeaf Cannabis Co.", svc: "smm" }
+    ],
+    aadil: [
+      { t: "Pinecrest statics 1–4", p: "high", dueOff: 0, time: "10:00", est: 120, c: "Pinecrest Dental", svc: "smm", dlOff: 0, subs: ["Templates", "Copy", "Export"] },
+      { t: "Aurora statics 1–3", p: "med", dueOff: 0, time: "13:00", est: 90, c: "Aurora Wellness", svc: "smm" },
+      { t: "Harbour Auto Body logo refresh", p: "med", dueOff: 0, time: "15:30", est: 60, c: "Harbour Auto Body" },
+      { t: "Wildflower reel thumbnails", p: "low", dueOff: 1, time: "11:00", est: 30, c: "Wildflower Bakery", svc: "smm" },
+      { t: "Stonebridge statics", p: "med", dueOff: 4, est: 90, c: "Stonebridge Homes", svc: "smm" }
+    ]
+  };
+  const TASKS_RICH = [];
+  Object.keys(TASK_SPECS).forEach(who => TASK_SPECS[who].forEach((s, i) => TASKS_RICH.push(_mkTask("tk-" + who + "-" + (i + 1), who, s))));
 
-  /* ── Phase 6 — task duration + scheduling layer ─────────────────────
-     Adds time-estimate, tracked-hours (start/stop timer), and real ISO
-     dates to every task so the Todoist-style quick-add, duration board,
-     timer, and owner activity+hours report all run on real data.
-     Additive: the legacy `due` string is kept for display and derived
-     from `dueISO`. ───────────────────────────────────────────────────── */
+  /* Completed tasks (this week, weekday-spread) so Reporting + Team report have
+     real numbers: 1 done today + 1 done earlier this week per employee. */
+  const _doneSpec = {
+    jaydeep: ["Weekly leadership review", "Sign off April commissions"],
+    dhaval: ["Approve Q2 budget", "Vendor payment run"],
+    shrikant: ["Delivery standup", "Resolve Cedarwood escalation"],
+    vihar: ["Maritime weekly check-in", "Stonebridge status call"],
+    abhishek: ["Discovery call — new lead", "Send recap — Aurora"],
+    vanshika: ["Approve FreshLeaf statics", "Wildflower reel review"],
+    harsh: ["Daily budget pacing — 6 accts", "Pinecrest search-terms audit"],
+    rayu: ["Edit Maritime reel 3", "FreshLeaf reel cut"],
+    aadil: ["Lumiere statics 1–4", "Aurora thumbnail set"]
+  };
+  Object.keys(_doneSpec).forEach(who => {
+    _doneSpec[who].forEach((title, i) => {
+      const day = i === 0 ? rISO(0) : rISO(-2);
+      TASKS_RICH.push({
+        id: "tkd-" + who + "-" + i, title, description: "",
+        assignee: who, reporter: who, watchers: [],
+        due: "Done", dueISO: day, dueTime: null, priority: i === 0 ? "med" : "low", status: "done",
+        client: null, service: null, services: [],
+        links: [], checklist: [], attachments: [], comments: [], labels: [], reminders: [],
+        timeEstimateMin: 30, timeSpentMin: i === 0 ? 25 : 35, timerStartedAt: null,
+        deadlineISO: null, recur: null, projectId: null,
+        createdISO: day, completedISO: day, createdAt: day
+      });
+    });
+  });
+
+  /* duration buckets + due/label helpers (restored alongside the new task DB) */
   const DURATION_BUCKETS = [
-    { id: "1m",    label: "1 min",     maxMin: 1   },
-    { id: "5m",    label: "5 min",     maxMin: 5   },
-    { id: "5-10",  label: "5–10 min",  maxMin: 10  },
-    { id: "10-30", label: "10–30 min", maxMin: 30  },
-    { id: "30-60", label: "30–60 min", maxMin: 60  },
+    { id: "1m",    label: "1 min",     maxMin: 1 },
+    { id: "5m",    label: "5 min",     maxMin: 5 },
+    { id: "5-10",  label: "5–10 min",  maxMin: 10 },
+    { id: "10-30", label: "10–30 min", maxMin: 30 },
+    { id: "30-60", label: "30–60 min", maxMin: 60 },
     { id: "60+",   label: "60 min+",   maxMin: Infinity }
   ];
-  function bucketFor(min) {
-    if (min == null) return null;
-    return DURATION_BUCKETS.find(b => min <= b.maxMin) || DURATION_BUCKETS[DURATION_BUCKETS.length - 1];
-  }
-  /* friendly due-string → ISO (anchored to TODAY = Mon 2026-05-25) */
-  const DUE_OFFSET = { "Today": 0, "Tomorrow": 1, "Wed": 2, "Thu": 3, "Fri": 4, "Next Mon": 7, "Overdue": -1 };
+  function bucketFor(min) { if (min == null) return null; return DURATION_BUCKETS.find(b => min <= b.maxMin) || DURATION_BUCKETS[DURATION_BUCKETS.length - 1]; }
+  const DUE_OFFSET = { "Today": 0, "Tomorrow": 1, "Wed": 2, "Thu": 3, "Fri": 4, "Next Mon": 7, "Yesterday": -1, "Overdue": -3 };
   function dueLabelToISO(due) {
     if (due == null || due === "No date" || due === "Done") return null;
     if (/^\d{4}-\d{2}-\d{2}$/.test(due)) return due;          // already ISO
     const off = DUE_OFFSET[due];
-    return off == null ? null : shiftDate(nowISO(), off);   // real-clock anchor so detail-panel Due lands in Today
+    return off == null ? null : shiftDate(nowISO(), off);     // real-clock anchor
   }
-
-  /* Estimate / tracked-time / created-date seed for the 7 hand-authored tasks */
-  const TASK_SEED_META = {
-    "tk-1": { est: 30,  spent: 0,   created: TODAY },
-    "tk-2": { est: 60,  spent: 25,  created: "2026-05-22" },
-    "tk-3": { est: 15,  spent: 0,   created: TODAY },
-    "tk-4": { est: 270, spent: 180, created: "2026-05-21" },
-    "tk-5": { est: 60,  spent: 0,   created: "2026-05-22" },
-    "tk-6": { est: 20,  spent: 0,   created: TODAY },
-    "tk-7": { est: 45,  spent: 50,  created: "2026-05-22", completed: "2026-05-24" }
-  };
-  TASKS_RICH.forEach(t => {
-    const m = TASK_SEED_META[t.id] || {};
-    t.timeEstimateMin = m.est != null ? m.est : null;
-    t.timeSpentMin    = m.spent != null ? m.spent : 0;
-    t.timerStartedAt  = null;
-    t.deadlineISO     = t.deadlineISO || null;
-    t.recur           = t.recur || null;
-    t.reminders       = t.reminders || [];
-    t.dueISO          = dueLabelToISO(t.due);
-    t.createdISO      = m.created || TODAY;
-    t.completedISO    = t.status === "done" ? (m.completed || TODAY) : null;
-  });
-
-  /* Completed-task history → gives the owner activity+hours report real
-     multi-day, multi-person data. Weekdays only (Sat 5/23 + Sun 5/24 off). */
-  const TASK_HISTORY = [
-    { id: "th-1",  who: "harsh",    title: "Adjust Mosaic Dental daily budgets",    client: "Mosaic Dental",      service: "google", est: 20,  spent: 25,  day: "2026-05-21", priority: "med"  },
-    { id: "th-2",  who: "harsh",    title: "Weekly Google opt log — 3 accounts",    client: null,                 service: "google", est: 45,  spent: 50,  day: "2026-05-22", priority: "med"  },
-    { id: "th-3",  who: "harsh",    title: "Pull MTD spend report",                 client: null,                 service: "google", est: 15,  spent: 10,  day: "2026-05-25", priority: "low"  },
-    { id: "th-4",  who: "vanshika", title: "Review Wildflower reel cut",            client: "Wildflower Bakery",  service: "smm",    est: 30,  spent: 35,  day: "2026-05-21", priority: "med"  },
-    { id: "th-5",  who: "vanshika", title: "Approve Saffron statics batch",         client: "Saffron & Spice",    service: "smm",    est: 20,  spent: 20,  day: "2026-05-22", priority: "med"  },
-    { id: "th-6",  who: "vanshika", title: "Creative refresh — Maritime Meta",      client: "Maritime Realty",    service: "meta",   est: 45,  spent: 40,  day: "2026-05-25", priority: "high" },
-    { id: "th-7",  who: "rayu",     title: "Edit Saffron reels 1–2",                client: "Saffron & Spice",    service: "smm",    est: 270, spent: 240, day: "2026-05-21", priority: "med"  },
-    { id: "th-8",  who: "rayu",     title: "Edit Saffron reel 3",                   client: "Saffron & Spice",    service: "smm",    est: 135, spent: 150, day: "2026-05-22", priority: "med"  },
-    { id: "th-9",  who: "aadil",    title: "Lumiere statics 1–4",                   client: "Lumiere Skin Clinic",service: "smm",    est: 120, spent: 140, day: "2026-05-22", priority: "med"  },
-    { id: "th-10", who: "aadil",    title: "Lumiere statics 5–8",                   client: "Lumiere Skin Clinic",service: "smm",    est: 120, spent: 130, day: "2026-05-25", priority: "med"  },
-    { id: "th-11", who: "vihar",    title: "Call Stonebridge re: approval",         client: "Stonebridge Homes",  service: "smm",    est: 15,  spent: 20,  day: "2026-05-22", priority: "high" },
-    { id: "th-12", who: "vihar",    title: "Monthly review prep — FreshLeaf",       client: "FreshLeaf",          service: null,     est: 30,  spent: 25,  day: "2026-05-25", priority: "med"  },
-    { id: "th-13", who: "abhishek", title: "Follow up — GlobalFinancials",          client: "GlobalFinancials",   service: "sales",  est: 20,  spent: 15,  day: "2026-05-21", priority: "high" },
-    { id: "th-14", who: "abhishek", title: "Send proposal — new Meta lead",         client: null,                 service: "sales",  est: 30,  spent: 35,  day: "2026-05-25", priority: "med"  },
-    { id: "th-15", who: "shrikant", title: "Delivery sync + capacity check",        client: null,                 service: null,     est: 30,  spent: 30,  day: "2026-05-25", priority: "med"  }
-  ].map(h => ({
-    id: h.id, title: h.title, description: "",
-    assignee: h.who, reporter: h.who, watchers: [],
-    due: "Done", priority: h.priority, status: "done",
-    client: h.client, service: h.service,
-    links: [], checklist: [], attachments: [], comments: [], labels: [],
-    timeEstimateMin: h.est, timeSpentMin: h.spent, timerStartedAt: null,
-    deadlineISO: null, recur: null, reminders: [],
-    dueISO: h.day, createdISO: h.day, completedISO: h.day, createdAt: h.day
-  }));
-  TASKS_RICH.push(...TASK_HISTORY);
 
   /* ─────────────────────────────────────────────────────────────────
      SMM CONTENT WORKFLOW — quotas + monthly plans + per-deliverable cards.

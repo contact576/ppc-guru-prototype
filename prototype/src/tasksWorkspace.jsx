@@ -254,22 +254,51 @@ function TaskSubNav({ role, view, setView, counts, store, search, setSearch }) {
 }
 
 /* ── individual views ───────────────────────────────────────────── */
+/* priority score from the widget signals → drives the "Start here" suggestions */
+function twsScore(t, today) {
+  const PPC = window.PPC;
+  let s = t.priority === "high" ? 100 : t.priority === "med" ? 45 : 15;
+  if (twsIsOverdue(t, today)) s += 80;
+  else if (twsIsToday(t, today)) s += 45;
+  if (t.deadlineISO) { if (t.deadlineISO <= today) s += 70; else if (t.deadlineISO <= PPC.shiftDate(today, 2)) s += 35; }
+  if (t.dueTime) s += Math.max(0, 18 - parseInt(t.dueTime.slice(0, 2), 10));   // earlier in the day → nudge up
+  if (t.timeEstimateMin != null && t.timeEstimateMin <= 10) s += 12;            // quick win
+  return s;
+}
+function twsReasons(t, today) {
+  const PPC = window.PPC, r = [];
+  if (t.priority === "high") r.push("High priority"); else if (t.priority === "med") r.push("Medium priority");
+  if (twsIsOverdue(t, today)) r.push("Overdue");
+  else if (twsIsToday(t, today)) r.push("Due today" + (t.dueTime ? " · " + PPC.fmtTime12(t.dueTime) : ""));
+  if (t.deadlineISO && t.deadlineISO <= today) r.push("Deadline today");
+  else if (t.deadlineISO) r.push("Deadline " + PPC.isoToDueLabel(t.deadlineISO));
+  if (t.timeEstimateMin != null && t.timeEstimateMin <= 10) r.push("Quick win");
+  if (t.client) r.push(t.client);
+  return r;
+}
+
 function TwsToday({ tasks, viewMode, groupBy, today, store }) {
+  const { userMap } = window.PPC;
   const list = tasks.filter(t => twsIsTodayOrOverdue(t, today)).sort(twsSort);
-  const top = list[0];
+  const ranked = [...list].sort((a, b) => twsScore(b, today) - twsScore(a, today)).slice(0, 3);
   return (
     <div className="col gap-4">
-      {top && (
-        <div className="t6-starthere">
-          <div className="t6-starthere-ic">▶</div>
-          <div style={{ flex: 1 }}>
-            <div className="t6-starthere-eyebrow">Start here · your highest priority</div>
-            <div className="t6-starthere-title">{top.title}</div>
-            <div className="muted" style={{ fontSize: 12.5 }}>
-              {top.priority} priority{top.client ? " · " + top.client : ""}{top.due ? " · " + top.due : ""}
-            </div>
+      {ranked.length > 0 && (
+        <div className="t6-suggest">
+          <div className="t6-suggest-head">
+            <span className="t6-suggest-eyebrow">✦ Start here · suggested order</span>
+            <span className="muted" style={{ fontSize: 12 }}>ranked from priority, due time, deadline &amp; effort</span>
           </div>
-          {top.kind !== "auto" && <button className="btn primary sm" onClick={() => window.openTaskPanel?.(top.id)}>Open</button>}
+          {ranked.map((t, i) => (
+            <div key={t.id} className="t6-suggest-row" onClick={() => t.kind !== "auto" ? window.openTaskPanel?.(t.id) : window.openClientPanel?.(t.autoCardId)}>
+              <div className={`t6-suggest-rank r${i + 1}`}>{i + 1}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="t6-suggest-title">{t.title}</div>
+                <div className="t6-suggest-reasons">{twsReasons(t, today).map((rsn, j) => <span key={j} className="t6-suggest-reason">{rsn}</span>)}</div>
+              </div>
+              <Avatar user={userMap[t.assignee]} size="sm" />
+            </div>
+          ))}
         </div>
       )}
       <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} groupBy={groupBy} emptyMsg="All clear for today — inbox zero." />
