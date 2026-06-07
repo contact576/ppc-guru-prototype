@@ -1,0 +1,16 @@
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.log
+
+# Local Claude settings that may hold machine-specific config/permissions
+.claude/settings.local.json
+
+# Prototype snapshots / backups (regenerable, not the live app)
+prototype/index.html.bak-*
+prototype/src.bak-*
+prototype/*.bak
+prototype/PPC Guru - ERP (offline).html
+
+# Generated single-file bundles (regenerate with /tmp/inline_ppc.py when needed)
+PPC Guru — Prototype (*).html

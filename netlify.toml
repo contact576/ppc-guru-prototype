@@ -1,0 +1,20 @@
+# Netlify config — deploys the static prototype as-is (no build step).
+# The prototype is in-browser React + Babel-standalone (CDN), so there is
+# nothing to compile; we just publish the prototype/ folder.
+
+[build]
+  publish = "prototype"
+  command = ""
+
+# SPA-style: the app is a single index.html (client-side screens via state),
+# so route any unknown path back to index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
