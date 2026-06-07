@@ -598,6 +598,12 @@ North-star goal: answer *"what's my highest priority right now?"* at a glance.
   draggable. **Board always shows the full section set** (`twsPadColumns`/`twsCanonicalCols` — even empty columns) so
   you can drop into an empty section. CSS `.t6-drag`/`.t6-col-drop`. Available to all roles on Today/Filters/Inbox/Projects;
   admins also on Team (drop = reassign across teammates).
+- **Within-column reorder:** dropping a card **onto another card in the same column** reorders it (before/after by cursor
+  Y); `store.setTaskOrder(ids)` writes a sequential `order` field, and `twsSortOrdered` sorts by `order` first (falling
+  back to `twsSort`). Insertion indicator via `.t6-drop-before`/`.t6-drop-after`.
+- **Enriched cards/rows** (`TaskCard`/`TaskRow` in `tasks.jsx`): priority **left color accent** (`.prio-high/med/low`),
+  service badge (`.t6-svc.svc-*`), label chips, **deadline flag**, due+time, duration bucket, **subtask progress bar**,
+  client w/ icon, tracked time + timer. CSS under the enriched-cards block. No new tokens.
 - Still stubs: real Google Calendar/Workspace sync.
 
 ## Local memory (persistence) — `src/persist.js`

@@ -20,6 +20,12 @@ function twsSort(a, b) {
   const ad = a.dueISO || "9999-99-99", bd = b.dueISO || "9999-99-99";
   return ad < bd ? -1 : ad > bd ? 1 : 0;
 }
+/* manual order (drag-to-reorder) takes precedence; unordered fall back to twsSort */
+function twsSortOrdered(a, b) {
+  const ao = a.order != null ? a.order : Infinity, bo = b.order != null ? b.order : Infinity;
+  if (ao !== bo) return ao - bo;
+  return twsSort(a, b);
+}
 function twsIsOverdue(t, today) {
   if (t.status === "done") return false;
   if (t.dueISO) return t.dueISO < today;
@@ -90,7 +96,7 @@ function twsGroup(tasks, groupBy, today) {
   else if (groupBy === "duration") { const o = [...DURATION_BUCKETS.map(b => b.label), "No estimate"]; arr.sort((a, b) => o.indexOf(a.label) - o.indexOf(b.label)); }
   else if (groupBy === "assignee") { const o = USERS.map(u => u.id); arr.sort((a, b) => o.indexOf(a.key) - o.indexOf(b.key)); }
   else arr.sort((a, b) => a.label.localeCompare(b.label));
-  arr.forEach(g => g.items.sort(twsSort));
+  arr.forEach(g => g.items.sort(twsSortOrdered));
   // attach a drop handler per column so drag-and-drop re-files the card into that section
   arr.forEach(g => { g.groupBy = groupBy; g.apply = twsMakeApply(groupBy, g.key); });
   return arr;
@@ -144,6 +150,7 @@ function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy }) {
   const { userMap } = window.PPC;
   const [dragId, setDragId] = React.useState(null);
   const [overKey, setOverKey] = React.useState(null);
+  const [dropAt, setDropAt] = React.useState(null);   // {id, pos:'before'|'after'} — within-column reorder indicator
   const open = (t) => t.kind === "auto" ? window.openClientPanel?.(t.autoCardId) : window.openTaskPanel?.(t.id);
   const toggle = (t) => { if (t.kind !== "auto") store.toggleTaskDone(t.id); };
 
@@ -157,6 +164,31 @@ function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy }) {
     if (g.items.some(it => it.id === id)) return;        // dropped in same column → no-op
     const ok = g.apply ? g.apply(store, id) : false;
     window.toast?.(ok ? `Moved “${(task.title || "Task").slice(0, 28)}” → ${g.label}` : `Can’t move into “${g.label}”`, { icon: ok ? "✓" : "!" });
+  };
+
+  // within-column reorder: dropping on a card inserts the dragged card before/after it
+  const onCardOver = (e, t) => {
+    e.preventDefault();
+    const r = e.currentTarget.getBoundingClientRect();
+    const pos = (e.clientY > r.top + r.height / 2) ? "after" : "before";
+    if (!dropAt || dropAt.id !== t.id || dropAt.pos !== pos) setDropAt({ id: t.id, pos });
+  };
+  const onCardDrop = (e, g, target) => {
+    e.preventDefault(); e.stopPropagation();
+    const id = (e.dataTransfer && e.dataTransfer.getData("text/plain")) || dragId;
+    const r = e.currentTarget.getBoundingClientRect();
+    const after = e.clientY > r.top + r.height / 2;
+    setDragId(null); setOverKey(null); setDropAt(null);
+    if (!id || id === target.id) return;
+    if (!g.items.some(it => it.id === id)) {   // came from another column → re-file into this section
+      const ok = g.apply ? g.apply(store, id) : false;
+      if (ok) window.toast?.(`Moved → ${g.label}`, { icon: "✓" });
+      return;
+    }
+    const ids = g.items.map(it => it.id).filter(x => x !== id);
+    let idx = ids.indexOf(target.id); if (after) idx += 1;
+    ids.splice(idx, 0, id);
+    store.setTaskOrder(ids);
   };
 
   if (viewMode === "board") {
@@ -174,10 +206,12 @@ function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy }) {
             <div className="t6-col-body">
               {g.items.map(t => (
                 <div key={t.id}
-                  className={`t6-drag ${t.kind === "auto" ? "nodrag" : ""} ${dragId === t.id ? "dragging" : ""}`}
+                  className={`t6-drag ${t.kind === "auto" ? "nodrag" : ""} ${dragId === t.id ? "dragging" : ""} ${dropAt && dropAt.id === t.id ? "t6-drop-" + dropAt.pos : ""}`}
                   draggable={t.kind !== "auto"}
                   onDragStart={(e) => { if (t.kind === "auto") { e.preventDefault(); return; } e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", t.id); setDragId(t.id); }}
-                  onDragEnd={() => { setDragId(null); setOverKey(null); }}>
+                  onDragOver={(e) => onCardOver(e, t)}
+                  onDrop={(e) => onCardDrop(e, g, t)}
+                  onDragEnd={() => { setDragId(null); setOverKey(null); setDropAt(null); }}>
                   <TaskCard task={t} onToggle={() => toggle(t)} onOpen={() => open(t)} userMap={userMap} />
                 </div>
               ))}

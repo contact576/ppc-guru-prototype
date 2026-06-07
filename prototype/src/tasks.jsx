@@ -243,74 +243,94 @@ function TaskTimerBtn({ task }) {
     : <button className="btn sm ghost" title="Start timer" onClick={(e) => { e.stopPropagation(); store.startTaskTimer(task.id); window.toast?.("Timer started", { icon: "▶" }); }}>▶</button>;
 }
 
+/* shared bits for enriched cards/rows */
+function taskSvcBadge(task) {
+  if (!task.service) return null;
+  return <span className={`t6-svc svc-${task.service}`}>{task.service.toUpperCase()}</span>;
+}
+function taskDeadlineLabel(task) {
+  return task.deadlineISO && window.PPC.isoToDueLabel ? window.PPC.isoToDueLabel(task.deadlineISO) : null;
+}
+function taskDueText(task) {
+  if (!task.due) return null;
+  return task.due + (task.dueTime && window.PPC.fmtTime12 ? " · " + window.PPC.fmtTime12(task.dueTime) : "");
+}
+
 function TaskRow({ task, onToggle, onOpen, userMap }) {
   const tones = { high: "danger", med: "warn", low: "outline" };
   const u = userMap[task.assignee];
   const isDone = task.status === "done";
-  const subCount = task.checklist?.length || 0;
-  const subDone = task.checklist?.filter(c => c.done).length || 0;
+  const subN = task.checklist?.length || 0, subD = task.checklist?.filter(c => c.done).length || 0;
   const bucket = task.timeEstimateMin != null && window.PPC.bucketFor ? window.PPC.bucketFor(task.timeEstimateMin) : null;
   const running = !!task.timerStartedAt;
+  const dl = taskDeadlineLabel(task);
+  const overdue = task.due === "Overdue";
   return (
-    <div className="task-row" onClick={onOpen}>
+    <div className={`task-row prio-${task.priority || "low"} ${isDone ? "is-done" : ""}`} onClick={onOpen}>
       <span className={`check ${isDone ? "done" : ""}`} onClick={(e) => { e.stopPropagation(); onToggle(); }}>
         {isDone && <Icon k="check" className="ic sm" />}
       </span>
       <div className="col" style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ fontSize: 13.5, textDecoration: isDone ? "line-through" : "none", color: isDone ? "var(--ink-3)" : "var(--ink)" }}>
-          {task.title}
-        </span>
-        <span className="muted" style={{ fontSize: 12.5 }}>
-          {task.client && <>{task.client} · </>}
-          {task.service && task.service !== "sales" && <>{task.service.toUpperCase()} · </>}
-          {task.kind === "auto" ? "auto from pipeline" : "manual"}
-          {subCount > 0 && <> · {subDone}/{subCount} subtasks</>}
-          {(task.comments?.length || 0) > 0 && <> · {task.comments.length} 💬</>}
+        <span className="t6-row-title" style={{ textDecoration: isDone ? "line-through" : "none", color: isDone ? "var(--ink-3)" : "var(--ink)" }}>{task.title}</span>
+        <span className="t6-row-meta">
+          {task.client && <span className="t6-card-client"><Icon k="user" className="ic sm" />{task.client}</span>}
+          {taskSvcBadge(task)}
+          {(task.labels || []).slice(0, 3).map(l => <span key={l} className="t6-row-lbl">#{l}</span>)}
+          {subN > 0 && <span>☑ {subD}/{subN}</span>}
+          {(task.comments?.length || 0) > 0 && <span>💬 {task.comments.length}</span>}
         </span>
       </div>
       {running && <Pill kind="accent" dot>rec</Pill>}
+      {dl && <Pill kind="danger"><Icon k="flag" className="ic sm" />{dl}</Pill>}
       {bucket && <Pill kind="outline"><Icon k="clock" className="ic sm" />{bucket.label}</Pill>}
       <TaskTimerBtn task={task} />
-      {task.status === "in-progress" && <Pill kind="accent">in progress</Pill>}
-      {task.due === "Overdue" && <Pill kind="danger" dot>Overdue</Pill>}
-      {task.due && task.due !== "Overdue" && <Pill kind="outline">{task.due}</Pill>}
+      {overdue && <Pill kind="danger" dot>Overdue</Pill>}
+      {task.due && !overdue && <Pill kind="outline">{taskDueText(task)}</Pill>}
       <Pill kind={tones[task.priority] || "outline"}>{task.priority}</Pill>
       <Avatar user={u} size="sm" />
     </div>
   );
 }
 
-/* Card form of a task — used by the duration board (Todoist-style columns) */
+/* Card form of a task — used by the board (Todoist-style columns) */
 function TaskCard({ task, onToggle, onOpen, userMap }) {
-  const tones = { high: "danger", med: "warn", low: "outline" };
   const u = userMap[task.assignee];
   const isDone = task.status === "done";
   const running = !!task.timerStartedAt;
   const spent = task.timeSpentMin || 0;
+  const bucket = task.timeEstimateMin != null && window.PPC.bucketFor ? window.PPC.bucketFor(task.timeEstimateMin) : null;
+  const subN = task.checklist?.length || 0, subD = task.checklist?.filter(c => c.done).length || 0;
+  const dl = taskDeadlineLabel(task);
+  const overdue = task.due === "Overdue";
   return (
-    <div className="t6-card" onClick={onOpen}>
-      <div className="row gap-2" style={{ alignItems: "flex-start" }}>
+    <div className={`t6-card prio-${task.priority || "low"} ${isDone ? "is-done" : ""}`} onClick={onOpen}>
+      <div className="t6-card-top">
         <span className={`check ${isDone ? "done" : ""}`} onClick={(e) => { e.stopPropagation(); onToggle(); }}>
           {isDone && <Icon k="check" className="ic sm" />}
         </span>
-        <span style={{ flex: 1, fontSize: 13.5, lineHeight: 1.35, textDecoration: isDone ? "line-through" : "none", color: isDone ? "var(--ink-3)" : "var(--ink)" }}>
-          {task.title}
-        </span>
-      </div>
-      <div className="row gap-2" style={{ marginTop: 8, flexWrap: "wrap", alignItems: "center" }}>
-        {task.due && <Pill kind={task.due === "Overdue" ? "danger" : "outline"}><Icon k="clock" className="ic sm" />{task.due}</Pill>}
-        <Pill kind={tones[task.priority] || "outline"}>{task.priority}</Pill>
-        {spent > 0 && <span className="muted mono" style={{ fontSize: 12 }}>{fmtDur(spent)} tracked</span>}
-        {running && <Pill kind="accent" dot>rec</Pill>}
-        <span style={{ flex: 1 }} />
-        <TaskTimerBtn task={task} />
+        <span className="t6-card-title">{task.title}</span>
         <Avatar user={u} size="sm" />
       </div>
-      {(task.client || task.service) && (
-        <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
-          {task.client}{task.client && task.service && task.service !== "sales" ? " · " : ""}{task.service && task.service !== "sales" ? task.service.toUpperCase() : ""}
+      <div className="t6-card-pills">
+        {task.due && <Pill kind={overdue ? "danger" : "outline"} dot={overdue}><Icon k="clock" className="ic sm" />{taskDueText(task)}</Pill>}
+        {dl && <Pill kind="danger"><Icon k="flag" className="ic sm" />{dl}</Pill>}
+        {bucket && <Pill kind="ok"><Icon k="clock" className="ic sm" />{bucket.label}</Pill>}
+        {(task.labels || []).slice(0, 3).map(l => <Pill key={l} kind="outline">#{l}</Pill>)}
+        {running && <Pill kind="accent" dot>rec</Pill>}
+      </div>
+      {subN > 0 && (
+        <div className="t6-card-prog">
+          <div className="t6-card-prog-bar"><span style={{ width: Math.round((subD / subN) * 100) + "%" }} /></div>
+          <span className="t6-card-prog-txt">{subD}/{subN}</span>
         </div>
       )}
+      <div className="t6-card-foot">
+        {task.client && <span className="t6-card-client"><Icon k="user" className="ic sm" />{task.client}</span>}
+        {taskSvcBadge(task)}
+        <span style={{ flex: 1 }} />
+        {spent > 0 && <span className="muted mono" style={{ fontSize: 11.5 }}>{fmtDur(spent)}</span>}
+        <TaskTimerBtn task={task} />
+      </div>
     </div>
   );
 }

@@ -2123,6 +2123,13 @@
       this.tasks = this.tasks.map(t => t.id === taskId ? { ...t, projectId: projectId || null } : t);
       bump();
     },
+    /* Phase 7 — manual ordering within a board column (drag-to-reorder). Assigns
+       a sequential `order` to the given ids; sort comparator uses it as primary. */
+    setTaskOrder(ids) {
+      const pos = {}; ids.forEach((id, i) => { pos[id] = i; });
+      this.tasks = this.tasks.map(t => pos[t.id] != null ? { ...t, order: pos[t.id] } : t);
+      bump();
+    },
     /* Phase 7 — reporting: count tasks completed by a user on/after a date (ISO). */
     tasksCompleted(roleId, sinceISO) {
       return this.tasks.filter(t =>
