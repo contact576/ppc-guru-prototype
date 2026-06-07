@@ -401,7 +401,7 @@ function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy, onAddSection, o
                     <div className="t6-menu-scrim" onClick={() => setSecMenu(null)} />
                     <div className="t6-secmenu">
                       <button className="t6-menu-item" onClick={() => { setRenameKey(g.key); setRenameVal(g.label); setSecMenu(null); }}><span className="t6-menu-ic">✎</span> Rename</button>
-                      <button className="t6-menu-item" onClick={() => { setAddTaskCol(g.key); setTaskTitle(""); setSecMenu(null); }}><span className="t6-menu-ic">＋</span> Add task</button>
+                      <button className="t6-menu-item" onClick={() => { setAddTaskCol(g.key); setSecMenu(null); }}><span className="t6-menu-ic">＋</span> Add task</button>
                       <button className="t6-menu-item danger" onClick={() => deleteSection(g)}><span className="t6-menu-ic">🗑</span> Delete section</button>
                     </div>
                   </>
@@ -410,7 +410,7 @@ function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy, onAddSection, o
             )}
           </div>
           <div>{g.items.map(t => <TaskRow key={t.id} task={t} onToggle={() => toggle(t)} onOpen={() => open(t)} userMap={userMap} onMenu={openMenu ? (e) => openMenu(e, t) : undefined} />)}</div>
-          {(sectionMode || addTaskCol === g.key) && <div style={{ padding: "8px 12px" }}>{addTaskFoot(g)}</div>}
+          <div className="t6-list-addfoot">{addTaskFoot(g)}</div>
         </div>
       ))}
       {onAddSection && (addingSec

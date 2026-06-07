@@ -3,83 +3,103 @@
    Opened via window.openTaskPanel(id), window.openNewTask(defaults).
    ───────────────────────────────────────────────────────────────── */
 
+/* Centered, minimal Todoist-style task modal (main column + right rail). */
 function TaskDetailPanel({ taskId, role, onClose }) {
   const store = useStore();
-  const { userMap } = window.PPC;
-  if (!taskId) return <TaskShell open={false} onClose={onClose} />;
+  React.useEffect(() => {
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+  if (!taskId) return null;
   const task = store.tasks.find(t => t.id === taskId);
   if (!task) return null;
+  const proj = (store.projects || []).find(p => p.id === task.projectId);
+  const isDone = task.status === "done";
 
-  return (
-    <TaskShell open={true} onClose={onClose}>
-      <TaskHeader task={task} role={role} onClose={onClose} />
-      <div className="side-panel-body">
-        <TaskBody task={task} role={role} />
-      </div>
-    </TaskShell>
-  );
-}
-
-function TaskShell({ open, onClose, children }) {
-  if (!open) return null;
   return (
     <>
-      <div className="panel-scrim open" onClick={onClose} />
-      <div className="side-panel wide open" style={{ transform: "translateX(0)" }}>{children}</div>
+      <div className="t6-tm-scrim" onClick={onClose} />
+      <div className="t6-tm" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+        <div className="t6-tm-top">
+          <span className="t6-tm-crumb">
+            <Icon k={proj ? "board" : "inbox"} className="ic sm" />
+            {proj ? proj.name : (task.client || "Inbox")}
+          </span>
+          <span style={{ flex: 1 }} />
+          <button className="btn ghost sm" title="Copy link" onClick={() => { try { navigator.clipboard && navigator.clipboard.writeText(location.origin + location.pathname + "#task-" + task.id); } catch (e) {} window.toast?.("Link copied", { icon: "🔗" }); }}><Icon k="link" className="ic sm" /></button>
+          <button className="btn ghost sm" title="Close" onClick={onClose}><Icon k="close" className="ic sm" /></button>
+        </div>
+        <div className="t6-tm-body">
+          <div className="t6-tm-main">
+            <div className="t6-tm-titlerow">
+              <span className={`check ${isDone ? "done" : ""}`} onClick={() => store.toggleTaskDone(task.id)}>{isDone && <Icon k="check" className="ic sm" />}</span>
+              <input className={`t6-tm-title ${isDone ? "done" : ""}`} value={task.title} placeholder="Task name"
+                onChange={e => store.updateTask(task.id, { title: e.target.value })} />
+            </div>
+            <TaskBody task={task} role={role} />
+          </div>
+          <aside className="t6-tm-rail">
+            <TaskModalRail task={task} role={role} />
+          </aside>
+        </div>
+      </div>
     </>
   );
 }
 
-function TaskHeader({ task, role, onClose }) {
-  const { userMap, store } = window.PPC;
-  const u = userMap[task.assignee];
-  const statusTone = { open: "outline", "in-progress": "accent", done: "ok" }[task.status];
-
-  const updateTitle = (e) => store.updateTask(task.id, { title: e.target.value });
-  const cycleStatus = () => {
-    const next = task.status === "open" ? "in-progress" : task.status === "in-progress" ? "done" : "open";
-    store.updateTask(task.id, { status: next });
-    window.toast?.(`Task ${next}`, { icon: "✓" });
+/* Right rail — Project · Assignee · Date · Deadline · Priority · Labels · Reminders */
+function TaskModalRail({ task, role }) {
+  const { store, userMap } = window.PPC;
+  const [labelDraft, setLabelDraft] = React.useState("");
+  const addLabel = () => {
+    const l = labelDraft.trim().replace(/^#/, "");
+    if (!l) return;
+    const labels = Array.from(new Set([...(task.labels || []), l]));
+    store.updateTask(task.id, { labels }); setLabelDraft("");
   };
+  const removeLabel = (l) => store.updateTask(task.id, { labels: (task.labels || []).filter(x => x !== l) });
 
   return (
-    <div className="profile-head">
-      <div className="row gap-2" style={{ alignItems: "flex-start" }}>
-        <div style={{ flex: 1 }}>
-          <div className="row gap-2" style={{ marginBottom: 6 }}>
-            <Pill kind={statusTone} dot>{task.status === "in-progress" ? "In progress" : task.status === "done" ? "Done" : "Open"}</Pill>
-            <Pill kind={task.priority === "high" ? "danger" : task.priority === "med" ? "warn" : "outline"}>{task.priority} priority</Pill>
-            {task.due && <Pill kind={task.due === "Overdue" ? "danger" : "outline"}><Icon k="clock" className="ic sm" />{task.due}</Pill>}
-            {task.client && (
-              <span className="pill outline" style={{ cursor: "pointer" }} onClick={() => window.openClientPanel?.(task.client)}>
-                <Icon k="user" className="ic sm" />{task.client}
-              </span>
-            )}
-            {(task.labels || []).map(l => <Pill key={l} kind="outline">#{l}</Pill>)}
-          </div>
-          <input className="input serif" value={task.title} onChange={updateTitle} style={{ width: "100%", fontSize: 22 }} />
-          <div className="muted-2" style={{ fontSize: 12.5, marginTop: 4 }}>
-            Created {task.createdAt} · Reported by {userMap[task.reporter]?.name || task.reporter}
-          </div>
-        </div>
-        <button className="btn ghost" onClick={onClose}><Icon k="close" /></button>
+    <div className="t6-tm-railinner">
+      <div className="field-label">Project</div>
+      <SelectInput value={task.projectId || ""} onChange={(e) => store.setTaskProject(task.id, e.target.value || null)}>
+        <option value="">Inbox (no project)</option>
+        {(store.projects || []).filter(p => !p.system).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+      </SelectInput>
+
+      <div className="field-label">Assignee</div>
+      <UserSelect value={task.assignee} onChange={(id) => store.updateTask(task.id, { assignee: id })} />
+
+      <div className="field-label">Date</div>
+      <SelectInput value={task.due || ""} onChange={(e) => store.updateTask(task.id, { due: e.target.value })}>
+        {["Today", "Tomorrow", "Wed", "Thu", "Fri", "Next Mon", "Overdue", "No date"].map(o => <option key={o}>{o}</option>)}
+      </SelectInput>
+
+      <div className="field-label">Deadline</div>
+      <input type="date" className="t6-rail-date" value={task.deadlineISO || ""} onChange={(e) => store.updateTask(task.id, { deadlineISO: e.target.value || null })} />
+
+      <div className="field-label">Priority</div>
+      <SelectInput value={task.priority} onChange={(e) => store.updateTask(task.id, { priority: e.target.value })}>
+        <option value="high">P1 · High</option>
+        <option value="med">P2 · Medium</option>
+        <option value="low">P3 · Low</option>
+      </SelectInput>
+
+      <div className="field-label">Labels</div>
+      <div className="row" style={{ flexWrap: "wrap", gap: 6, marginBottom: 6 }}>
+        {(task.labels || []).map(l => <span key={l} className="pill outline">#{l} <span style={{ cursor: "pointer", marginLeft: 2 }} onClick={() => removeLabel(l)}>×</span></span>)}
+        {(task.labels || []).length === 0 && <span className="muted" style={{ fontSize: 12 }}>None</span>}
+      </div>
+      <TextInput placeholder="Add label + Enter" value={labelDraft} onChange={e => setLabelDraft(e.target.value)} onKeyDown={e => e.key === "Enter" && addLabel()} />
+
+      <div className="field-label">Reminders</div>
+      <div className="row" style={{ flexWrap: "wrap", gap: 6 }}>
+        {(task.reminders || []).map((r, i) => <Pill key={i} kind="warn">🔔 {r}</Pill>)}
+        {(task.reminders || []).length === 0 && <span className="muted" style={{ fontSize: 12 }}>None</span>}
       </div>
 
-      <div className="profile-actions">
-        <button className="btn sm" onClick={cycleStatus}>
-          <Icon k={task.status === "done" ? "check" : "arrow"} className="ic sm" />
-          {task.status === "open" ? "Start" : task.status === "in-progress" ? "Mark done" : "Reopen"}
-        </button>
-        <button className="btn sm ghost"><Icon k="link" className="ic sm" />Copy link</button>
-        <span style={{ flex: 1 }} />
-        {u && (
-          <div className="row gap-2">
-            <span className="muted-2" style={{ fontSize: 12.5 }}>Assignee</span>
-            <Avatar user={u} size="sm" />
-            <span style={{ fontSize: 12.5 }}>{u.name.split(" ")[0]}</span>
-          </div>
-        )}
-      </div>
+      <div className="t6-tm-railmeta">Created {task.createdAt} · by {userMap[task.reporter]?.name?.split(" ")[0] || task.reporter || "—"}</div>
     </div>
   );
 }
@@ -111,47 +131,6 @@ function TaskBody({ task, role }) {
 
   return (
     <div>
-      {/* meta panel */}
-      <div className="sub-card" style={{ padding: "10px 14px" }}>
-        <div className="grid-3" style={{ gap: 10 }}>
-          <div>
-            <div className="field-label">Assignee</div>
-            <UserSelect value={task.assignee} onChange={(id) => store.updateTask(task.id, { assignee: id })} />
-          </div>
-          <div>
-            <div className="field-label">Due</div>
-            <SelectInput value={task.due || ""} onChange={(e) => store.updateTask(task.id, { due: e.target.value })}>
-              {["Today","Tomorrow","Wed","Thu","Fri","Next Mon","Overdue","No date"].map(o => <option key={o}>{o}</option>)}
-            </SelectInput>
-          </div>
-          <div>
-            <div className="field-label">Priority</div>
-            <SelectInput value={task.priority} onChange={(e) => store.updateTask(task.id, { priority: e.target.value })}>
-              <option value="low">Low</option>
-              <option value="med">Medium</option>
-              <option value="high">High</option>
-            </SelectInput>
-          </div>
-          <div>
-            <div className="field-label">Project</div>
-            <SelectInput value={task.projectId || ""} onChange={(e) => store.setTaskProject(task.id, e.target.value || null)}>
-              <option value="">— No project —</option>
-              {(store.projects || []).filter(p => !p.system).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </SelectInput>
-          </div>
-        </div>
-        {(task.deadlineISO || task.recur) && (
-          <div className="row gap-2" style={{ marginTop: 8, flexWrap: "wrap" }}>
-            {task.deadlineISO && <Pill kind="danger"><Icon k="clock" className="ic sm" />Deadline {task.deadlineISO}</Pill>}
-            {task.recur && <Pill kind="accent">🔁 {task.recur}</Pill>}
-            {(task.reminders || []).map((r, i) => <Pill key={i} kind="warn">🔔 {r}</Pill>)}
-          </div>
-        )}
-      </div>
-
-      {/* time estimate + tracked timer (Phase 6) */}
-      <TaskTimeBlock task={task} />
-
       {/* description */}
       <div className="sub-card">
         <div className="row" style={{ marginBottom: 6 }}>
@@ -199,6 +178,9 @@ function TaskBody({ task, role }) {
           <button className="btn sm" onClick={addCheckItem}>Add</button>
         </div>
       </div>
+
+      {/* time estimate + tracked timer (Phase 6) */}
+      <TaskTimeBlock task={task} />
 
       {/* links */}
       <div className="sub-card">

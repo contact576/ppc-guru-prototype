@@ -637,6 +637,15 @@ North-star goal: answer *"what's my highest priority right now?"* at a glance.
   below) — `QuickAddBar` gained `defaultSection` + `onAdded(task)`; section columns pass `defaultSection`, other
   columns post-file via `onAdded → g.apply`. So typing "Finalize decor p1 30m" in a section creates a high-priority
   30-min task already filed there.
+- **Per-group "+ Add task" is universal** — the inline Ramble composer footer renders under **every** group in
+  **both** board and list modes (Today, Inbox, Filters, Team, projects), not just project sections (`.t6-list-addfoot`).
+- **Circle checkboxes everywhere** — `.check` is now a round 18px control (was a square) for task + subtask completion.
+- **Task panel is a centered minimal modal** (`TaskDetailPanel` → `.t6-tm`, replacing the right `.side-panel`):
+  Todoist-style — top bar (project/client breadcrumb · copy-link · close), a **main column** (circle check + serif
+  title, Description, Subtasks, Time/timer, Links, Attachments, Watchers, Comments) and a **right rail**
+  (`TaskModalRail`: Project · Assignee · Date · Deadline `type=date` · Priority P1–P3 · Labels add/remove · Reminders).
+  Esc/scrim close. The meta grid was removed from `TaskBody` (the rail owns it). **Hooks rule:** `useStore()` +
+  the Esc `useEffect` run BEFORE the `if (!task) return null` guards — keep all hooks above the early returns.
 - Still stubs: real Google Calendar/Workspace sync.
 
 ## Local memory (persistence) — `src/persist.js`
