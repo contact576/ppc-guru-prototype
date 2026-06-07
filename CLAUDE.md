@@ -67,8 +67,11 @@ src/
                         # (TasksScreen retired from routing — superseded by tasksWorkspace.jsx)
   tasksWorkspace.jsx    # Phase 7 — TasksWorkspace: Todoist two-pane (sub-sidebar + Today/Upcoming/
                         # Inbox/Filters/Calendar/Reporting/Team/projects); board|list + group/sort
-  persist.js            # LOCAL MEMORY — localStorage hydrate/save of mutated state slices
-                        # (tasks/projects/profiles/optlog/plans/credaudit/s5state); PPC.resetDemoData()
+  persist.js            # MEMORY — localStorage + Netlify Blobs cloud sync (per-user sync code)
+                        # of mutated slices (tasks/projects/profiles/optlog/plans/credaudit/s5state)
+                        # PPC.resetDemoData() / PPC.setSyncCode() / PPC.persistInfo()
+netlify/functions/state.js  # serverless GET/POST → Netlify Blobs store (keyed by sync code)
+package.json · netlify.toml # function deps (@netlify/blobs) + [functions] dir; publish=prototype/
   sales.jsx             # Pipeline (kanban) + Leads (table)
   forecast.jsx          # Pipeline Forecast / Win-rate (Phase 3) — weighted pipeline, by-source rates,
                         # days-in-stage vs benchmark, closing-soon list

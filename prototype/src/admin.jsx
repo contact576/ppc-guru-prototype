@@ -66,30 +66,62 @@ function UsersScreen() {
   );
 }
 
-/* Local memory (localStorage persistence) status + reset — owners' Admin screen */
+/* Memory status: local (localStorage) + cloud sync code (Netlify Blobs) — Admin */
 function LocalMemoryCard() {
   useStore();
+  const [code, setCode] = React.useState("");
+  const [show, setShow] = React.useState(false);
   const info = window.PPC.persistInfo ? window.PPC.persistInfo() : null;
   if (!info) return null;
   const when = info.lastSaved ? new Date(info.lastSaved).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
+  const sync = info.syncCode || "";
+  const masked = sync ? sync.slice(0, 4) + "••••••••" + sync.slice(-4) : "—";
+  const cloudTone = info.cloud === "connected" ? "ok" : info.cloud && info.cloud.indexOf("offline") === 0 ? "warn" : "outline";
+  const copy = () => { try { navigator.clipboard.writeText(sync); window.toast?.("Sync code copied", { icon: "✓" }); } catch (e) {} };
+  const load = () => {
+    const c = code.trim();
+    if (c.length < 12) { window.toast?.("Paste a full sync code (it's long).", { icon: "!" }); return; }
+    if (window.confirm("Load the data saved under that sync code? This device will switch to that data set.")) window.PPC.setSyncCode(c);
+  };
   const reset = () => {
-    if (window.confirm("Reset all demo data back to the seeded state? Your locally saved changes (tasks, projects, notes, sales moves) will be cleared.")) {
+    if (window.confirm("Reset all data back to the seeded state? Your saved changes (tasks, projects, notes, sales moves) will be cleared on this device and in the cloud for this sync code.")) {
       window.PPC.resetDemoData();
     }
   };
   return (
     <div className="widget" style={{ padding: "16px 18px" }}>
-      <div className="row" style={{ alignItems: "flex-start", gap: 14 }}>
+      <div className="row" style={{ alignItems: "flex-start", gap: 14, marginBottom: 12 }}>
         <div className="col" style={{ flex: 1, gap: 4 }}>
-          <span className="section-title">Local memory</span>
+          <span className="section-title">Memory &amp; sync</span>
           <span className="muted" style={{ fontSize: 12.5, lineHeight: 1.5 }}>
-            Your changes are saved on <strong>this browser</strong> (localStorage) and restored on reload — tasks,
-            projects, notes, sales moves, optimization logs, content-plan changes. No login, no cloud.
+            Your changes save to <strong>this browser</strong> instantly and to the <strong>cloud</strong> under your private
+            sync code — so your data follows you across devices. Tasks, projects, notes, sales moves, optimization logs, content plans.
             {" "}Last saved: <span className="mono">{when}</span>{info.restoredOnBoot ? " · restored this session" : ""}.
           </span>
-          <span className="muted" style={{ fontSize: 12 }}>Cross-device sync would need a backend (Netlify Blobs / Supabase) — that belongs in the live app.</span>
         </div>
-        <button className="btn ghost" onClick={reset}><Icon k="refresh" className="ic sm" />Reset demo data</button>
+        <Pill kind={cloudTone} dot>{info.cloud}</Pill>
+      </div>
+
+      <div className="sub-card" style={{ marginBottom: 12 }}>
+        <div className="sub-card-title">Your sync code — keep it private</div>
+        <div className="row gap-2" style={{ alignItems: "center", flexWrap: "wrap" }}>
+          <span className="mono" style={{ fontSize: 13, background: "var(--card)", border: "1px solid var(--line)", borderRadius: 6, padding: "5px 9px" }}>{show ? sync : masked}</span>
+          <button className="btn sm ghost" onClick={() => setShow(s => !s)}>{show ? "Hide" : "Reveal"}</button>
+          <button className="btn sm" onClick={copy}><Icon k="link" className="ic sm" />Copy</button>
+          <span className="muted" style={{ fontSize: 12 }}>Paste this on another device (below) to load the same data.</span>
+        </div>
+      </div>
+
+      <div className="sub-card" style={{ marginBottom: 12 }}>
+        <div className="sub-card-title">Use data from another device</div>
+        <div className="row gap-2" style={{ alignItems: "center", flexWrap: "wrap" }}>
+          <TextInput placeholder="Paste a sync code…" value={code} onChange={e => setCode(e.target.value)} style={{ maxWidth: 320 }} />
+          <button className="btn sm" onClick={load}>Load that data</button>
+        </div>
+      </div>
+
+      <div className="row" style={{ justifyContent: "flex-end" }}>
+        <button className="btn ghost" onClick={reset}><Icon k="refresh" className="ic sm" />Reset data</button>
       </div>
     </div>
   );

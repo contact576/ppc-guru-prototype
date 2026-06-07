@@ -6,6 +6,12 @@
   publish = "prototype"
   command = ""
 
+# Serverless functions (personal-state sync via Netlify Blobs). Netlify installs
+# the function deps (package.json) and bundles with esbuild on deploy.
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 # SPA-style: the app is a single index.html (client-side screens via state),
 # so route any unknown path back to index.html.
 [[redirects]]

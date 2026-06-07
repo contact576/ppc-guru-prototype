@@ -1,0 +1,9 @@
+{
+  "name": "ppc-guru-prototype",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PPC Guru ERP — in-browser React+Babel prototype (static) with Netlify Blobs personal-state sync.",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}
