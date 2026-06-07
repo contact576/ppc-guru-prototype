@@ -604,6 +604,11 @@ North-star goal: answer *"what's my highest priority right now?"* at a glance.
 - **Enriched cards/rows** (`TaskCard`/`TaskRow` in `tasks.jsx`): priority **left color accent** (`.prio-high/med/low`),
   service badge (`.t6-svc.svc-*`), label chips, **deadline flag**, due+time, duration bucket, **subtask progress bar**,
   client w/ icon, tracked time + timer. CSS under the enriched-cards block. No new tokens.
+- **Custom project sections (Todoist-style):** projects gain `sections: [{id,name}]`, tasks gain `sectionId`; mutations
+  `addSection`/`renameSection`/`removeSection`/`setTaskSection`. **User-project views default to the `section` grouping**
+  (toolbar: Section · Priority · Due · Duration · Label via separate `projGroupBy` state) — board shows the project's
+  sections + a **"No section"** column + a trailing **"+ Add section"** column (`onAddSection` → `store.addSection`).
+  Dragging a card between sections sets its `sectionId` (`g.apply`); within-section reorder uses `setTaskOrder`.
 - Still stubs: real Google Calendar/Workspace sync.
 
 ## Local memory (persistence) — `src/persist.js`

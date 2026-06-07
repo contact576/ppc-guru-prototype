@@ -146,11 +146,21 @@ function twsPadColumns(groups, groupBy) {
 
 /* board (kanban) OR list rendering of grouped tasks. Board columns are drop
    targets; cards (real tasks, not auto pipeline rows) are draggable. */
-function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy }) {
+function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy, onAddSection }) {
   const { userMap } = window.PPC;
   const [dragId, setDragId] = React.useState(null);
   const [overKey, setOverKey] = React.useState(null);
   const [dropAt, setDropAt] = React.useState(null);   // {id, pos:'before'|'after'} — within-column reorder indicator
+  const [addingSec, setAddingSec] = React.useState(false);
+  const [secName, setSecName] = React.useState("");
+  const commitSec = () => { const n = secName.trim(); if (n && onAddSection) onAddSection(n); setSecName(""); setAddingSec(false); };
+  const addSectionCol = onAddSection ? (
+    <div className="t6-col t6-col-add">
+      {addingSec
+        ? <input autoFocus className="t6-sec-input" value={secName} placeholder="Section name" onChange={e => setSecName(e.target.value)} onKeyDown={e => { if (e.key === "Enter") commitSec(); if (e.key === "Escape") { setAddingSec(false); setSecName(""); } }} onBlur={commitSec} />
+        : <button className="t6-col-addbtn" onClick={() => setAddingSec(true)}><Icon k="plus" className="ic sm" />Add section</button>}
+    </div>
+  ) : null;
   const open = (t) => t.kind === "auto" ? window.openClientPanel?.(t.autoCardId) : window.openTaskPanel?.(t.id);
   const toggle = (t) => { if (t.kind !== "auto") store.toggleTaskDone(t.id); };
 
@@ -218,10 +228,11 @@ function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy }) {
             </div>
           </div>
         ))}
+        {addSectionCol}
       </div>
     );
   }
-  if (!groups.length) return <div className="empty">{emptyMsg || "Nothing here — inbox zero."}</div>;
+  if (!groups.length && !onAddSection) return <div className="empty">{emptyMsg || "Nothing here — inbox zero."}</div>;
   return (
     <div className="col gap-4">
       {groups.map(g => (
@@ -233,6 +244,9 @@ function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy }) {
           <div>{g.items.map(t => <TaskRow key={t.id} task={t} onToggle={() => toggle(t)} onOpen={() => open(t)} userMap={userMap} />)}</div>
         </div>
       ))}
+      {onAddSection && (addingSec
+        ? <input autoFocus className="t6-sec-input" style={{ maxWidth: 260 }} value={secName} placeholder="Section name" onChange={e => setSecName(e.target.value)} onKeyDown={e => { if (e.key === "Enter") commitSec(); if (e.key === "Escape") { setAddingSec(false); setSecName(""); } }} onBlur={commitSec} />
+        : <button className="t6-col-addbtn" style={{ alignSelf: "flex-start" }} onClick={() => setAddingSec(true)}><Icon k="plus" className="ic sm" />Add section</button>)}
     </div>
   );
 }
@@ -481,6 +495,7 @@ function TasksWorkspace({ role, setScreen }) {
   const [view, setView] = React.useState("today");
   const [viewMode, setViewMode] = React.useState("list");
   const [groupBy, setGroupBy] = React.useState("priority");
+  const [projGroupBy, setProjGroupBy] = React.useState("section");   // user projects default to custom Sections
   const [search, setSearch] = React.useState("");
 
   // pools
@@ -519,9 +534,9 @@ function TasksWorkspace({ role, setScreen }) {
   };
 
   const showToolbar = ["today", "inbox", "filters", "project:team"].includes(view) || view.startsWith("project:");
-  const effGroup = view === "project:team" ? "assignee" : groupBy;
   // when inside a user project, new tasks default into it
   const curProject = (view.startsWith("project:") && view !== "project:team") ? view.slice(8) : null;
+  const effGroup = view === "project:team" ? "assignee" : curProject ? projGroupBy : groupBy;
 
   const renderBody = () => {
     if (view === "today") return <TwsToday tasks={applySearch(mine)} viewMode={viewMode} groupBy={groupBy} today={today} store={store} />;
@@ -542,8 +557,17 @@ function TasksWorkspace({ role, setScreen }) {
     }
     if (view.startsWith("project:")) {
       const pid = view.slice(8);
+      const proj = store.projects.find(p => p.id === pid) || {};
       const list = applySearch(store.tasks.filter(t => t.projectId === pid && (isAdmin || t.assignee === role.id || (t.watchers || []).includes(role.id))));
-      return <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} groupBy={groupBy} emptyMsg="No tasks in this project yet — add one with “Add task”." />;
+      if (projGroupBy === "section") {
+        const secs = proj.sections || [];
+        const groups = [
+          ...secs.map(sec => ({ key: sec.id, label: sec.name, groupBy: "section", items: list.filter(t => t.sectionId === sec.id).sort(twsSortOrdered), apply: (s, id) => { s.setTaskSection(id, sec.id); return true; } })),
+          { key: "~nosec", label: "No section", groupBy: "section", items: list.filter(t => !t.sectionId || !secs.some(x => x.id === t.sectionId)).sort(twsSortOrdered), apply: (s, id) => { s.setTaskSection(id, null); return true; } }
+        ];
+        return <TwsGroups groups={groups} viewMode={viewMode} store={store} groupBy="section" onAddSection={(name) => store.addSection(pid, name)} emptyMsg="No tasks yet — add one with “Add task”." />;
+      }
+      return <TwsGroups groups={twsGroup(list, projGroupBy, today)} viewMode={viewMode} store={store} groupBy={projGroupBy} emptyMsg="No tasks in this project yet — add one with “Add task”." />;
     }
     return null;
   };
@@ -557,7 +581,7 @@ function TasksWorkspace({ role, setScreen }) {
           <div className="sp" style={{ flex: 1 }} />
           {showToolbar && view !== "project:team" && (
             <div className="seg sm">
-              {TWS_GROUPS.map(g => <button key={g.id} className={effGroup === g.id ? "on" : ""} onClick={() => setGroupBy(g.id)}>{g.label}</button>)}
+              {(curProject ? [{ id: "section", label: "Section" }, ...TWS_GROUPS] : TWS_GROUPS).map(g => <button key={g.id} className={effGroup === g.id ? "on" : ""} onClick={() => curProject ? setProjGroupBy(g.id) : setGroupBy(g.id)}>{g.label}</button>)}
             </div>
           )}
           {(showToolbar || view === "upcoming") && (

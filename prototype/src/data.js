@@ -2034,6 +2034,7 @@
         recur: null,
         reminders: [],
         projectId: null,
+        sectionId: null,
         createdISO: nowISO(),
         completedISO: null,
         createdAt: "Just now",
@@ -2114,10 +2115,36 @@
     /* Phase 7 — projects */
     addProject({ name, color, owner }) {
       const id = "pj-" + Math.random().toString(36).slice(2, 7);
-      const proj = { id, name: (name || "Untitled project").trim(), color: color || "#5B4B8A", system: false, owner: owner || null };
+      const proj = { id, name: (name || "Untitled project").trim(), color: color || "#5B4B8A", system: false, owner: owner || null, sections: [] };
       this.projects.push(proj);
       bump();
       return proj;
+    },
+    /* Phase 7 — custom sections within a project (Todoist-style) */
+    addSection(projectId, name) {
+      const p = this.projects.find(x => x.id === projectId);
+      if (!p) return null;
+      if (!p.sections) p.sections = [];
+      const sec = { id: "sec-" + Math.random().toString(36).slice(2, 7), name: (name || "New section").trim() };
+      p.sections.push(sec);
+      bump();
+      return sec;
+    },
+    renameSection(projectId, sectionId, name) {
+      const p = this.projects.find(x => x.id === projectId);
+      const sec = p && (p.sections || []).find(s => s.id === sectionId);
+      if (sec) { sec.name = (name || sec.name).trim(); bump(); }
+    },
+    removeSection(projectId, sectionId) {
+      const p = this.projects.find(x => x.id === projectId);
+      if (!p || !p.sections) return;
+      p.sections = p.sections.filter(s => s.id !== sectionId);
+      this.tasks = this.tasks.map(t => t.sectionId === sectionId ? { ...t, sectionId: null } : t);
+      bump();
+    },
+    setTaskSection(taskId, sectionId) {
+      this.tasks = this.tasks.map(t => t.id === taskId ? { ...t, sectionId: sectionId || null } : t);
+      bump();
     },
     setTaskProject(taskId, projectId) {
       this.tasks = this.tasks.map(t => t.id === taskId ? { ...t, projectId: projectId || null } : t);
