@@ -256,7 +256,7 @@ function taskDueText(task) {
   return task.due + (task.dueTime && window.PPC.fmtTime12 ? " · " + window.PPC.fmtTime12(task.dueTime) : "");
 }
 
-function TaskRow({ task, onToggle, onOpen, userMap }) {
+function TaskRow({ task, onToggle, onOpen, userMap, onMenu }) {
   const tones = { high: "danger", med: "warn", low: "outline" };
   const u = userMap[task.assignee];
   const isDone = task.status === "done";
@@ -266,7 +266,8 @@ function TaskRow({ task, onToggle, onOpen, userMap }) {
   const dl = taskDeadlineLabel(task);
   const overdue = task.due === "Overdue";
   return (
-    <div className={`task-row prio-${task.priority || "low"} ${isDone ? "is-done" : ""}`} onClick={onOpen}>
+    <div className={`task-row prio-${task.priority || "low"} ${isDone ? "is-done" : ""}`} onClick={onOpen}
+      onContextMenu={onMenu && task.kind !== "auto" ? (e) => onMenu(e) : undefined}>
       <span className={`check ${isDone ? "done" : ""}`} onClick={(e) => { e.stopPropagation(); onToggle(); }}>
         {isDone && <Icon k="check" className="ic sm" />}
       </span>
@@ -288,12 +289,13 @@ function TaskRow({ task, onToggle, onOpen, userMap }) {
       {task.due && !overdue && <Pill kind="outline">{taskDueText(task)}</Pill>}
       <Pill kind={tones[task.priority] || "outline"}>{task.priority}</Pill>
       <Avatar user={u} size="sm" />
+      {onMenu && task.kind !== "auto" && <button className="t6-card-menu" title="Task actions" onClick={(e) => { e.stopPropagation(); onMenu(e); }}>⋯</button>}
     </div>
   );
 }
 
 /* Card form of a task — used by the board (Todoist-style columns) */
-function TaskCard({ task, onToggle, onOpen, userMap }) {
+function TaskCard({ task, onToggle, onOpen, userMap, onMenu }) {
   const u = userMap[task.assignee];
   const isDone = task.status === "done";
   const running = !!task.timerStartedAt;
@@ -303,12 +305,14 @@ function TaskCard({ task, onToggle, onOpen, userMap }) {
   const dl = taskDeadlineLabel(task);
   const overdue = task.due === "Overdue";
   return (
-    <div className={`t6-card prio-${task.priority || "low"} ${isDone ? "is-done" : ""}`} onClick={onOpen}>
+    <div className={`t6-card prio-${task.priority || "low"} ${isDone ? "is-done" : ""}`} onClick={onOpen}
+      onContextMenu={onMenu && task.kind !== "auto" ? (e) => onMenu(e) : undefined}>
       <div className="t6-card-top">
         <span className={`check ${isDone ? "done" : ""}`} onClick={(e) => { e.stopPropagation(); onToggle(); }}>
           {isDone && <Icon k="check" className="ic sm" />}
         </span>
         <span className="t6-card-title">{task.title}</span>
+        {onMenu && task.kind !== "auto" && <button className="t6-card-menu" title="Task actions" onClick={(e) => { e.stopPropagation(); onMenu(e); }}>⋯</button>}
         <Avatar user={u} size="sm" />
       </div>
       <div className="t6-card-pills">

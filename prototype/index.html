@@ -2959,6 +2959,37 @@
   .t6-col-addbtn { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: 0; color: var(--ink-3); font-size: 13px; font-weight: 500; cursor: pointer; padding: 6px 8px; border-radius: 6px; }
   .t6-col-addbtn:hover { background: rgba(27,23,20,.05); color: var(--accent); }
   .t6-sec-input { border: 1px solid var(--accent); border-radius: 8px; padding: 7px 10px; font-size: 13.5px; font-family: var(--sans); outline: 0; width: 100%; background: var(--card); }
+  /* per-column "+ Add task" footer (works in any board column) */
+  .t6-col-addtask { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: 0; color: var(--ink-4); font-size: 12.5px; font-weight: 500; cursor: pointer; padding: 7px 8px; border-radius: 6px; width: 100%; text-align: left; margin-top: 2px; }
+  .t6-col-addtask:hover { background: rgba(27,23,20,.05); color: var(--accent); }
+  /* section column header ⋯ menu */
+  .t6-sec-menuwrap { position: relative; display: inline-flex; }
+  .t6-secmenu { position: absolute; top: 22px; right: 0; z-index: 70; background: var(--card); border: 1px solid var(--line-strong); border-radius: 10px; box-shadow: 0 12px 32px rgba(27,23,20,.18); padding: 5px; min-width: 168px; display: flex; flex-direction: column; }
+  /* card ⋯ menu button (shared by cards/rows/section heads) */
+  .t6-card-menu { background: transparent; border: 0; color: var(--ink-4); cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 6px; border-radius: 6px; opacity: .55; transition: opacity .12s, background .12s; }
+  .t6-card:hover .t6-card-menu, .task-row:hover .t6-card-menu, .t6-col-head:hover .t6-card-menu { opacity: 1; }
+  .t6-card-menu:hover { background: rgba(27,23,20,.08); color: var(--ink); opacity: 1; }
+  /* Todoist-style card context menu */
+  .t6-menu-scrim { position: fixed; inset: 0; z-index: 60; background: transparent; }
+  .t6-menu { position: fixed; z-index: 65; width: 252px; background: var(--card); border: 1px solid var(--line-strong); border-radius: 12px; box-shadow: 0 16px 44px rgba(27,23,20,.22); padding: 7px; display: flex; flex-direction: column; gap: 2px; font-family: var(--sans); }
+  .t6-menu-item { display: flex; align-items: center; gap: 9px; background: transparent; border: 0; text-align: left; padding: 8px 9px; border-radius: 8px; font-size: 13px; color: var(--ink); cursor: pointer; }
+  .t6-menu-item:hover { background: rgba(27,23,20,.06); }
+  .t6-menu-item.danger { color: var(--danger); }
+  .t6-menu-item.danger:hover { background: rgba(178,58,42,.08); }
+  .t6-menu-ic { width: 16px; text-align: center; font-size: 13px; opacity: .85; }
+  .t6-menu-div { height: 1px; background: var(--line); margin: 4px 2px; }
+  .t6-menu-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-4); font-weight: 600; padding: 3px 9px 2px; }
+  .t6-menu-row { display: flex; align-items: center; padding: 3px 9px 2px; }
+  .t6-menu-clear { background: transparent; border: 0; color: var(--accent); font-size: 11px; cursor: pointer; }
+  .t6-menu-quick { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 2px 6px 4px; }
+  .t6-menu-quick button { background: var(--card-2); border: 1px solid var(--line); border-radius: 7px; padding: 6px 4px; font-size: 12px; color: var(--ink-2); cursor: pointer; }
+  .t6-menu-quick button:hover { border-color: var(--accent); color: var(--accent); }
+  .t6-menu-date, .t6-menu-sel { width: calc(100% - 12px); margin: 2px 6px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 7px; font-size: 12.5px; font-family: var(--sans); background: var(--card); color: var(--ink); outline: 0; }
+  .t6-menu-prio { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; padding: 2px 6px 4px; }
+  .t6-pf { display: inline-flex; align-items: center; justify-content: center; gap: 3px; background: var(--card-2); border: 1px solid var(--line); border-radius: 7px; padding: 6px 2px; font-size: 11px; font-weight: 600; color: var(--ink-3); cursor: pointer; }
+  .t6-pf .t6-pf-flag { font-size: 11px; }
+  .t6-pf.p1 .t6-pf-flag { color: var(--danger); } .t6-pf.p2 .t6-pf-flag { color: var(--warn); } .t6-pf.p3 .t6-pf-flag { color: var(--client); } .t6-pf.p4 .t6-pf-flag { color: var(--ink-4); }
+  .t6-pf.on { border-color: var(--accent); background: rgba(197,85,45,.08); color: var(--ink); }
   @media (max-width: 900px) { .t6-ws { flex-direction: column; margin: -16px -16px -40px; } .t6-sub { flex: none; width: 100%; border-right: 0; border-bottom: 1px solid var(--line); flex-direction: row; flex-wrap: wrap; overflow-x: auto; } .t6-ws-main { padding: 16px; } }
 </style>
 </head>
@@ -2971,49 +3002,49 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
 <!-- Data & primitives -->
-<script src="src/data.js?v=20260606q"></script>
-<script src="src/phase3Data.js?v=20260606q"></script>
-<script src="src/phase4Data.js?v=20260606q"></script>
-<script src="src/liveData.js?v=20260606q"></script>
-<script src="src/phase5Sales.js?v=20260606q"></script>
-<script src="src/persist.js?v=20260606q"></script>
-<script type="text/babel" src="src/icons.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/primitives.jsx?v=20260606q"></script>
+<script src="src/data.js?v=20260607a"></script>
+<script src="src/phase3Data.js?v=20260607a"></script>
+<script src="src/phase4Data.js?v=20260607a"></script>
+<script src="src/liveData.js?v=20260607a"></script>
+<script src="src/phase5Sales.js?v=20260607a"></script>
+<script src="src/persist.js?v=20260607a"></script>
+<script type="text/babel" src="src/icons.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/primitives.jsx?v=20260607a"></script>
 
 <!-- Panels (unified profile + task detail + create modals) -->
-<script type="text/babel" src="src/clientProfile.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/clientBible.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/taskDetail.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/taskQuickAdd.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/newClient.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/aiAssistant.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/emailCompose.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/myDay.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/scenarios.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/autoTasks.jsx?v=20260606q"></script>
+<script type="text/babel" src="src/clientProfile.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/clientBible.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/taskDetail.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/taskQuickAdd.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/newClient.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/aiAssistant.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/emailCompose.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/myDay.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/scenarios.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/autoTasks.jsx?v=20260607a"></script>
 
 <!-- Screens -->
-<script type="text/babel" src="src/sidebar.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/dashboard.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/boards.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/content.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/tasks.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/sales.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/phase4Sales.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/phase4SalesExtras.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/salesWorkspace.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/forecast.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/platforms.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/insight.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/teamActivity.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/performance.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/concentration.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/commission.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/admin.jsx?v=20260606q"></script>
-<script type="text/babel" src="src/tasksWorkspace.jsx?v=20260606q"></script>
+<script type="text/babel" src="src/sidebar.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/dashboard.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/boards.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/content.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/tasks.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/sales.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/phase4Sales.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/phase4SalesExtras.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/salesWorkspace.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/forecast.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/platforms.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/insight.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/teamActivity.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/performance.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/concentration.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/commission.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/admin.jsx?v=20260607a"></script>
+<script type="text/babel" src="src/tasksWorkspace.jsx?v=20260607a"></script>
 
 <!-- App -->
-<script type="text/babel" src="src/app.jsx?v=20260606q"></script>
+<script type="text/babel" src="src/app.jsx?v=20260607a"></script>
 
 </body>
 </html>

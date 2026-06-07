@@ -144,25 +144,118 @@ function twsPadColumns(groups, groupBy) {
   return out;
 }
 
+/* Todoist-style card context menu — change date / priority / deadline / move to
+   project+section / duplicate / delete without opening the full panel.
+   Opened by the card ⋯ button or right-click. Fixed-positioned at the cursor. */
+function TwsCardMenu({ menu, store, today, onClose }) {
+  const PPC = window.PPC;
+  const t = menu.task;
+  React.useEffect(() => {
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+  const live = store.tasks.find(x => x.id === t.id) || t;   // reflect latest after each mutation
+  const setDue = (label, iso) => { store.updateTask(t.id, { due: label, dueISO: iso }); window.toast?.(`Due · ${label}`, { icon: "📅" }); onClose(); };
+  const pickDate = (iso) => { if (!iso) return; const label = PPC.isoToDueLabel ? PPC.isoToDueLabel(iso) : iso; store.updateTask(t.id, { due: label, dueISO: iso }); window.toast?.(`Due · ${label}`, { icon: "📅" }); onClose(); };
+  const clearDate = () => { store.updateTask(t.id, { due: "No date", dueISO: null }); window.toast?.("Date cleared", { icon: "📅" }); onClose(); };
+  const setPrio = (p) => { store.updateTask(t.id, { priority: p }); window.toast?.(`Priority · ${p || "none"}`, { icon: "⚑" }); onClose(); };
+  const setDeadline = (iso) => { store.updateTask(t.id, { deadlineISO: iso || null }); window.toast?.(iso ? "Deadline set" : "Deadline cleared", { icon: "⛳" }); onClose(); };
+  const dup = () => { store.duplicateTask(t.id); window.toast?.("Task duplicated", { icon: "⧉" }); onClose(); };
+  const del = () => { store.deleteTask(t.id); window.toast?.("Task deleted", { icon: "🗑" }); onClose(); };
+  const moveToProject = (pid) => { store.setTaskProject(t.id, pid || null); store.setTaskSection(t.id, null); window.toast?.("Moved to project", { icon: "→" }); };
+  const moveToSection = (sid) => { store.setTaskSection(t.id, sid || null); window.toast?.("Moved to section", { icon: "→" }); onClose(); };
+
+  const W = 252, H = 430;
+  const left = Math.max(8, Math.min(menu.x, window.innerWidth - W - 8));
+  const top = Math.max(8, Math.min(menu.y, window.innerHeight - H - 8));
+  const projects = store.projects.filter(p => !p.system);
+  const curProj = store.projects.find(p => p.id === live.projectId);
+  const PRIOS = [["high", "P1", "p1"], ["med", "P2", "p2"], ["low", "P3", "p3"], [null, "P4", "p4"]];
+
+  return (
+    <>
+      <div className="t6-menu-scrim" onClick={onClose} onContextMenu={(e) => { e.preventDefault(); onClose(); }} />
+      <div className="t6-menu" style={{ left, top }} onClick={(e) => e.stopPropagation()}>
+        <button className="t6-menu-item" onClick={() => { onClose(); window.openTaskPanel?.(t.id); }}><span className="t6-menu-ic">✎</span> Edit task</button>
+        <div className="t6-menu-div" />
+        <div className="t6-menu-label">Date</div>
+        <div className="t6-menu-quick">
+          <button onClick={() => setDue("Today", PPC.shiftDate(today, 0))}>Today</button>
+          <button onClick={() => setDue("Tomorrow", PPC.shiftDate(today, 1))}>Tomorrow</button>
+          <button onClick={() => setDue("Next week", PPC.shiftDate(today, 7))}>Next wk</button>
+          <button onClick={clearDate}>No date</button>
+        </div>
+        <input type="date" className="t6-menu-date" value={live.dueISO || ""} onChange={(e) => pickDate(e.target.value)} />
+        <div className="t6-menu-div" />
+        <div className="t6-menu-label">Priority</div>
+        <div className="t6-menu-prio">
+          {PRIOS.map(([p, lbl, cls]) => (
+            <button key={lbl} className={`t6-pf ${cls} ${(live.priority || null) === p ? "on" : ""}`} onClick={() => setPrio(p)}>
+              <span className="t6-pf-flag">⚑</span>{lbl}
+            </button>
+          ))}
+        </div>
+        <div className="t6-menu-div" />
+        <div className="t6-menu-row">
+          <span className="t6-menu-label" style={{ flex: 1, padding: 0 }}>Deadline</span>
+          {live.deadlineISO && <button className="t6-menu-clear" onClick={() => setDeadline(null)}>clear</button>}
+        </div>
+        <input type="date" className="t6-menu-date" value={live.deadlineISO || ""} onChange={(e) => setDeadline(e.target.value)} />
+        <div className="t6-menu-div" />
+        <div className="t6-menu-label">Move to project</div>
+        <select className="t6-menu-sel" value={live.projectId || ""} onChange={(e) => moveToProject(e.target.value)}>
+          <option value="">Inbox (no project)</option>
+          {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+        </select>
+        {curProj && (curProj.sections || []).length > 0 && (
+          <select className="t6-menu-sel" value={live.sectionId || ""} onChange={(e) => moveToSection(e.target.value)}>
+            <option value="">No section</option>
+            {curProj.sections.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+        )}
+        <div className="t6-menu-div" />
+        <button className="t6-menu-item" onClick={dup}><span className="t6-menu-ic">⧉</span> Duplicate</button>
+        <button className="t6-menu-item danger" onClick={del}><span className="t6-menu-ic">🗑</span> Delete</button>
+      </div>
+    </>
+  );
+}
+
 /* board (kanban) OR list rendering of grouped tasks. Board columns are drop
-   targets; cards (real tasks, not auto pipeline rows) are draggable. */
-function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy, onAddSection }) {
+   targets; cards (real tasks, not auto pipeline rows) are draggable.
+   Universal section management (rename/delete/add-section) + per-column "+ Add
+   task" work for any project; the card ⋯ menu (openMenu) works everywhere. */
+function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy, onAddSection, openMenu, role, projectId, sectionMode }) {
   const { userMap } = window.PPC;
   const [dragId, setDragId] = React.useState(null);
   const [overKey, setOverKey] = React.useState(null);
   const [dropAt, setDropAt] = React.useState(null);   // {id, pos:'before'|'after'} — within-column reorder indicator
   const [addingSec, setAddingSec] = React.useState(false);
   const [secName, setSecName] = React.useState("");
+  const [addTaskCol, setAddTaskCol] = React.useState(null);  // column key with an open inline composer
+  const [taskTitle, setTaskTitle] = React.useState("");
+  const [secMenu, setSecMenu] = React.useState(null);        // section column key whose ⋯ menu is open
+  const [renameKey, setRenameKey] = React.useState(null);    // section being renamed inline
+  const [renameVal, setRenameVal] = React.useState("");
+
   const commitSec = () => { const n = secName.trim(); if (n && onAddSection) onAddSection(n); setSecName(""); setAddingSec(false); };
-  const addSectionCol = onAddSection ? (
-    <div className="t6-col t6-col-add">
-      {addingSec
-        ? <input autoFocus className="t6-sec-input" value={secName} placeholder="Section name" onChange={e => setSecName(e.target.value)} onKeyDown={e => { if (e.key === "Enter") commitSec(); if (e.key === "Escape") { setAddingSec(false); setSecName(""); } }} onBlur={commitSec} />
-        : <button className="t6-col-addbtn" onClick={() => setAddingSec(true)}><Icon k="plus" className="ic sm" />Add section</button>}
-    </div>
-  ) : null;
   const open = (t) => t.kind === "auto" ? window.openClientPanel?.(t.autoCardId) : window.openTaskPanel?.(t.id);
   const toggle = (t) => { if (t.kind !== "auto") store.toggleTaskDone(t.id); };
+  const isRealSection = (g) => sectionMode && projectId && g.key !== "~nosec";
+
+  // add a task into a specific column: create it, then apply the column's filing rule
+  const commitTask = (g) => {
+    const title = taskTitle.trim();
+    if (title) {
+      const nt = store.addTask({ title, assignee: role ? role.id : null, projectId: projectId || null });
+      if (g.apply) g.apply(store, nt.id);
+      window.toast?.(`Added to “${g.label}”`, { icon: "✓" });
+    }
+    setTaskTitle(""); setAddTaskCol(null);
+  };
+  const renameCommit = (g) => { const n = renameVal.trim(); if (n && projectId) store.renameSection(projectId, g.key, n); setRenameKey(null); setRenameVal(""); };
+  const deleteSection = (g) => { if (projectId) { store.removeSection(projectId, g.key); window.toast?.(`Section “${g.label}” removed`, { icon: "🗑" }); } setSecMenu(null); };
 
   const onDrop = (e, g) => {
     e.preventDefault(); setOverKey(null);
@@ -201,9 +294,67 @@ function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy, onAddSection })
     store.setTaskOrder(ids);
   };
 
+  // per-column footer: "+ Add task" inline composer (works for any column via g.apply)
+  const addTaskFoot = (g) => (
+    addTaskCol === g.key
+      ? <input autoFocus className="t6-sec-input" value={taskTitle} placeholder="Task name, Enter to add"
+          onChange={e => setTaskTitle(e.target.value)}
+          onKeyDown={e => { if (e.key === "Enter") commitTask(g); if (e.key === "Escape") { setAddTaskCol(null); setTaskTitle(""); } }}
+          onBlur={() => commitTask(g)} />
+      : <button className="t6-col-addtask" onClick={() => { setAddTaskCol(g.key); setTaskTitle(""); }}><Icon k="plus" className="ic sm" />Add task</button>
+  );
+
+  // section column header: title (or rename input) + count + ⋯ menu (rename/delete) for real sections
+  const colHead = (g) => (
+    <div className="t6-col-head">
+      {renameKey === g.key
+        ? <input autoFocus className="t6-sec-input" style={{ flex: 1 }} value={renameVal}
+            onChange={e => setRenameVal(e.target.value)}
+            onKeyDown={e => { if (e.key === "Enter") renameCommit(g); if (e.key === "Escape") { setRenameKey(null); setRenameVal(""); } }}
+            onBlur={() => renameCommit(g)} />
+        : <span className="section-title" style={{ flex: 1 }}>{g.label}</span>}
+      <span className="muted mono" style={{ fontSize: 12.5 }}>{g.items.length}</span>
+      {isRealSection(g) && renameKey !== g.key && (
+        <div className="t6-sec-menuwrap">
+          <button className="t6-card-menu" title="Section actions" onClick={() => setSecMenu(secMenu === g.key ? null : g.key)}>⋯</button>
+          {secMenu === g.key && (
+            <>
+              <div className="t6-menu-scrim" onClick={() => setSecMenu(null)} />
+              <div className="t6-secmenu">
+                <button className="t6-menu-item" onClick={() => { setRenameKey(g.key); setRenameVal(g.label); setSecMenu(null); }}><span className="t6-menu-ic">✎</span> Rename</button>
+                <button className="t6-menu-item" onClick={() => { setAddTaskCol(g.key); setTaskTitle(""); setSecMenu(null); }}><span className="t6-menu-ic">＋</span> Add task</button>
+                <button className="t6-menu-item danger" onClick={() => deleteSection(g)}><span className="t6-menu-ic">🗑</span> Delete section</button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  const cardWrap = (t, g) => (
+    <div key={t.id}
+      className={`t6-drag ${t.kind === "auto" ? "nodrag" : ""} ${dragId === t.id ? "dragging" : ""} ${dropAt && dropAt.id === t.id ? "t6-drop-" + dropAt.pos : ""}`}
+      draggable={t.kind !== "auto"}
+      onDragStart={(e) => { if (t.kind === "auto") { e.preventDefault(); return; } e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", t.id); setDragId(t.id); }}
+      onDragOver={(e) => onCardOver(e, t)}
+      onDrop={(e) => onCardDrop(e, g, t)}
+      onDragEnd={() => { setDragId(null); setOverKey(null); setDropAt(null); }}>
+      <TaskCard task={t} onToggle={() => toggle(t)} onOpen={() => open(t)} userMap={userMap} onMenu={openMenu ? (e) => openMenu(e, t) : undefined} />
+    </div>
+  );
+
+  const addSectionCol = onAddSection ? (
+    <div className="t6-col t6-col-add">
+      {addingSec
+        ? <input autoFocus className="t6-sec-input" value={secName} placeholder="Section name" onChange={e => setSecName(e.target.value)} onKeyDown={e => { if (e.key === "Enter") commitSec(); if (e.key === "Escape") { setAddingSec(false); setSecName(""); } }} onBlur={commitSec} />
+        : <button className="t6-col-addbtn" onClick={() => setAddingSec(true)}><Icon k="plus" className="ic sm" />Add section</button>}
+    </div>
+  ) : null;
+
   if (viewMode === "board") {
     const cols = twsPadColumns(groups, groupBy || (groups[0] && groups[0].groupBy));
-    if (!cols.length) return <div className="empty">{emptyMsg || "Nothing here — inbox zero."}</div>;
+    if (!cols.length && !onAddSection) return <div className="empty">{emptyMsg || "Nothing here — inbox zero."}</div>;
     return (
       <div className="t6-board">
         {cols.map(g => (
@@ -212,19 +363,10 @@ function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy, onAddSection })
             onDragOver={(e) => { e.preventDefault(); if (overKey !== g.key) setOverKey(g.key); }}
             onDragLeave={(e) => { if (e.currentTarget === e.target) setOverKey(null); }}
             onDrop={(e) => onDrop(e, g)}>
-            <div className="t6-col-head"><span className="section-title">{g.label}</span><span className="muted mono" style={{ fontSize: 12.5 }}>{g.items.length}</span></div>
+            {colHead(g)}
             <div className="t6-col-body">
-              {g.items.map(t => (
-                <div key={t.id}
-                  className={`t6-drag ${t.kind === "auto" ? "nodrag" : ""} ${dragId === t.id ? "dragging" : ""} ${dropAt && dropAt.id === t.id ? "t6-drop-" + dropAt.pos : ""}`}
-                  draggable={t.kind !== "auto"}
-                  onDragStart={(e) => { if (t.kind === "auto") { e.preventDefault(); return; } e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", t.id); setDragId(t.id); }}
-                  onDragOver={(e) => onCardOver(e, t)}
-                  onDrop={(e) => onCardDrop(e, g, t)}
-                  onDragEnd={() => { setDragId(null); setOverKey(null); setDropAt(null); }}>
-                  <TaskCard task={t} onToggle={() => toggle(t)} onOpen={() => open(t)} userMap={userMap} />
-                </div>
-              ))}
+              {g.items.map(t => cardWrap(t, g))}
+              {addTaskFoot(g)}
             </div>
           </div>
         ))}
@@ -237,11 +379,29 @@ function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy, onAddSection })
     <div className="col gap-4">
       {groups.map(g => (
         <div key={g.key} className="widget" style={{ padding: 0 }}>
-          <div className="row" style={{ padding: "12px 16px", borderBottom: "1px solid var(--line)" }}>
-            <span className="section-title" style={{ flex: 1 }}>{g.label}</span>
+          <div className="row" style={{ padding: "10px 16px", borderBottom: "1px solid var(--line)" }}>
+            {renameKey === g.key
+              ? <input autoFocus className="t6-sec-input" style={{ flex: 1 }} value={renameVal} onChange={e => setRenameVal(e.target.value)} onKeyDown={e => { if (e.key === "Enter") renameCommit(g); if (e.key === "Escape") { setRenameKey(null); setRenameVal(""); } }} onBlur={() => renameCommit(g)} />
+              : <span className="section-title" style={{ flex: 1 }}>{g.label}</span>}
             <span className="muted mono" style={{ fontSize: 12.5 }}>{g.items.length}</span>
+            {isRealSection(g) && renameKey !== g.key && (
+              <div className="t6-sec-menuwrap">
+                <button className="t6-card-menu" title="Section actions" onClick={() => setSecMenu(secMenu === g.key ? null : g.key)}>⋯</button>
+                {secMenu === g.key && (
+                  <>
+                    <div className="t6-menu-scrim" onClick={() => setSecMenu(null)} />
+                    <div className="t6-secmenu">
+                      <button className="t6-menu-item" onClick={() => { setRenameKey(g.key); setRenameVal(g.label); setSecMenu(null); }}><span className="t6-menu-ic">✎</span> Rename</button>
+                      <button className="t6-menu-item" onClick={() => { setAddTaskCol(g.key); setTaskTitle(""); setSecMenu(null); }}><span className="t6-menu-ic">＋</span> Add task</button>
+                      <button className="t6-menu-item danger" onClick={() => deleteSection(g)}><span className="t6-menu-ic">🗑</span> Delete section</button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
-          <div>{g.items.map(t => <TaskRow key={t.id} task={t} onToggle={() => toggle(t)} onOpen={() => open(t)} userMap={userMap} />)}</div>
+          <div>{g.items.map(t => <TaskRow key={t.id} task={t} onToggle={() => toggle(t)} onOpen={() => open(t)} userMap={userMap} onMenu={openMenu ? (e) => openMenu(e, t) : undefined} />)}</div>
+          {(sectionMode || addTaskCol === g.key) && <div style={{ padding: "8px 12px" }}>{addTaskFoot(g)}</div>}
         </div>
       ))}
       {onAddSection && (addingSec
@@ -325,7 +485,7 @@ function twsReasons(t, today) {
   return r;
 }
 
-function TwsToday({ tasks, viewMode, groupBy, today, store }) {
+function TwsToday({ tasks, viewMode, groupBy, today, store, openMenu }) {
   const { userMap } = window.PPC;
   const list = tasks.filter(t => twsIsTodayOrOverdue(t, today)).sort(twsSort);
   const ranked = [...list].sort((a, b) => twsScore(b, today) - twsScore(a, today)).slice(0, 3);
@@ -349,12 +509,12 @@ function TwsToday({ tasks, viewMode, groupBy, today, store }) {
           ))}
         </div>
       )}
-      <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} groupBy={groupBy} emptyMsg="All clear for today — inbox zero." />
+      <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} groupBy={groupBy} openMenu={openMenu} emptyMsg="All clear for today — inbox zero." />
     </div>
   );
 }
 
-function TwsUpcoming({ tasks, today, store }) {
+function TwsUpcoming({ tasks, today, store, openMenu }) {
   const { shiftDate, isoToDueLabel, userMap } = window.PPC;
   const open = (t) => t.kind === "auto" ? window.openClientPanel?.(t.autoCardId) : window.openTaskPanel?.(t.id);
   const toggle = (t) => { if (t.kind !== "auto") store.toggleTaskDone(t.id); };
@@ -369,7 +529,7 @@ function TwsUpcoming({ tasks, today, store }) {
         <span className="section-title" style={{ flex: 1, color: kind === "over" ? "var(--danger)" : undefined }}>{title}</span>
         <span className="muted mono" style={{ fontSize: 12.5 }}>{items.length}</span>
       </div>
-      <div>{items.length ? items.map(t => <TaskRow key={t.id} task={t} onToggle={() => toggle(t)} onOpen={() => open(t)} userMap={userMap} />) : <div className="empty" style={{ padding: "14px 16px" }}>—</div>}</div>
+      <div>{items.length ? items.map(t => <TaskRow key={t.id} task={t} onToggle={() => toggle(t)} onOpen={() => open(t)} userMap={userMap} onMenu={openMenu ? (e) => openMenu(e, t) : undefined} />) : <div className="empty" style={{ padding: "14px 16px" }}>—</div>}</div>
     </div>
   );
   return (
@@ -439,7 +599,7 @@ function TwsCalendar({ tasks, today }) {
   );
 }
 
-function TwsReporting({ role, today, store, setScreen }) {
+function TwsReporting({ role, today, store, setScreen, openMenu }) {
   const { shiftDate, userMap, USERS } = window.PPC;
   const isAdmin = TWS_ADMINS.includes(role.id);
   const weekStart = shiftDate(today, -6);
@@ -478,7 +638,7 @@ function TwsReporting({ role, today, store, setScreen }) {
           <span className="section-title" style={{ flex: 1 }}>What you finished today</span>
           <span className="muted mono" style={{ fontSize: 12.5 }}>{doneToday.length}</span>
         </div>
-        <div>{doneToday.length ? doneToday.map(t => <TaskRow key={t.id} task={t} onToggle={() => store.toggleTaskDone(t.id)} onOpen={() => window.openTaskPanel?.(t.id)} userMap={userMap} />) : <div className="empty" style={{ padding: "14px 16px" }}>Nothing logged yet today.</div>}</div>
+        <div>{doneToday.length ? doneToday.map(t => <TaskRow key={t.id} task={t} onToggle={() => store.toggleTaskDone(t.id)} onOpen={() => window.openTaskPanel?.(t.id)} userMap={userMap} onMenu={openMenu ? (e) => openMenu(e, t) : undefined} />) : <div className="empty" style={{ padding: "14px 16px" }}>Nothing logged yet today.</div>}</div>
       </div>
     </div>
   );
@@ -494,9 +654,12 @@ function TasksWorkspace({ role, setScreen }) {
   const isAdmin = TWS_ADMINS.includes(role.id);
   const [view, setView] = React.useState("today");
   const [viewMode, setViewMode] = React.useState("list");
+  const [projViewMode, setProjViewMode] = React.useState("board");   // projects open as a Todoist-style board by default
   const [groupBy, setGroupBy] = React.useState("priority");
   const [projGroupBy, setProjGroupBy] = React.useState("section");   // user projects default to custom Sections
   const [search, setSearch] = React.useState("");
+  const [menu, setMenu] = React.useState(null);   // {task, x, y} — card context menu
+  const openMenu = (e, t) => { if (!t || t.kind === "auto") return; e.preventDefault(); e.stopPropagation(); setMenu({ task: t, x: e.clientX, y: e.clientY }); };
 
   // pools
   const mineRich = store.tasks.filter(t => t.assignee === role.id || (t.watchers || []).includes(role.id));
@@ -537,23 +700,24 @@ function TasksWorkspace({ role, setScreen }) {
   // when inside a user project, new tasks default into it
   const curProject = (view.startsWith("project:") && view !== "project:team") ? view.slice(8) : null;
   const effGroup = view === "project:team" ? "assignee" : curProject ? projGroupBy : groupBy;
+  const effViewMode = curProject ? projViewMode : viewMode;   // projects default to board
 
   const renderBody = () => {
-    if (view === "today") return <TwsToday tasks={applySearch(mine)} viewMode={viewMode} groupBy={groupBy} today={today} store={store} />;
-    if (view === "upcoming") return <TwsUpcoming tasks={applySearch(mine)} today={today} store={store} />;
+    if (view === "today") return <TwsToday tasks={applySearch(mine)} viewMode={viewMode} groupBy={groupBy} today={today} store={store} openMenu={openMenu} />;
+    if (view === "upcoming") return <TwsUpcoming tasks={applySearch(mine)} today={today} store={store} openMenu={openMenu} />;
     if (view === "calendar") return <TwsCalendar tasks={applySearch(mine)} today={today} />;
-    if (view === "reporting") return <TwsReporting role={role} today={today} store={store} setScreen={setScreen} />;
+    if (view === "reporting") return <TwsReporting role={role} today={today} store={store} setScreen={setScreen} openMenu={openMenu} />;
     if (view === "inbox") {
       const list = applySearch(mineRich.filter(t => t.status !== "done" && !t.projectId && !t.client));
-      return <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} groupBy={groupBy} emptyMsg="Inbox zero — no loose personal tasks." />;
+      return <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} groupBy={groupBy} openMenu={openMenu} role={role} emptyMsg="Inbox zero — no loose personal tasks." />;
     }
     if (view === "filters") {
       const list = applySearch(mine.filter(t => t.status !== "done"));
-      return <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} groupBy={groupBy} />;
+      return <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} groupBy={groupBy} openMenu={openMenu} role={role} />;
     }
     if (view === "project:team") {
       const list = applySearch(everyone.filter(t => t.status !== "done"));
-      return <TwsGroups groups={twsGroup(list, "assignee", today)} viewMode={viewMode} store={store} groupBy="assignee" emptyMsg="No open tasks across the team." />;
+      return <TwsGroups groups={twsGroup(list, "assignee", today)} viewMode={viewMode} store={store} groupBy="assignee" openMenu={openMenu} role={role} emptyMsg="No open tasks across the team." />;
     }
     if (view.startsWith("project:")) {
       const pid = view.slice(8);
@@ -565,9 +729,9 @@ function TasksWorkspace({ role, setScreen }) {
           ...secs.map(sec => ({ key: sec.id, label: sec.name, groupBy: "section", items: list.filter(t => t.sectionId === sec.id).sort(twsSortOrdered), apply: (s, id) => { s.setTaskSection(id, sec.id); return true; } })),
           { key: "~nosec", label: "No section", groupBy: "section", items: list.filter(t => !t.sectionId || !secs.some(x => x.id === t.sectionId)).sort(twsSortOrdered), apply: (s, id) => { s.setTaskSection(id, null); return true; } }
         ];
-        return <TwsGroups groups={groups} viewMode={viewMode} store={store} groupBy="section" onAddSection={(name) => store.addSection(pid, name)} emptyMsg="No tasks yet — add one with “Add task”." />;
+        return <TwsGroups groups={groups} viewMode={effViewMode} store={store} groupBy="section" sectionMode projectId={pid} role={role} openMenu={openMenu} onAddSection={(name) => store.addSection(pid, name)} emptyMsg="No tasks yet — add one with “Add task”." />;
       }
-      return <TwsGroups groups={twsGroup(list, projGroupBy, today)} viewMode={viewMode} store={store} groupBy={projGroupBy} emptyMsg="No tasks in this project yet — add one with “Add task”." />;
+      return <TwsGroups groups={twsGroup(list, projGroupBy, today)} viewMode={effViewMode} store={store} groupBy={projGroupBy} projectId={pid} role={role} openMenu={openMenu} emptyMsg="No tasks in this project yet — add one with “Add task”." />;
     }
     return null;
   };
@@ -586,8 +750,8 @@ function TasksWorkspace({ role, setScreen }) {
           )}
           {(showToolbar || view === "upcoming") && (
             <div className="seg sm">
-              <button className={viewMode === "list" ? "on" : ""} onClick={() => setViewMode("list")} title="List"><Icon k="board" className="ic sm" /></button>
-              <button className={viewMode === "board" ? "on" : ""} onClick={() => setViewMode("board")} title="Board"><Icon k="catalog" className="ic sm" /></button>
+              <button className={effViewMode === "list" ? "on" : ""} onClick={() => curProject ? setProjViewMode("list") : setViewMode("list")} title="List"><Icon k="board" className="ic sm" /></button>
+              <button className={effViewMode === "board" ? "on" : ""} onClick={() => curProject ? setProjViewMode("board") : setViewMode("board")} title="Board"><Icon k="catalog" className="ic sm" /></button>
             </div>
           )}
           <button className="btn sm" onClick={() => window.openNewTask?.(curProject ? { projectId: curProject } : undefined)}><Icon k="plus" className="ic sm" />New task</button>
@@ -598,8 +762,9 @@ function TasksWorkspace({ role, setScreen }) {
         </div>
         <div className="t6-ws-body">{renderBody()}</div>
       </div>
+      {menu && <TwsCardMenu menu={menu} store={store} today={today} onClose={() => setMenu(null)} />}
     </div>
   );
 }
 
-Object.assign(window, { TasksWorkspace, TaskSubNav, TwsGroups });
+Object.assign(window, { TasksWorkspace, TaskSubNav, TwsGroups, TwsCardMenu });

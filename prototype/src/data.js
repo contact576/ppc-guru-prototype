@@ -2157,6 +2157,24 @@
       this.tasks = this.tasks.map(t => pos[t.id] != null ? { ...t, order: pos[t.id] } : t);
       bump();
     },
+    /* Phase 7 — card actions (Todoist context menu): delete + duplicate */
+    deleteTask(id) {
+      this.tasks = this.tasks.filter(t => t.id !== id);
+      bump();
+    },
+    duplicateTask(id) {
+      const t = this.tasks.find(x => x.id === id);
+      if (!t) return null;
+      const copy = {
+        ...t, id: "tk-" + Math.random().toString(36).slice(2, 8),
+        status: "open", completedISO: null, timeSpentMin: 0, timerStartedAt: null,
+        order: undefined, createdISO: nowISO(), createdAt: "Just now"
+      };
+      const idx = this.tasks.findIndex(x => x.id === id);
+      this.tasks.splice(idx >= 0 ? idx + 1 : 0, 0, copy);
+      bump();
+      return copy;
+    },
     /* Phase 7 — reporting: count tasks completed by a user on/after a date (ISO). */
     tasksCompleted(roleId, sinceISO) {
       return this.tasks.filter(t =>

@@ -609,6 +609,22 @@ North-star goal: answer *"what's my highest priority right now?"* at a glance.
   (toolbar: Section · Priority · Due · Duration · Label via separate `projGroupBy` state) — board shows the project's
   sections + a **"No section"** column + a trailing **"+ Add section"** column (`onAddSection` → `store.addSection`).
   Dragging a card between sections sets its `sectionId` (`g.apply`); within-section reorder uses `setTaskOrder`.
+- **Universal section + card management (Todoist parity for ALL projects):** every user project (not just one)
+  gets the same toolkit. **User projects now open in `board` mode by default** (separate `projViewMode` state,
+  default `"board"`; the global `viewMode` still drives Today/Inbox/Filters). Each board column has a **per-column
+  "+ Add task"** footer (`addTaskFoot` → `store.addTask` then `g.apply` files it into that column — works for
+  sections AND priority/due/assignee columns, so "add into High priority" / "add into a teammate's column" all work).
+  Real **section columns carry a header `⋯` menu** (`.t6-secmenu`) → **Rename** (inline input → `renameSection`) ·
+  **Add task** · **Delete section** (`removeSection`; its tasks fall back to "No section", non-destructive). The
+  "No section" pseudo-column has no menu. `TwsGroups` gained props `openMenu` · `role` · `projectId` · `sectionMode`.
+- **Card context menu (`TwsCardMenu`) — the Todoist right-click popover:** every card/row exposes a `⋯` button
+  **and** right-click (`onContextMenu`) → a fixed-positioned popover at the cursor (clamped to viewport). One window
+  to: **Edit** (opens panel) · **Date** (Today/Tomorrow/Next wk/No date quick-set + a `type="date"` picker, via
+  `updateTask({due,dueISO})`) · **Priority** (P1–P4 flag chips) · **Deadline** (`type="date"` + clear) · **Move to
+  project** + **section** (`setTaskProject`/`setTaskSection`) · **Duplicate** (`store.duplicateTask`) · **Delete**
+  (`store.deleteTask`). Menu state (`menu={task,x,y}`) lives in `TasksWorkspace`; `openMenu(e,t)` is threaded to
+  `TwsToday`/`TwsUpcoming`/`TwsReporting`/`TwsGroups`. The shared `TaskCard`/`TaskRow` take an optional `onMenu` prop
+  (renders the `⋯`, wires right-click); auto pipeline rows never get a menu. New mutations: `duplicateTask`, `deleteTask`.
 - Still stubs: real Google Calendar/Workspace sync.
 
 ## Local memory (persistence) — `src/persist.js`
