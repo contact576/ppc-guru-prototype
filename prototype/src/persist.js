@@ -117,7 +117,9 @@
   PPC.resetDemoData = function () {
     const code = getSyncCode();
     try { localStorage.removeItem(KEY); } catch (e) {}
-    fetch(`${REMOTE}?key=${encodeURIComponent(code)}`, { method: "POST", headers: { "content-type": "application/json" }, body: "" })
+    // tombstone (empty data) — Netlify Blobs rejects empty-string values, and an
+    // empty `data` object means boot applies nothing → seed shows.
+    fetch(`${REMOTE}?key=${encodeURIComponent(code)}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ v: PERSIST_VERSION, savedAt: Date.now(), data: {} }) })
       .catch(() => {}).finally(() => location.reload());
   };
   PPC.setSyncCode = function (code) {
