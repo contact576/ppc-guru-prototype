@@ -574,7 +574,13 @@ North-star goal: answer *"what's my highest priority right now?"* at a glance.
   Everything else is for everyone; no money in this module.
 - **Data (`data.js`, additive):** tasks gain **`projectId`** (default null); `store.projects` seeds a virtual
   **`team`** project; mutations **`addProject`**, **`setTaskProject`**; reporting helper **`store.tasksCompleted(roleId, sinceISO)`**.
-  Date logic anchors to `window.PPC.TODAY` (so curated seed data lines up).
+- **Project assignment (move tasks into projects):** the shared `TaskFieldZone` has a **Project** pill, the
+  `TaskDetailPanel` meta panel has a **Project** picker (`setTaskProject`), and adding a task **while inside a user
+  project** defaults its `projectId` (workspace passes `curProject` → `QuickAddBar defaultProject` + `openNewTask({projectId})`).
+- **Real-date rule (LOCKED):** user *actions* use the **real calendar date**, not the demo `TODAY`. The Tasks workspace
+  views (Today/Upcoming/Calendar), `nowISO()` (createdISO/completedISO), `dueLabelToISO()`, and the >10-min banner all
+  anchor to `window.PPC.realToday()`. Today also surfaces tasks whose **deadline** is today/overdue. (Demo seed data,
+  SMM 25th-rule and pacing keep the fixed demo `TODAY`.)
 - **Wiring:** `app.jsx` route `tasks → <TasksWorkspace>`; `index.html` loads `src/tasksWorkspace.jsx` (CSS under
   `/* Phase 7 — Tasks workspace */`, prefixed `.t6-ws*`/`.t6-sub*`). **Script tags now carry a `?v=YYYYMMDD…`
   cache-bust token** — bump it (perl one-liner over `index.html`) when an edited sub-resource keeps serving stale.

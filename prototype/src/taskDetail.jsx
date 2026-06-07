@@ -132,6 +132,13 @@ function TaskBody({ task, role }) {
               <option value="high">High</option>
             </SelectInput>
           </div>
+          <div>
+            <div className="field-label">Project</div>
+            <SelectInput value={task.projectId || ""} onChange={(e) => store.setTaskProject(task.id, e.target.value || null)}>
+              <option value="">— No project —</option>
+              {(store.projects || []).filter(p => !p.system).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </SelectInput>
+          </div>
         </div>
         {(task.deadlineISO || task.recur) && (
           <div className="row gap-2" style={{ marginTop: 8, flexWrap: "wrap" }}>
@@ -374,7 +381,8 @@ function tdBlankForm(d, role) {
     client: d?.client || "", service: d?.service || "", services: d?.services || [],
     links: d?.links || [], checklist: [], labels: d?.labels || [], reminders: [],
     timeEstimateMin: d?.timeEstimateMin != null ? d.timeEstimateMin : null,
-    deadlineISO: d?.deadlineISO || null, recur: d?.recur || null
+    deadlineISO: d?.deadlineISO || null, recur: d?.recur || null,
+    projectId: d?.projectId || null
   };
 }
 
@@ -449,6 +457,7 @@ function TaskFieldZone({ form, setForm, role, activeField, setActiveField }) {
   if (form.recur) chips.push({ k: "rec", field: null, kind: "accent", label: "🔁 " + form.recur, clear: () => setF({ recur: null }) });
   if (form.assignee && form.assignee !== role.id) chips.push({ k: "asg", field: "assignee", kind: "accent", label: "+ " + ((userMap[form.assignee] || {}).name || form.assignee).split(" ")[0], clear: () => setF({ assignee: role.id }) });
   if (form.client) chips.push({ k: "cli", field: "client", kind: "outline", label: "# " + form.client, clear: () => setF({ client: "" }) });
+  if (form.projectId) { const pj = (window.PPC.store.projects || []).find(p => p.id === form.projectId); chips.push({ k: "pj", field: "project", kind: "accent", label: "▦ " + (pj ? pj.name : "Project"), clear: () => setF({ projectId: null }) }); }
   (form.services || []).forEach(s => chips.push({ k: "svc" + s, field: "services", kind: "ok", label: "▸ " + (TD_SVC_LABEL[s] || s), clear: () => setForm(f => ({ ...f, services: f.services.filter(x => x !== s) })) }));
   (form.labels || []).forEach(l => chips.push({ k: "lbl" + l, field: "labels", kind: "outline", label: "@" + l, clear: () => setForm(f => ({ ...f, labels: f.labels.filter(x => x !== l) })) }));
   (form.watchers || []).forEach(w => chips.push({ k: "w" + w, field: "watchers", kind: "accent", label: "👁 " + ((userMap[w] || {}).name || w).split(" ")[0], clear: () => setForm(f => ({ ...f, watchers: f.watchers.filter(x => x !== w) })) }));
@@ -456,7 +465,7 @@ function TaskFieldZone({ form, setForm, role, activeField, setActiveField }) {
   if ((form.checklist || []).length) chips.push({ k: "sub", field: "subtasks", kind: "ok", label: "☑ " + form.checklist.length + " subtask" + (form.checklist.length > 1 ? "s" : ""), clear: () => setF({ checklist: [] }) });
   if ((form.links || []).length) chips.push({ k: "lnk", field: "links", kind: "outline", label: "🔗 " + form.links.length + " link" + (form.links.length > 1 ? "s" : ""), clear: () => setF({ links: [] }) });
 
-  const fieldSet = { date: !!form.dueISO, priority: form.priority !== "med", duration: form.timeEstimateMin != null, deadline: !!form.deadlineISO, assignee: form.assignee !== role.id, client: !!form.client };
+  const fieldSet = { date: !!form.dueISO, priority: form.priority !== "med", duration: form.timeEstimateMin != null, deadline: !!form.deadlineISO, assignee: form.assignee !== role.id, client: !!form.client, project: !!form.projectId };
   const FIELD_PILLS = [
     { key: "date", emoji: "📅", name: "Date", single: true },
     { key: "priority", emoji: "🚩", name: "Priority", single: true },
@@ -468,6 +477,7 @@ function TaskFieldZone({ form, setForm, role, activeField, setActiveField }) {
     { key: "watchers", emoji: "👁", name: "Watchers" },
     { key: "assignee", emoji: "👤", name: "Assignee", single: true },
     { key: "client", emoji: "#", name: "Client", single: true },
+    { key: "project", emoji: "▦", name: "Project", single: true },
     { key: "subtasks", emoji: "☑", name: "Subtasks" }
   ];
   const renderEditor = () => {
@@ -478,6 +488,7 @@ function TaskFieldZone({ form, setForm, role, activeField, setActiveField }) {
       case "deadline": return <input type="date" className="input" autoFocus value={form.deadlineISO || ""} onChange={e => setF({ deadlineISO: e.target.value || null })} />;
       case "assignee": return <UserSelect value={form.assignee} onChange={(id) => setF({ assignee: id })} />;
       case "client": return <SelectInput value={form.client} onChange={e => setF({ client: e.target.value })}><option value="">— No client —</option>{clientOptions.map(c => <option key={c} value={c}>{c}</option>)}</SelectInput>;
+      case "project": return <SelectInput value={form.projectId || ""} onChange={e => setF({ projectId: e.target.value || null })}><option value="">— No project —</option>{(window.PPC.store.projects || []).filter(p => !p.system).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</SelectInput>;
       case "services": return <div className="row gap-2" style={{ flexWrap: "wrap" }}>{TD_SVC_OPTS.map(([code, lbl]) => <span key={code} className={`chip-pick ${form.services.includes(code) ? "on" : ""}`} onClick={() => toggleService(code)}>{lbl}</span>)}</div>;
       case "watchers": return <div className="row gap-2" style={{ flexWrap: "wrap" }}>{window.PPC.USERS.filter(u => u.id !== "client" && u.id !== form.assignee).map(u => <span key={u.id} className={`chip-pick ${form.watchers.includes(u.id) ? "on" : ""}`} onClick={() => toggleWatcher(u.id)}><Avatar user={u} size="sm" /> {u.name.split(" ")[0]}</span>)}</div>;
       case "labels": return <div className="row gap-2" style={{ flexWrap: "wrap" }}>{TD_LABEL_CHOICES.map(l => <span key={l} className={`chip-pick ${form.labels.includes(l) ? "on" : ""}`} onClick={() => toggleLabel(l)}>#{l}</span>)}</div>;
@@ -550,7 +561,7 @@ function NewTaskModal({ open, defaults, role, onClose }) {
       assignee: form.assignee, watchers: form.watchers, reporter: role.id,
       due: form.due, dueISO: form.dueISO || null, dueTime: form.dueISO ? (form.dueTime || "09:00") : null,
       priority: form.priority, client: form.client || null,
-      service: (form.services || [])[0] || null, services: form.services || [],
+      service: (form.services || [])[0] || null, services: form.services || [], projectId: form.projectId || null,
       links: form.links, checklist: form.checklist, labels: form.labels, reminders: form.reminders,
       timeEstimateMin: form.timeEstimateMin != null ? form.timeEstimateMin : null,
       deadlineISO: form.deadlineISO || null, recur: form.recur || null, status: "open"

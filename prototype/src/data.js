@@ -1777,7 +1777,7 @@
     if (due == null || due === "No date" || due === "Done") return null;
     if (/^\d{4}-\d{2}-\d{2}$/.test(due)) return due;          // already ISO
     const off = DUE_OFFSET[due];
-    return off == null ? null : shiftDate(TODAY, off);
+    return off == null ? null : shiftDate(nowISO(), off);   // real-clock anchor so detail-panel Due lands in Today
   }
 
   /* Estimate / tracked-time / created-date seed for the 7 hand-authored tasks */

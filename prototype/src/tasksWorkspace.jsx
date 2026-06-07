@@ -383,6 +383,8 @@ function TasksWorkspace({ role, setScreen }) {
 
   const showToolbar = ["today", "inbox", "filters", "project:team"].includes(view) || view.startsWith("project:");
   const effGroup = view === "project:team" ? "assignee" : groupBy;
+  // when inside a user project, new tasks default into it
+  const curProject = (view.startsWith("project:") && view !== "project:team") ? view.slice(8) : null;
 
   const renderBody = () => {
     if (view === "today") return <TwsToday tasks={applySearch(mine)} viewMode={viewMode} groupBy={groupBy} today={today} store={store} />;
@@ -427,11 +429,11 @@ function TasksWorkspace({ role, setScreen }) {
               <button className={viewMode === "board" ? "on" : ""} onClick={() => setViewMode("board")} title="Board"><Icon k="catalog" className="ic sm" /></button>
             </div>
           )}
-          <button className="btn sm" onClick={() => window.openNewTask?.()}><Icon k="plus" className="ic sm" />New task</button>
+          <button className="btn sm" onClick={() => window.openNewTask?.(curProject ? { projectId: curProject } : undefined)}><Icon k="plus" className="ic sm" />New task</button>
         </div>
         <div className="t6-ws-tools">
           <TenMinBanner role={role} />
-          <QuickAddBar role={role} />
+          <QuickAddBar role={role} defaultProject={curProject} />
         </div>
         <div className="t6-ws-body">{renderBody()}</div>
       </div>

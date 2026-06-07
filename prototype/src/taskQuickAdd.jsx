@@ -177,7 +177,7 @@ function parseQuickAdd(text, opts) {
      take precedence over loose tokens, so "the due date is Monday at 5pm" wins. */
   let exDue = null, exDueTime = null, exDeadline = null, exPrio = null, exDur = null, exClient = null, exAssignee = null;
   const exServices = [], exWatchers = [], exSubtasks = [], exLabels = [];
-  const BND = "(?=[.]|$|\\s+(?:priority|hard\\s+deadline|deadline|estimated\\s+duration|duration|services?\\b|related\\b|clients?\\b|watchers?\\b|cc\\b|assign(?:ee|ed)?\\b|owner\\b|sub-?tasks?\\b|steps?\\b|labels?\\b|those\\b|service\\b))";
+  const BND = "(?=[.]|$|\\s+(?:priority|hard\\s+deadline|deadline|estimated\\s+duration|duration|services?\\b|related\\b|clients?\\b|watchers?\\b|cc\\b|loop\\b|assign(?:ee|ed)?\\b|owner\\b|sub-?tasks?\\b|steps?\\b|labels?\\b|those\\b|service\\b))";
   const decl = (re, handler) => {
     re.lastIndex = 0; let m;
     while ((m = re.exec(text)) !== null) {
@@ -283,7 +283,7 @@ function parseQuickAdd(text, opts) {
   scan(/(^|\s)p\s?([1-4])\b/gi, "priority", m => PNUM[m[2]], plbl);
 
   /* 7 — duration estimate (natural). "takes 30 min" · "for 2 hours" · "30m" · "1h". */
-  scan(/(^|\s)(?:takes?\s+|for\s+|about\s+|~\s*)?(\d+)\s?(m|min|mins|minute|minutes|h|hr|hrs|hour|hours)\b/gi, "duration",
+  scan(/(^|\s)(?:should\s+take\s+|takes?\s+|for\s+|about\s+|~\s*)?(\d+)\s?(m|min|mins|minute|minutes|h|hr|hrs|hour|hours)\b/gi, "duration",
     m => { const n = +m[2]; return /^h/.test(m[3]) ? n * 60 : n; },
     v => { const b = (PPC.bucketFor ? PPC.bucketFor(v) : null); return "⏱ " + (b ? b.label : v + "m"); });
 
@@ -313,9 +313,9 @@ function parseQuickAdd(text, opts) {
   /* 11 — links (URLs anywhere in the text) */
   scan(/(^|\s)(https?:\/\/[^\s]+|www\.[^\s]+)/gi, "link", m => m[2], v => "🔗 " + (v.replace(/^https?:\/\//, "").length > 22 ? v.replace(/^https?:\/\//, "").slice(0, 22) + "…" : v.replace(/^https?:\/\//, "")));
 
-  /* 12 — watchers: "cc Dhaval, Vihar" / "watchers: Harsh Rayu" */
+  /* 12 — watchers: "cc Dhaval, Vihar" / "watchers: Harsh Rayu" / "loop in Vihar and Harsh" */
   (function () {
-    const re = /(^|\s)(?:cc|watchers?)\b\s*:?\s+([a-z][a-z,&\s]*?)(?=$|[.;]|\s[@#+]|\s+(?:priority|every|remind|reminders?|subtasks?|steps?|checklist|deadline|desc)\b)/gi;
+    const re = /(^|\s)(?:cc|watchers?|loop(?:ing)?\s+in)\b\s*:?\s+([a-z][a-z,&\s]*?)(?=$|[.;]|\s[@#+]|\s+(?:priority|every|remind|reminders?|subtasks?|steps?|checklist|deadline|desc)\b)/gi;
     let m;
     while ((m = re.exec(text)) !== null) {
       const start = m.index + m[1].length;
@@ -461,9 +461,9 @@ function WisprFormatLink() {
    the New Task modal (chips + pills + inline editors) + a Ramble button
    beside Add. Typed/dictated tokens are stripped from the title live and
    pushed into the fields, so every widget is visible while you speak. ──── */
-function QuickAddBar({ role, defaultClient, placeholder, compact }) {
+function QuickAddBar({ role, defaultClient, defaultProject, placeholder, compact }) {
   const store = useStore();
-  const blank = () => (window.tdBlankForm ? window.tdBlankForm({ client: defaultClient }, role) : { title: "" });
+  const blank = () => (window.tdBlankForm ? window.tdBlankForm({ client: defaultClient, projectId: defaultProject }, role) : { title: "" });
   const [form, setForm] = React.useState(blank);
   const [activeField, setActiveField] = React.useState(null);
   const [focus, setFocus] = React.useState(false);
@@ -472,8 +472,8 @@ function QuickAddBar({ role, defaultClient, placeholder, compact }) {
   const [rambleBusy, setRambleBusy] = React.useState(false);
   const inputRef = React.useRef(null);
 
-  // reset when the acting user changes (role switch) so no stale assignee chip lingers
-  React.useEffect(() => { setForm(blank()); setActiveField(null); setRambleOpen(false); }, [role.id]);
+  // reset when the acting user, default client, or default project changes
+  React.useEffect(() => { setForm(blank()); setActiveField(null); setRambleOpen(false); }, [role.id, defaultClient, defaultProject]);
 
   const ready = (form.title || "").trim().length > 0;
   const hasField = !!(form.dueISO || (form.priority && form.priority !== "med") || form.timeEstimateMin != null
@@ -496,6 +496,7 @@ function QuickAddBar({ role, defaultClient, placeholder, compact }) {
     reminders: form.reminders || [],
     priority: form.priority || "med",
     client: form.client || defaultClient || null,
+    projectId: form.projectId || defaultProject || null,
     service: (form.services || [])[0] || null,
     services: form.services || [],
     labels: form.labels || [],
