@@ -584,7 +584,13 @@ North-star goal: answer *"what's my highest priority right now?"* at a glance.
 - **Wiring:** `app.jsx` route `tasks → <TasksWorkspace>`; `index.html` loads `src/tasksWorkspace.jsx` (CSS under
   `/* Phase 7 — Tasks workspace */`, prefixed `.t6-ws*`/`.t6-sub*`). **Script tags now carry a `?v=YYYYMMDD…`
   cache-bust token** — bump it (perl one-liner over `index.html`) when an edited sub-resource keeps serving stale.
-- Still stubs: real Google Calendar/Workspace sync; task drag-and-drop between columns.
+- **Drag-and-drop (board mode):** cards are draggable; each board **section/column is a drop target**. Dropping
+  re-files the card per the active grouping — `twsMakeApply(groupBy,key)`: assignee→reassign, priority→set priority,
+  duration→set estimate bucket, due→reschedule (Today/Tomorrow/No date), label→add label. Auto pipeline rows aren't
+  draggable. **Board always shows the full section set** (`twsPadColumns`/`twsCanonicalCols` — even empty columns) so
+  you can drop into an empty section. CSS `.t6-drag`/`.t6-col-drop`. Available to all roles on Today/Filters/Inbox/Projects;
+  admins also on Team (drop = reassign across teammates).
+- Still stubs: real Google Calendar/Workspace sync.
 
 ## Local memory (persistence) — `src/persist.js`
 

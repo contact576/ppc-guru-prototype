@@ -91,29 +91,103 @@ function twsGroup(tasks, groupBy, today) {
   else if (groupBy === "assignee") { const o = USERS.map(u => u.id); arr.sort((a, b) => o.indexOf(a.key) - o.indexOf(b.key)); }
   else arr.sort((a, b) => a.label.localeCompare(b.label));
   arr.forEach(g => g.items.sort(twsSort));
+  // attach a drop handler per column so drag-and-drop re-files the card into that section
+  arr.forEach(g => { g.groupBy = groupBy; g.apply = twsMakeApply(groupBy, g.key); });
   return arr;
 }
 
-/* board (kanban) OR list rendering of grouped tasks */
-function TwsGroups({ groups, viewMode, store, emptyMsg }) {
+/* Given a board grouping + a column key, return apply(store, taskId) -> bool.
+   Dropping a card into a column performs the matching mutation (reassign, set
+   priority, set estimate bucket, reschedule, add label). Returns false if the
+   column isn't a meaningful drop target (e.g. "Overdue"). */
+function twsMakeApply(groupBy, key) {
+  const PPC = window.PPC;
+  if (groupBy === "priority") return (s, id) => { s.updateTask(id, { priority: key }); return true; };
+  if (groupBy === "assignee") return (s, id) => { s.updateTask(id, { assignee: key === "none" ? null : key }); return true; };
+  if (groupBy === "duration") {
+    const b = (PPC.DURATION_BUCKETS || []).find(x => x.label === key);
+    return (s, id) => { s.setTaskEstimate(id, b ? (b.maxMin && b.maxMin !== Infinity ? b.maxMin : 90) : null); return true; };
+  }
+  if (groupBy === "due") {
+    const lbl = { "1": "Today", "2": "Tomorrow", "5": "No date" }[key];
+    return (s, id) => { if (!lbl) return false; if (lbl === "No date") s.updateTask(id, { due: "No date", dueISO: null }); else s.updateTask(id, { due: lbl }); return true; };
+  }
+  if (groupBy === "label") {
+    return (s, id) => { if (key === "~none") return false; const t = s.tasks.find(x => x.id === id); const labels = Array.from(new Set([...((t && t.labels) || []), key])); s.updateTask(id, { labels }); return true; };
+  }
+  return () => false;
+}
+
+/* The full, ordered set of sections (columns) for a board grouping — so the
+   kanban always shows every section (even empty ones) and you can drop into them. */
+function twsCanonicalCols(groupBy) {
+  const PPC = window.PPC;
+  if (groupBy === "priority") return [["high", "High priority"], ["med", "Medium"], ["low", "Low"]];
+  if (groupBy === "assignee") return PPC.USERS.filter(u => u.id !== "client").map(u => [u.id, u.name]);
+  if (groupBy === "duration") return [...PPC.DURATION_BUCKETS.map(b => [b.label, b.label]), ["~none", "No estimate"]];
+  if (groupBy === "due") return [["0", "Overdue"], ["1", "Today"], ["2", "Tomorrow"], ["3", "This week"], ["4", "Later"], ["5", "No date"]];
+  return null;  // label / other: dynamic domain — show only existing sections
+}
+function twsPadColumns(groups, groupBy) {
+  const canon = twsCanonicalCols(groupBy);
+  if (!canon) return groups;
+  const byKey = new Map(groups.map(g => [g.key, g]));
+  const used = new Set();
+  const out = canon.map(([key, label]) => { used.add(key); return byKey.get(key) || { key, label, items: [], groupBy, apply: twsMakeApply(groupBy, key) }; });
+  groups.forEach(g => { if (!used.has(g.key)) out.push(g); });   // keep extras (Unassigned, etc.)
+  return out;
+}
+
+/* board (kanban) OR list rendering of grouped tasks. Board columns are drop
+   targets; cards (real tasks, not auto pipeline rows) are draggable. */
+function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy }) {
   const { userMap } = window.PPC;
+  const [dragId, setDragId] = React.useState(null);
+  const [overKey, setOverKey] = React.useState(null);
   const open = (t) => t.kind === "auto" ? window.openClientPanel?.(t.autoCardId) : window.openTaskPanel?.(t.id);
   const toggle = (t) => { if (t.kind !== "auto") store.toggleTaskDone(t.id); };
-  if (!groups.length) return <div className="empty">{emptyMsg || "Nothing here — inbox zero."}</div>;
+
+  const onDrop = (e, g) => {
+    e.preventDefault(); setOverKey(null);
+    const id = (e.dataTransfer && e.dataTransfer.getData("text/plain")) || dragId;
+    setDragId(null);
+    if (!id) return;
+    const task = store.tasks.find(t => t.id === id);
+    if (!task) return;
+    if (g.items.some(it => it.id === id)) return;        // dropped in same column → no-op
+    const ok = g.apply ? g.apply(store, id) : false;
+    window.toast?.(ok ? `Moved “${(task.title || "Task").slice(0, 28)}” → ${g.label}` : `Can’t move into “${g.label}”`, { icon: ok ? "✓" : "!" });
+  };
+
   if (viewMode === "board") {
+    const cols = twsPadColumns(groups, groupBy || (groups[0] && groups[0].groupBy));
+    if (!cols.length) return <div className="empty">{emptyMsg || "Nothing here — inbox zero."}</div>;
     return (
       <div className="t6-board">
-        {groups.map(g => (
-          <div key={g.key} className="t6-col">
+        {cols.map(g => (
+          <div key={g.key}
+            className={`t6-col ${overKey === g.key ? "t6-col-drop" : ""}`}
+            onDragOver={(e) => { e.preventDefault(); if (overKey !== g.key) setOverKey(g.key); }}
+            onDragLeave={(e) => { if (e.currentTarget === e.target) setOverKey(null); }}
+            onDrop={(e) => onDrop(e, g)}>
             <div className="t6-col-head"><span className="section-title">{g.label}</span><span className="muted mono" style={{ fontSize: 12.5 }}>{g.items.length}</span></div>
             <div className="t6-col-body">
-              {g.items.map(t => <TaskCard key={t.id} task={t} onToggle={() => toggle(t)} onOpen={() => open(t)} userMap={userMap} />)}
+              {g.items.map(t => (
+                <div key={t.id}
+                  className={`t6-drag ${t.kind === "auto" ? "nodrag" : ""} ${dragId === t.id ? "dragging" : ""}`}
+                  draggable={t.kind !== "auto"}
+                  onDragStart={(e) => { if (t.kind === "auto") { e.preventDefault(); return; } e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", t.id); setDragId(t.id); }}
+                  onDragEnd={() => { setDragId(null); setOverKey(null); }}>
+                  <TaskCard task={t} onToggle={() => toggle(t)} onOpen={() => open(t)} userMap={userMap} />
+                </div>
+              ))}
             </div>
           </div>
         ))}
       </div>
     );
   }
+  if (!groups.length) return <div className="empty">{emptyMsg || "Nothing here — inbox zero."}</div>;
   return (
     <div className="col gap-4">
       {groups.map(g => (
@@ -198,7 +272,7 @@ function TwsToday({ tasks, viewMode, groupBy, today, store }) {
           {top.kind !== "auto" && <button className="btn primary sm" onClick={() => window.openTaskPanel?.(top.id)}>Open</button>}
         </div>
       )}
-      <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} emptyMsg="All clear for today — inbox zero." />
+      <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} groupBy={groupBy} emptyMsg="All clear for today — inbox zero." />
     </div>
   );
 }
@@ -393,20 +467,20 @@ function TasksWorkspace({ role, setScreen }) {
     if (view === "reporting") return <TwsReporting role={role} today={today} store={store} setScreen={setScreen} />;
     if (view === "inbox") {
       const list = applySearch(mineRich.filter(t => t.status !== "done" && !t.projectId && !t.client));
-      return <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} emptyMsg="Inbox zero — no loose personal tasks." />;
+      return <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} groupBy={groupBy} emptyMsg="Inbox zero — no loose personal tasks." />;
     }
     if (view === "filters") {
       const list = applySearch(mine.filter(t => t.status !== "done"));
-      return <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} />;
+      return <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} groupBy={groupBy} />;
     }
     if (view === "project:team") {
       const list = applySearch(everyone.filter(t => t.status !== "done"));
-      return <TwsGroups groups={twsGroup(list, "assignee", today)} viewMode={viewMode} store={store} emptyMsg="No open tasks across the team." />;
+      return <TwsGroups groups={twsGroup(list, "assignee", today)} viewMode={viewMode} store={store} groupBy="assignee" emptyMsg="No open tasks across the team." />;
     }
     if (view.startsWith("project:")) {
       const pid = view.slice(8);
       const list = applySearch(store.tasks.filter(t => t.projectId === pid && (isAdmin || t.assignee === role.id || (t.watchers || []).includes(role.id))));
-      return <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} emptyMsg="No tasks in this project yet — add one with “Add task”." />;
+      return <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} groupBy={groupBy} emptyMsg="No tasks in this project yet — add one with “Add task”." />;
     }
     return null;
   };
