@@ -625,6 +625,18 @@ North-star goal: answer *"what's my highest priority right now?"* at a glance.
   (`store.deleteTask`). Menu state (`menu={task,x,y}`) lives in `TasksWorkspace`; `openMenu(e,t)` is threaded to
   `TwsToday`/`TwsUpcoming`/`TwsReporting`/`TwsGroups`. The shared `TaskCard`/`TaskRow` take an optional `onMenu` prop
   (renders the `⋯`, wires right-click); auto pipeline rows never get a menu. New mutations: `duplicateTask`, `deleteTask`.
+- **Section/card menu polish (all project boards):** (1) **Colorful section headers** — real sections get a
+  deterministic hue + emoji (`twsSecColor`/`twsSecEmoji`, hashed from the section id) on the title plus an `inset`
+  top accent bar; "No section" stays neutral. (2) **"Start here" redesign** — transparent container, each rank is its
+  own tinted **chip** (`.t6-suggest-row.r1/.r2/.r3` → orange/amber/blue left border + faint bg), not one dark block.
+  (3) **`TwsCardMenu` is viewport-safe** — `max-height: calc(100vh-16px)` + `overflow-y:auto`, height clamp on
+  positioning, so it never clips off-screen. (4) **Move-to-project reveals the *target* project's sections** — changing
+  the project select (no auto-close) re-derives `curProj` from `live.projectId`, so a second "section" select appears
+  with the destination project's subsections → move straight into a subsection. (5) **Per-section "+ Add task" is the
+  full `QuickAddBar` (Ramble + NL parse) squeezed into the column** (`.t6-col-compose`, input on its own row, buttons
+  below) — `QuickAddBar` gained `defaultSection` + `onAdded(task)`; section columns pass `defaultSection`, other
+  columns post-file via `onAdded → g.apply`. So typing "Finalize decor p1 30m" in a section creates a high-priority
+  30-min task already filed there.
 - Still stubs: real Google Calendar/Workspace sync.
 
 ## Local memory (persistence) — `src/persist.js`

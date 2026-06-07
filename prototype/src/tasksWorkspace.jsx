@@ -13,6 +13,13 @@ const TWS_GROUPS = [
   { id: "label", label: "Label" }
 ];
 
+/* deterministic color + emoji per section (Todoist-style colorful headers) */
+const TWS_SEC_PALETTE = ["#C5552D", "#4E6FAE", "#3E8E7E", "#B98426", "#8A5BA8", "#C2477A", "#5B8C3E", "#C77D2E"];
+const TWS_SEC_EMOJI = ["📌", "🚀", "🎯", "🗂️", "✨", "🔔", "📂", "🧩"];
+function twsSecHash(key) { let h = 0; const s = String(key || ""); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+function twsSecColor(key) { return TWS_SEC_PALETTE[twsSecHash(key) % TWS_SEC_PALETTE.length]; }
+function twsSecEmoji(key) { return TWS_SEC_EMOJI[twsSecHash(key) % TWS_SEC_EMOJI.length]; }
+
 function twsPrioRank(p) { return p === "high" ? 0 : p === "med" ? 1 : 2; }
 function twsSort(a, b) {
   const pr = twsPrioRank(a.priority) - twsPrioRank(b.priority);
@@ -166,7 +173,8 @@ function TwsCardMenu({ menu, store, today, onClose }) {
   const moveToProject = (pid) => { store.setTaskProject(t.id, pid || null); store.setTaskSection(t.id, null); window.toast?.("Moved to project", { icon: "→" }); };
   const moveToSection = (sid) => { store.setTaskSection(t.id, sid || null); window.toast?.("Moved to section", { icon: "→" }); onClose(); };
 
-  const W = 252, H = 430;
+  const W = 252;
+  const H = Math.min(440, window.innerHeight - 16);   // never taller than the viewport (menu scrolls if needed)
   const left = Math.max(8, Math.min(menu.x, window.innerWidth - W - 8));
   const top = Math.max(8, Math.min(menu.y, window.innerHeight - H - 8));
   const projects = store.projects.filter(p => !p.system);
@@ -234,7 +242,6 @@ function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy, onAddSection, o
   const [addingSec, setAddingSec] = React.useState(false);
   const [secName, setSecName] = React.useState("");
   const [addTaskCol, setAddTaskCol] = React.useState(null);  // column key with an open inline composer
-  const [taskTitle, setTaskTitle] = React.useState("");
   const [secMenu, setSecMenu] = React.useState(null);        // section column key whose ⋯ menu is open
   const [renameKey, setRenameKey] = React.useState(null);    // section being renamed inline
   const [renameVal, setRenameVal] = React.useState("");
@@ -244,16 +251,6 @@ function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy, onAddSection, o
   const toggle = (t) => { if (t.kind !== "auto") store.toggleTaskDone(t.id); };
   const isRealSection = (g) => sectionMode && projectId && g.key !== "~nosec";
 
-  // add a task into a specific column: create it, then apply the column's filing rule
-  const commitTask = (g) => {
-    const title = taskTitle.trim();
-    if (title) {
-      const nt = store.addTask({ title, assignee: role ? role.id : null, projectId: projectId || null });
-      if (g.apply) g.apply(store, nt.id);
-      window.toast?.(`Added to “${g.label}”`, { icon: "✓" });
-    }
-    setTaskTitle(""); setAddTaskCol(null);
-  };
   const renameCommit = (g) => { const n = renameVal.trim(); if (n && projectId) store.renameSection(projectId, g.key, n); setRenameKey(null); setRenameVal(""); };
   const deleteSection = (g) => { if (projectId) { store.removeSection(projectId, g.key); window.toast?.(`Section “${g.label}” removed`, { icon: "🗑" }); } setSecMenu(null); };
 
@@ -294,43 +291,55 @@ function TwsGroups({ groups, viewMode, store, emptyMsg, groupBy, onAddSection, o
     store.setTaskOrder(ids);
   };
 
-  // per-column footer: "+ Add task" inline composer (works for any column via g.apply)
+  // per-column footer: "+ Add task" → compact inline Ramble composer (the full
+  // QuickAddBar squeezed into the column; files into the section / column via g.apply)
   const addTaskFoot = (g) => (
     addTaskCol === g.key
-      ? <input autoFocus className="t6-sec-input" value={taskTitle} placeholder="Task name, Enter to add"
-          onChange={e => setTaskTitle(e.target.value)}
-          onKeyDown={e => { if (e.key === "Enter") commitTask(g); if (e.key === "Escape") { setAddTaskCol(null); setTaskTitle(""); } }}
-          onBlur={() => commitTask(g)} />
-      : <button className="t6-col-addtask" onClick={() => { setAddTaskCol(g.key); setTaskTitle(""); }}><Icon k="plus" className="ic sm" />Add task</button>
+      ? <div className="t6-col-compose">
+          <QuickAddBar role={role} compact autoFocus
+            defaultProject={projectId || undefined}
+            defaultSection={sectionMode && g.key !== "~nosec" ? g.key : undefined}
+            placeholder="Task name — type or Ramble"
+            onAdded={(t) => { if (g.apply && !(sectionMode && g.key !== "~nosec")) g.apply(store, t.id); }} />
+          <button className="t6-col-addtask" onClick={() => setAddTaskCol(null)}><Icon k="close" className="ic sm" />Close</button>
+        </div>
+      : <button className="t6-col-addtask" onClick={() => setAddTaskCol(g.key)}><Icon k="plus" className="ic sm" />Add task</button>
   );
 
-  // section column header: title (or rename input) + count + ⋯ menu (rename/delete) for real sections
-  const colHead = (g) => (
-    <div className="t6-col-head">
-      {renameKey === g.key
-        ? <input autoFocus className="t6-sec-input" style={{ flex: 1 }} value={renameVal}
-            onChange={e => setRenameVal(e.target.value)}
-            onKeyDown={e => { if (e.key === "Enter") renameCommit(g); if (e.key === "Escape") { setRenameKey(null); setRenameVal(""); } }}
-            onBlur={() => renameCommit(g)} />
-        : <span className="section-title" style={{ flex: 1 }}>{g.label}</span>}
-      <span className="muted mono" style={{ fontSize: 12.5 }}>{g.items.length}</span>
-      {isRealSection(g) && renameKey !== g.key && (
-        <div className="t6-sec-menuwrap">
-          <button className="t6-card-menu" title="Section actions" onClick={() => setSecMenu(secMenu === g.key ? null : g.key)}>⋯</button>
-          {secMenu === g.key && (
-            <>
-              <div className="t6-menu-scrim" onClick={() => setSecMenu(null)} />
-              <div className="t6-secmenu">
-                <button className="t6-menu-item" onClick={() => { setRenameKey(g.key); setRenameVal(g.label); setSecMenu(null); }}><span className="t6-menu-ic">✎</span> Rename</button>
-                <button className="t6-menu-item" onClick={() => { setAddTaskCol(g.key); setTaskTitle(""); setSecMenu(null); }}><span className="t6-menu-ic">＋</span> Add task</button>
-                <button className="t6-menu-item danger" onClick={() => deleteSection(g)}><span className="t6-menu-ic">🗑</span> Delete section</button>
-              </div>
-            </>
-          )}
-        </div>
-      )}
-    </div>
-  );
+  // section column header: colorful title (emoji + hue) + count + ⋯ menu for real sections
+  const colHead = (g) => {
+    const real = isRealSection(g);
+    const c = real ? twsSecColor(g.key) : null;
+    return (
+      <div className="t6-col-head" style={real ? { boxShadow: `inset 0 3px 0 ${c}` } : undefined}>
+        {renameKey === g.key
+          ? <input autoFocus className="t6-sec-input" style={{ flex: 1 }} value={renameVal}
+              onChange={e => setRenameVal(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") renameCommit(g); if (e.key === "Escape") { setRenameKey(null); setRenameVal(""); } }}
+              onBlur={() => renameCommit(g)} />
+          : <span className="section-title" style={{ flex: 1, display: "flex", alignItems: "center", gap: 6, color: c || undefined }}>
+              {real && <span aria-hidden style={{ fontSize: 13 }}>{twsSecEmoji(g.key)}</span>}
+              {g.label}
+            </span>}
+        <span className="muted mono" style={{ fontSize: 12.5 }}>{g.items.length}</span>
+        {real && renameKey !== g.key && (
+          <div className="t6-sec-menuwrap">
+            <button className="t6-card-menu sec" title="Section actions" onClick={() => setSecMenu(secMenu === g.key ? null : g.key)}>⋯</button>
+            {secMenu === g.key && (
+              <>
+                <div className="t6-menu-scrim" onClick={() => setSecMenu(null)} />
+                <div className="t6-secmenu">
+                  <button className="t6-menu-item" onClick={() => { setRenameKey(g.key); setRenameVal(g.label); setSecMenu(null); }}><span className="t6-menu-ic">✎</span> Rename</button>
+                  <button className="t6-menu-item" onClick={() => { setAddTaskCol(g.key); setSecMenu(null); }}><span className="t6-menu-ic">＋</span> Add task</button>
+                  <button className="t6-menu-item danger" onClick={() => deleteSection(g)}><span className="t6-menu-ic">🗑</span> Delete section</button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const cardWrap = (t, g) => (
     <div key={t.id}
@@ -498,7 +507,7 @@ function TwsToday({ tasks, viewMode, groupBy, today, store, openMenu }) {
             <span className="muted" style={{ fontSize: 12 }}>ranked from priority, due time, deadline &amp; effort</span>
           </div>
           {ranked.map((t, i) => (
-            <div key={t.id} className="t6-suggest-row" onClick={() => t.kind !== "auto" ? window.openTaskPanel?.(t.id) : window.openClientPanel?.(t.autoCardId)}>
+            <div key={t.id} className={`t6-suggest-row r${i + 1}`} onClick={() => t.kind !== "auto" ? window.openTaskPanel?.(t.id) : window.openClientPanel?.(t.autoCardId)}>
               <div className={`t6-suggest-rank r${i + 1}`}>{i + 1}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div className="t6-suggest-title">{t.title}</div>

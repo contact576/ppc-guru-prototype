@@ -461,7 +461,7 @@ function WisprFormatLink() {
    the New Task modal (chips + pills + inline editors) + a Ramble button
    beside Add. Typed/dictated tokens are stripped from the title live and
    pushed into the fields, so every widget is visible while you speak. ──── */
-function QuickAddBar({ role, defaultClient, defaultProject, placeholder, compact }) {
+function QuickAddBar({ role, defaultClient, defaultProject, defaultSection, onAdded, placeholder, compact, autoFocus }) {
   const store = useStore();
   const blank = () => (window.tdBlankForm ? window.tdBlankForm({ client: defaultClient, projectId: defaultProject }, role) : { title: "" });
   const [form, setForm] = React.useState(blank);
@@ -473,7 +473,8 @@ function QuickAddBar({ role, defaultClient, defaultProject, placeholder, compact
   const inputRef = React.useRef(null);
 
   // reset when the acting user, default client, or default project changes
-  React.useEffect(() => { setForm(blank()); setActiveField(null); setRambleOpen(false); }, [role.id, defaultClient, defaultProject]);
+  React.useEffect(() => { setForm(blank()); setActiveField(null); setRambleOpen(false); }, [role.id, defaultClient, defaultProject, defaultSection]);
+  React.useEffect(() => { if (autoFocus && inputRef.current) inputRef.current.focus(); }, []);
 
   const ready = (form.title || "").trim().length > 0;
   const hasField = !!(form.dueISO || (form.priority && form.priority !== "med") || form.timeEstimateMin != null
@@ -497,6 +498,7 @@ function QuickAddBar({ role, defaultClient, defaultProject, placeholder, compact
     priority: form.priority || "med",
     client: form.client || defaultClient || null,
     projectId: form.projectId || defaultProject || null,
+    sectionId: form.sectionId || defaultSection || null,
     service: (form.services || [])[0] || null,
     services: form.services || [],
     labels: form.labels || [],
@@ -511,9 +513,10 @@ function QuickAddBar({ role, defaultClient, defaultProject, placeholder, compact
   const commit = () => {
     if (!ready) return;
     const p = buildPayload();
-    store.addTask(p);
+    const created = store.addTask(p);
     const who = window.PPC.userMap[p.assignee];
     window.toast?.(`Task added${who ? " · " + who.name.split(" ")[0] : ""}`, { icon: "✓" });
+    onAdded && onAdded(created);
     setForm(blank());
     setActiveField(null);
     inputRef.current && inputRef.current.focus();
