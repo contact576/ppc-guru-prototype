@@ -2061,6 +2061,9 @@
     return profiles[name];
   }
   function bump() { window.dispatchEvent(new CustomEvent("ppc:update")); }
+  /* "now" for user actions = the REAL current date (so created/completed stamps line
+     up with the real-date task views & reporting). Falls back to demo TODAY pre-boot. */
+  function nowISO() { try { return (window.PPC && window.PPC.realToday) ? window.PPC.realToday() : TODAY; } catch (e) { return TODAY; } }
 
   const store = {
     profiles,
@@ -2112,7 +2115,7 @@
         recur: null,
         reminders: [],
         projectId: null,
-        createdISO: TODAY,
+        createdISO: nowISO(),
         completedISO: null,
         createdAt: "Just now",
         ...t,
@@ -2132,7 +2135,7 @@
       this.tasks = this.tasks.map(t => {
         if (t.id !== id) return t;
         const next = { ...t, ...patch };
-        if (patch.status) next.completedISO = patch.status === "done" ? (t.completedISO || TODAY) : null;
+        if (patch.status) next.completedISO = patch.status === "done" ? (t.completedISO || nowISO()) : null;
         if (patch.due != null && patch.dueISO == null) next.dueISO = dueLabelToISO(patch.due);
         return next;
       });
@@ -2142,7 +2145,7 @@
       this.tasks = this.tasks.map(t => {
         if (t.id !== id) return t;
         const done = t.status !== "done";
-        return { ...t, status: done ? "done" : "open", completedISO: done ? TODAY : null };
+        return { ...t, status: done ? "done" : "open", completedISO: done ? nowISO() : null };
       });
       bump();
     },

@@ -591,11 +591,11 @@ function QuickAddBar({ role, defaultClient, placeholder, compact }) {
 /* ── TenMinBanner — the "start your day" >10-min-rule nudge ─────── */
 function TenMinBanner({ role }) {
   const store = useStore();
-  const { TODAY } = window.PPC;
+  const today = window.PPC.realToday ? window.PPC.realToday() : window.PPC.TODAY;
   const [hidden, setHidden] = React.useState(false);
   if (hidden) return null;
   const mine = store.tasks.filter(t => t.assignee === role.id);
-  const loggedToday = mine.filter(t => t.createdISO === TODAY && (t.timeEstimateMin || 0) > 10).length;
+  const loggedToday = mine.filter(t => t.createdISO === today && (t.timeEstimateMin || 0) > 10).length;
   const missing = mine.filter(t => t.status !== "done" && t.timeEstimateMin == null).length;
   return (
     <div className="t6-rule-banner">
