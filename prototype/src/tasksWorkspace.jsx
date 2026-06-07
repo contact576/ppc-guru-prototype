@@ -30,7 +30,10 @@ function twsIsToday(t, today) {
   return t.due === "Today";
 }
 function twsIsTodayOrOverdue(t, today) {
-  return t.status !== "done" && (twsIsOverdue(t, today) || twsIsToday(t, today));
+  if (t.status === "done") return false;
+  // due today/overdue OR a hard deadline that is today/past — either should surface in Today
+  const deadlineHit = t.deadlineISO && t.deadlineISO <= today;
+  return twsIsOverdue(t, today) || twsIsToday(t, today) || deadlineHit;
 }
 
 /* auto-from-pipeline tasks (mirrors TasksScreen). onlyRoleId=null → every owner. */
@@ -333,7 +336,10 @@ function TwsReporting({ role, today, store, setScreen }) {
 /* ── workspace shell ────────────────────────────────────────────── */
 function TasksWorkspace({ role, setScreen }) {
   const store = useStore();
-  const { TODAY, userMap } = window.PPC;
+  const { userMap } = window.PPC;
+  // anchor date logic to the REAL current date (tasks are created with the real clock),
+  // so a task you add for today shows up in Today. Falls back to demo TODAY if unavailable.
+  const today = window.PPC.realToday ? window.PPC.realToday() : window.PPC.TODAY;
   const isAdmin = TWS_ADMINS.includes(role.id);
   const [view, setView] = React.useState("today");
   const [viewMode, setViewMode] = React.useState("list");
@@ -352,8 +358,8 @@ function TasksWorkspace({ role, setScreen }) {
 
   // counts for sub-nav
   const counts = {
-    today: mine.filter(t => twsIsTodayOrOverdue(t, TODAY)).length,
-    upcoming: mine.filter(t => t.status !== "done" && t.dueISO && t.dueISO >= TODAY).length,
+    today: mine.filter(t => twsIsTodayOrOverdue(t, today)).length,
+    upcoming: mine.filter(t => t.status !== "done" && t.dueISO && t.dueISO >= today).length,
     inbox: mineRich.filter(t => t.status !== "done" && !t.projectId && !t.client).length,
     team: store.tasks.filter(t => t.status !== "done").length,
     projects: {}
@@ -379,26 +385,26 @@ function TasksWorkspace({ role, setScreen }) {
   const effGroup = view === "project:team" ? "assignee" : groupBy;
 
   const renderBody = () => {
-    if (view === "today") return <TwsToday tasks={applySearch(mine)} viewMode={viewMode} groupBy={groupBy} today={TODAY} store={store} />;
-    if (view === "upcoming") return <TwsUpcoming tasks={applySearch(mine)} today={TODAY} store={store} />;
-    if (view === "calendar") return <TwsCalendar tasks={applySearch(mine)} today={TODAY} />;
-    if (view === "reporting") return <TwsReporting role={role} today={TODAY} store={store} setScreen={setScreen} />;
+    if (view === "today") return <TwsToday tasks={applySearch(mine)} viewMode={viewMode} groupBy={groupBy} today={today} store={store} />;
+    if (view === "upcoming") return <TwsUpcoming tasks={applySearch(mine)} today={today} store={store} />;
+    if (view === "calendar") return <TwsCalendar tasks={applySearch(mine)} today={today} />;
+    if (view === "reporting") return <TwsReporting role={role} today={today} store={store} setScreen={setScreen} />;
     if (view === "inbox") {
       const list = applySearch(mineRich.filter(t => t.status !== "done" && !t.projectId && !t.client));
-      return <TwsGroups groups={twsGroup(list, groupBy, TODAY)} viewMode={viewMode} store={store} emptyMsg="Inbox zero — no loose personal tasks." />;
+      return <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} emptyMsg="Inbox zero — no loose personal tasks." />;
     }
     if (view === "filters") {
       const list = applySearch(mine.filter(t => t.status !== "done"));
-      return <TwsGroups groups={twsGroup(list, groupBy, TODAY)} viewMode={viewMode} store={store} />;
+      return <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} />;
     }
     if (view === "project:team") {
       const list = applySearch(everyone.filter(t => t.status !== "done"));
-      return <TwsGroups groups={twsGroup(list, "assignee", TODAY)} viewMode={viewMode} store={store} emptyMsg="No open tasks across the team." />;
+      return <TwsGroups groups={twsGroup(list, "assignee", today)} viewMode={viewMode} store={store} emptyMsg="No open tasks across the team." />;
     }
     if (view.startsWith("project:")) {
       const pid = view.slice(8);
       const list = applySearch(store.tasks.filter(t => t.projectId === pid && (isAdmin || t.assignee === role.id || (t.watchers || []).includes(role.id))));
-      return <TwsGroups groups={twsGroup(list, groupBy, TODAY)} viewMode={viewMode} store={store} emptyMsg="No tasks in this project yet — add one with “Add task”." />;
+      return <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} emptyMsg="No tasks in this project yet — add one with “Add task”." />;
     }
     return null;
   };
