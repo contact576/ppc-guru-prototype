@@ -314,7 +314,6 @@ function TaskCard({ task, onToggle, onOpen, userMap, onMenu }) {
         </span>
         <span className="t6-card-title">{task.title}</span>
         {onMenu && task.kind !== "auto" && <button className="t6-card-menu" title="Task actions" onClick={(e) => { e.stopPropagation(); onMenu(e); }}>⋯</button>}
-        <Avatar user={u} size="sm" />
       </div>
       <div className="t6-card-pills">
         {task.due && <Pill kind={overdue ? "danger" : "outline"} dot={overdue}><Icon k="clock" className="ic sm" />{taskDueText(task)}</Pill>}
@@ -335,6 +334,7 @@ function TaskCard({ task, onToggle, onOpen, userMap, onMenu }) {
         <span style={{ flex: 1 }} />
         {spent > 0 && <span className="muted mono" style={{ fontSize: 11.5 }}>{fmtDur(spent)}</span>}
         <TaskTimerBtn task={task} />
+        {u && <Avatar user={u} size="sm" />}
       </div>
     </div>
   );

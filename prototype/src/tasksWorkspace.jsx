@@ -214,7 +214,7 @@ function TwsCardMenu({ menu, store, today, onClose }) {
         <div className="t6-menu-label">Move to project</div>
         <select className="t6-menu-sel" value={live.projectId || ""} onChange={(e) => moveToProject(e.target.value)}>
           <option value="">Inbox (no project)</option>
-          {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+          {projects.map(p => <option key={p.id} value={p.id}># {p.name}</option>)}
         </select>
         {curProj && (curProj.sections || []).length > 0 && (
           <select className="t6-menu-sel" value={live.sectionId || ""} onChange={(e) => moveToSection(e.target.value)}>
@@ -451,7 +451,7 @@ function TaskSubNav({ role, view, setView, counts, store, search, setSearch }) {
       {isAdmin && <Item id="project:team" icon="users" label="Team" count={counts.team} />}
       {projects.map(p => (
         <div key={p.id} className={`t6-sub-item ${view === "project:" + p.id ? "active" : ""}`} onClick={() => setView("project:" + p.id)}>
-          <span className="t6-sub-dot" style={{ background: p.color }} />
+          <span className="t6-sub-hash" style={{ color: p.color }}>#</span>
           <span style={{ flex: 1 }}>{p.name}</span>
           <span className="count">{counts.projects[p.id] || 0}</span>
         </div>
@@ -506,16 +506,17 @@ function TwsToday({ tasks, viewMode, groupBy, today, store, openMenu }) {
             <span className="t6-suggest-eyebrow">✦ Start here · suggested order</span>
             <span className="muted" style={{ fontSize: 12 }}>ranked from priority, due time, deadline &amp; effort</span>
           </div>
-          {ranked.map((t, i) => (
-            <div key={t.id} className={`t6-suggest-row r${i + 1}`} onClick={() => t.kind !== "auto" ? window.openTaskPanel?.(t.id) : window.openClientPanel?.(t.autoCardId)}>
-              <div className={`t6-suggest-rank r${i + 1}`}>{i + 1}</div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div className="t6-suggest-title">{t.title}</div>
-                <div className="t6-suggest-reasons">{twsReasons(t, today).map((rsn, j) => <span key={j} className="t6-suggest-reason">{rsn}</span>)}</div>
+          <div className="t6-suggest-grid">
+            {ranked.map((t, i) => (
+              <div key={t.id} className={`t6-suggest-row r${i + 1}`} onClick={() => t.kind !== "auto" ? window.openTaskPanel?.(t.id) : window.openClientPanel?.(t.autoCardId)}>
+                <div className={`t6-suggest-rank r${i + 1}`}>{i + 1}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="t6-suggest-title">{t.title}</div>
+                  <div className="t6-suggest-reasons">{twsReasons(t, today).map((rsn, j) => <span key={j} className="t6-suggest-reason">{rsn}</span>)}</div>
+                </div>
               </div>
-              <Avatar user={userMap[t.assignee]} size="sm" />
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
       <TwsGroups groups={twsGroup(list, groupBy, today)} viewMode={viewMode} store={store} groupBy={groupBy} openMenu={openMenu} emptyMsg="All clear for today — inbox zero." />

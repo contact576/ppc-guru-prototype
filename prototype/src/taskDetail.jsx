@@ -23,7 +23,7 @@ function TaskDetailPanel({ taskId, role, onClose }) {
       <div className="t6-tm" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
         <div className="t6-tm-top">
           <span className="t6-tm-crumb">
-            <Icon k={proj ? "board" : "inbox"} className="ic sm" />
+            {proj ? <span style={{ color: proj.color, fontWeight: 700 }}>#</span> : <Icon k="inbox" className="ic sm" />}
             {proj ? proj.name : (task.client || "Inbox")}
           </span>
           <span style={{ flex: 1 }} />
@@ -511,7 +511,7 @@ function TaskFieldZone({ form, setForm, role, activeField, setActiveField, iconO
   if (form.recur) chips.push({ k: "rec", field: null, kind: "accent", label: "🔁 " + form.recur, clear: () => setF({ recur: null }) });
   if (form.assignee && form.assignee !== role.id) chips.push({ k: "asg", field: "assignee", kind: "accent", label: "+ " + ((userMap[form.assignee] || {}).name || form.assignee).split(" ")[0], clear: () => setF({ assignee: role.id }) });
   if (form.client) chips.push({ k: "cli", field: "client", kind: "outline", label: "# " + form.client, clear: () => setF({ client: "" }) });
-  if (form.projectId) { const pj = (window.PPC.store.projects || []).find(p => p.id === form.projectId); chips.push({ k: "pj", field: "project", kind: "accent", label: "▦ " + (pj ? pj.name : "Project"), clear: () => setF({ projectId: null }) }); }
+  if (form.projectId) { const pj = (window.PPC.store.projects || []).find(p => p.id === form.projectId); chips.push({ k: "pj", field: "project", kind: "accent", label: "# " + (pj ? pj.name : "Project"), clear: () => setF({ projectId: null }) }); }
   (form.services || []).forEach(s => chips.push({ k: "svc" + s, field: "services", kind: "ok", label: "▸ " + (TD_SVC_LABEL[s] || s), clear: () => setForm(f => ({ ...f, services: f.services.filter(x => x !== s) })) }));
   (form.labels || []).forEach(l => chips.push({ k: "lbl" + l, field: "labels", kind: "outline", label: "@" + l, clear: () => setForm(f => ({ ...f, labels: f.labels.filter(x => x !== l) })) }));
   (form.watchers || []).forEach(w => chips.push({ k: "w" + w, field: "watchers", kind: "accent", label: "👁 " + ((userMap[w] || {}).name || w).split(" ")[0], clear: () => setForm(f => ({ ...f, watchers: f.watchers.filter(x => x !== w) })) }));

@@ -680,6 +680,13 @@ North-star goal: answer *"what's my highest priority right now?"* at a glance.
   (Every day / Every week on ‹weekday› / Every weekday (Mon–Fri) / Every month on the ‹Nth› / Every year on ‹Mon D›),
   all computed from the selected date. **Gotcha fixed:** `QuickAddBar`'s `showZone` referenced the removed `rambleOpen`
   — must be `mode !== "none"` (a stale ref there crashes the bar).
+- **Card chrome + project `#` + 3-up "Start here":** (1) **Board cards no longer show the assignee avatar in the
+  top-right** — that corner is reserved for the `⋯` menu; the avatar moved to the card **footer** (`TaskCard`).
+  (2) **User projects render with a `#` prefix** in the project's color (`.t6-sub-hash` in `TaskSubNav`, the
+  move-to-project `<option>`s, the `TaskFieldZone` project chip, and the task-modal breadcrumb) — Todoist-style.
+  (3) **"Start here" lays its top-3 ranked suggestions as three cards in ONE row** (`.t6-suggest-grid`,
+  `grid-template-columns: repeat(3,1fr)`, collapses to 1 col under 1100px) so the task list below gets more vertical
+  room; the per-card avatar was dropped (all "mine" on Today anyway).
 - Still stubs: real Google Calendar/Workspace sync.
 
 ## Local memory (persistence) — `src/persist.js`
