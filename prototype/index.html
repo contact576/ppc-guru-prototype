@@ -2858,9 +2858,20 @@
   .t6-scan-title { font-size: 13.5px; font-weight: 500; color: var(--ink); }
   .t6-scan-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
   .t6-scan-chips .pill { font-size: 11px; }
-  /* date+repeat editor in the composer */
-  .t6-dateedit .t6-menu-quick button { background: var(--card-2); border: 1px solid var(--line); border-radius: 7px; padding: 7px 6px; font-size: 12px; color: var(--ink-2); cursor: pointer; }
-  .t6-dateedit .t6-menu-quick button:hover, .t6-dateedit .t6-menu-quick button.on { border-color: var(--accent); color: var(--accent); }
+  /* floating widget-editor popover (opens up/down, sized to content) */
+  .t6-fpop { z-index: 120; background: var(--card); border: 1px solid var(--line-strong); border-radius: 12px; box-shadow: 0 16px 44px rgba(27,23,20,.24); padding: 10px; min-width: 210px; max-width: 330px; max-height: min(62vh, 440px); overflow-y: auto; }
+  .t6-fpop .input, .t6-fpop .select-input, .t6-fpop input, .t6-fpop select { width: 100%; }
+  /* Todoist-style date editor: icon quick chips + Repeat */
+  .t6-dateedit .t6-dq { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+  .t6-dateedit .t6-dq button { display: inline-flex; align-items: center; gap: 7px; background: var(--card-2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; font-size: 12.5px; color: var(--ink-2); cursor: pointer; }
+  .t6-dateedit .t6-dq button:hover { border-color: var(--accent); color: var(--accent); }
+  .t6-dq-ic { font-size: 14px; line-height: 1; }
+  .t6-dr-repeat { display: flex; align-items: center; width: 100%; margin-top: 8px; background: var(--card-2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13px; color: var(--ink); cursor: pointer; }
+  .t6-dr-repeat:hover { border-color: var(--accent); }
+  .t6-dr-list { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+  .t6-dr-list button { text-align: left; background: transparent; border: 0; padding: 8px 9px; border-radius: 7px; font-size: 13px; color: var(--ink); cursor: pointer; }
+  .t6-dr-list button:hover { background: rgba(27,23,20,.05); }
+  .t6-dr-list button.on { color: var(--accent); font-weight: 600; }
   @media (max-width: 640px) { .t6-newtask { width: 100vw; max-width: 100vw; } }
 
   /* ─── Phase 7 — Tasks workspace (two-pane: sub-sidebar + view) ─── */
@@ -3049,49 +3060,49 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
 <!-- Data & primitives -->
-<script src="src/data.js?v=20260607g"></script>
-<script src="src/phase3Data.js?v=20260607g"></script>
-<script src="src/phase4Data.js?v=20260607g"></script>
-<script src="src/liveData.js?v=20260607g"></script>
-<script src="src/phase5Sales.js?v=20260607g"></script>
-<script src="src/persist.js?v=20260607g"></script>
-<script type="text/babel" src="src/icons.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/primitives.jsx?v=20260607g"></script>
+<script src="src/data.js?v=20260607i"></script>
+<script src="src/phase3Data.js?v=20260607i"></script>
+<script src="src/phase4Data.js?v=20260607i"></script>
+<script src="src/liveData.js?v=20260607i"></script>
+<script src="src/phase5Sales.js?v=20260607i"></script>
+<script src="src/persist.js?v=20260607i"></script>
+<script type="text/babel" src="src/icons.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/primitives.jsx?v=20260607i"></script>
 
 <!-- Panels (unified profile + task detail + create modals) -->
-<script type="text/babel" src="src/clientProfile.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/clientBible.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/taskDetail.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/taskQuickAdd.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/newClient.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/aiAssistant.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/emailCompose.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/myDay.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/scenarios.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/autoTasks.jsx?v=20260607g"></script>
+<script type="text/babel" src="src/clientProfile.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/clientBible.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/taskDetail.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/taskQuickAdd.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/newClient.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/aiAssistant.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/emailCompose.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/myDay.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/scenarios.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/autoTasks.jsx?v=20260607i"></script>
 
 <!-- Screens -->
-<script type="text/babel" src="src/sidebar.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/dashboard.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/boards.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/content.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/tasks.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/sales.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/phase4Sales.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/phase4SalesExtras.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/salesWorkspace.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/forecast.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/platforms.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/insight.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/teamActivity.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/performance.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/concentration.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/commission.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/admin.jsx?v=20260607g"></script>
-<script type="text/babel" src="src/tasksWorkspace.jsx?v=20260607g"></script>
+<script type="text/babel" src="src/sidebar.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/dashboard.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/boards.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/content.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/tasks.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/sales.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/phase4Sales.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/phase4SalesExtras.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/salesWorkspace.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/forecast.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/platforms.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/insight.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/teamActivity.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/performance.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/concentration.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/commission.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/admin.jsx?v=20260607i"></script>
+<script type="text/babel" src="src/tasksWorkspace.jsx?v=20260607i"></script>
 
 <!-- App -->
-<script type="text/babel" src="src/app.jsx?v=20260607g"></script>
+<script type="text/babel" src="src/app.jsx?v=20260607i"></script>
 
 </body>
 </html>

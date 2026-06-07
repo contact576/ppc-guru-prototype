@@ -527,13 +527,13 @@ function QuickAddBar({ role, defaultClient, defaultProject, defaultSection, onAd
   const [form, setForm] = React.useState(blank);
   const [activeField, setActiveField] = React.useState(null);
   const [focus, setFocus] = React.useState(false);
-  const [rambleOpen, setRambleOpen] = React.useState(false);
+  const [mode, setMode] = React.useState("none");   // none | ramble | scan
   const [rambleText, setRambleText] = React.useState("");
   const [rambleBusy, setRambleBusy] = React.useState(false);
   const inputRef = React.useRef(null);
 
   // reset when the acting user, default client, or default project changes
-  React.useEffect(() => { setForm(blank()); setActiveField(null); setRambleOpen(false); }, [role.id, defaultClient, defaultProject, defaultSection]);
+  React.useEffect(() => { setForm(blank()); setActiveField(null); setMode("none"); }, [role.id, defaultClient, defaultProject, defaultSection]);
   React.useEffect(() => { if (autoFocus && inputRef.current) inputRef.current.focus(); }, []);
 
   const ready = (form.title || "").trim().length > 0;
@@ -541,7 +541,7 @@ function QuickAddBar({ role, defaultClient, defaultProject, defaultSection, onAd
     || form.deadlineISO || form.recur || (form.assignee && form.assignee !== role.id) || form.client
     || (form.services || []).length || (form.labels || []).length || (form.watchers || []).length
     || (form.reminders || []).length || (form.checklist || []).length);
-  const showZone = focus || ready || hasField || !!activeField || rambleOpen;
+  const showZone = focus || ready || hasField || !!activeField || mode !== "none";
 
   const applyType = (raw) => setForm(f => (window.tdMergeParse ? window.tdMergeParse(f, raw, "title", role) : { ...f, title: raw }));
 
@@ -589,6 +589,19 @@ function QuickAddBar({ role, defaultClient, defaultProject, defaultSection, onAd
     setActiveField(null);
   };
 
+  const runRamble = async () => {
+    const txt = rambleText.trim();
+    if (!txt) return;
+    setRambleBusy(true);
+    try {
+      const p = await window.PPC.rambleParse(txt);
+      setForm(f => (window.tdApplyRamble ? window.tdApplyRamble(f, p, role) : f));
+      setMode("none"); setRambleText("");
+      window.toast?.("Structured into a task ✨", { icon: "✨" });
+    } catch (e) { window.toast?.("Couldn’t structure that — try again", { icon: "!" }); }
+    finally { setRambleBusy(false); }
+  };
+
   const onKey = (e) => {
     if (e.key === "Enter") { e.preventDefault(); commit(); }
     else if (e.key === "Escape") { setForm(blank()); setActiveField(null); e.currentTarget.blur(); }
@@ -596,11 +609,20 @@ function QuickAddBar({ role, defaultClient, defaultProject, defaultSection, onAd
 
   return (
     <div className={`t6-qa ${focus || showZone ? "focus" : ""} ${compact ? "compact" : ""}`}>
-      {rambleOpen ? (
+      {mode === "scan" ? (
         <div className="t6-qa-ramble">
           <TextScanPanel role={role} defaults={{ projectId: defaultProject || null, sectionId: defaultSection || null, client: defaultClient || null }}
-            onBack={() => setRambleOpen(false)}
-            onDone={() => { setRambleOpen(false); setRambleText(""); }} />
+            onBack={() => setMode("none")}
+            onDone={() => { setMode("none"); setRambleText(""); }} />
+        </div>
+      ) : mode === "ramble" ? (
+        <div className="t6-qa-ramble">
+          <textarea className="t6-ramble-ta" autoFocus value={rambleText} onChange={e => setRambleText(e.target.value)}
+            placeholder={"Dump everything about ONE task — what, when, who, priority, steps."} />
+          <div className="row gap-2" style={{ justifyContent: "flex-end", marginTop: 8 }}>
+            <button className="btn ghost sm" onClick={() => setMode("none")}>Back</button>
+            <button className="btn primary sm" disabled={rambleBusy || !rambleText.trim()} onClick={runRamble}>{rambleBusy ? "Structuring…" : "✨ Structure it"}</button>
+          </div>
         </div>
       ) : (
         <div className="t6-qa-input-row">
@@ -617,18 +639,22 @@ function QuickAddBar({ role, defaultClient, defaultProject, defaultSection, onAd
               onBlur={() => setFocus(false)}
             />
           </div>
-          <button className={`t6-qa-ramblebtn ${rambleOpen ? "on" : ""}`} onMouseDown={e => e.preventDefault()} onClick={() => setRambleOpen(o => !o)} title="Text Scan — paste a paragraph, get one task per sentence">
-            <Icon k="sparkle" className="ic sm" /> Text Scan
+          <button className="t6-qa-ramblebtn" onMouseDown={e => e.preventDefault()} onClick={() => setMode("ramble")} title="Ramble — structure ONE task from a brain-dump">
+            <Icon k="sparkle" className="ic sm" /> Ramble
+          </button>
+          <button className="t6-qa-ramblebtn" onMouseDown={e => e.preventDefault()} onClick={() => setMode("scan")} title="Text Scan — paste a paragraph, get one task per sentence">
+            <Icon k="board" className="ic sm" /> Text Scan
           </button>
           <button className="btn sm ghost" onMouseDown={e => e.preventDefault()} onClick={expand} title="Open full task form">⋯</button>
           <button className="btn sm primary" disabled={!ready} onMouseDown={e => e.preventDefault()} onClick={commit}>Add</button>
         </div>
       )}
-      {/* the SAME widgets as the New Task box — visible while you type */}
-      {showZone && !rambleOpen && window.TaskFieldZone && (
+      {/* the SAME widgets as the New Task box — visible while you type. Section
+         composer (compact) shows ICON-ONLY widgets with hover tooltips. */}
+      {showZone && mode === "none" && window.TaskFieldZone && (
         <div className="t6-qa-zone">
-          <TaskFieldZone form={form} setForm={setForm} role={role} activeField={activeField} setActiveField={setActiveField} />
-          <div className="t6-qa-hint">↵ to add · click a widget to set it · Text Scan turns a paragraph into many tasks</div>
+          <TaskFieldZone form={form} setForm={setForm} role={role} activeField={activeField} setActiveField={setActiveField} iconOnly={compact} />
+          <div className="t6-qa-hint">↵ to add · click a widget to set it · Ramble for one task · Text Scan for many</div>
         </div>
       )}
     </div>

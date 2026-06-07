@@ -667,6 +667,19 @@ North-star goal: answer *"what's my highest priority right now?"* at a glance.
   back-compat but is unused by the UI. (4) **`DateRepeatEditor`** (`taskDetail.jsx`) is the Date widget's editor:
   Today/Tomorrow/Next-week quick chips + a `datetime-local` (date **and** time) + a **Repeat** select
   (Doesn't repeat / Every day / week / 2 weeks / month → sets `task.recur`).
+- **Ramble + Text Scan are BOTH present (distinct), floating popover editors, icon-only section widgets:**
+  (1) Every composer (NewTaskModal + QuickAddBar) shows **two** buttons top-right: **Ramble** (✨ — structures ONE
+  task from a brain-dump, fills the form via `tdApplyRamble`) and **Text Scan** (▦ — paragraph → many tasks). Both
+  local. `mode` state = `none|ramble|scan`. (2) **Widget editors now open as a floating popover** (`TaskFieldPopover`,
+  `.t6-fpop`) anchored to the clicked pill — it measures itself and **opens upward** when there isn't room below, is
+  sized to content, scrolls if tall, and closes on outside-click/Esc. Replaces the old inline push-down editor. (3)
+  **`TaskFieldZone` gained `iconOnly`** — the **compact section add-card composer** (`QuickAddBar compact`) renders
+  **icon-only** widget pills with `title=` hover tooltips; the top/global composer + NewTaskModal keep **named** pills.
+  (4) **`DateRepeatEditor`** is now the full Todoist date popover: icon quick-chips (📅 Today · ☀️ Tomorrow · 🛋️
+  Weekend · ⊘ No date) + `datetime-local` + a **Repeat** button that expands contextual recurrence options
+  (Every day / Every week on ‹weekday› / Every weekday (Mon–Fri) / Every month on the ‹Nth› / Every year on ‹Mon D›),
+  all computed from the selected date. **Gotcha fixed:** `QuickAddBar`'s `showZone` referenced the removed `rambleOpen`
+  — must be `mode !== "none"` (a stale ref there crashes the bar).
 - Still stubs: real Google Calendar/Workspace sync.
 
 ## Local memory (persistence) — `src/persist.js`

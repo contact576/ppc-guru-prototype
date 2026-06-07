@@ -423,33 +423,72 @@ function tdApplyRamble(f, p, role) {
   };
 }
 
-/* Todoist-style date popover: Today/Tomorrow/Next-week quick chips + a date&time
-   picker + a Repeat (recurring) select. Used by the Date widget in the composer. */
+/* Floating popover for a widget editor — anchored to the clicked pill, opens UP
+   when there isn't room below, sized to its content (Todoist-style). */
+function TaskFieldPopover({ anchor, onClose, children }) {
+  const ref = React.useRef(null);
+  const [style, setStyle] = React.useState({ left: anchor.left, top: anchor.bottom + 6, visibility: "hidden" });
+  React.useLayoutEffect(() => {
+    const el = ref.current; if (!el) return;
+    const h = el.offsetHeight, w = el.offsetWidth;
+    const spaceBelow = window.innerHeight - anchor.bottom;
+    const openUp = spaceBelow < h + 16 && anchor.top > h + 16;
+    const left = Math.max(8, Math.min(anchor.left, window.innerWidth - w - 8));
+    const top = openUp ? Math.max(8, anchor.top - h - 6) : anchor.bottom + 6;
+    setStyle({ left, top, visibility: "visible" });
+  }, []);
+  React.useEffect(() => {
+    const onDown = (e) => { if (ref.current && !ref.current.contains(e.target)) onClose(); };
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("mousedown", onDown, true);
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("mousedown", onDown, true); document.removeEventListener("keydown", onKey); };
+  }, []);
+  return <div ref={ref} className="t6-fpop" style={{ position: "fixed", ...style }}>{children}</div>;
+}
+
+/* Todoist-style date popover: Today ☀️ Tomorrow 🛋️ Weekend ⊘ No-date quick chips +
+   a date&time picker + a Repeat button that expands recurring options. */
 function DateRepeatEditor({ form, setF }) {
   const PPC = window.PPC;
   const today = PPC.realToday ? PPC.realToday() : PPC.TODAY;
+  const [repeatOpen, setRepeatOpen] = React.useState(false);
+  const baseISO = form.dueISO || today;
+  const d = new Date(baseISO + "T00:00:00");
+  const ord = (n) => { const s = ["th", "st", "nd", "rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
+  const wkday = d.toLocaleDateString("en-US", { weekday: "long" });
+  const nth = ord(d.getDate());
+  const monthDay = d.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  const dow = new Date(today + "T00:00:00").getDay();
+  let toSat = (6 - dow + 7) % 7; if (toSat === 0) toSat = 7;
   const setQuick = (label, off) => { const iso = PPC.shiftDate(today, off); setF({ dueISO: iso, due: label, dueTime: form.dueTime || null }); };
-  const RECUR = [["", "Doesn’t repeat"], ["every day", "Every day"], ["every week", "Every week"], ["every 2 weeks", "Every 2 weeks"], ["every month", "Every month"]];
-  const dtVal = form.dueISO ? `${form.dueISO}T${form.dueTime || "09:00"}` : "";
+  const REPEATS = ["Every day", "Every week on " + wkday, "Every weekday (Mon–Fri)", "Every month on the " + nth, "Every year on " + monthDay];
   return (
     <div className="t6-dateedit">
-      <div className="t6-menu-quick" style={{ padding: 0, marginBottom: 8 }}>
-        <button className={form.due === "Today" ? "on" : ""} onClick={() => setQuick("Today", 0)}>Today</button>
-        <button className={form.due === "Tomorrow" ? "on" : ""} onClick={() => setQuick("Tomorrow", 1)}>Tomorrow</button>
-        <button onClick={() => setQuick("Next week", 7)}>Next wk</button>
-        <button onClick={() => setF({ dueISO: null, dueTime: null, due: "No date" })}>No date</button>
+      <div className="t6-dq">
+        <button onClick={() => setQuick("Today", 0)}><span className="t6-dq-ic" style={{ color: "var(--ok)" }}>📅</span>Today</button>
+        <button onClick={() => setQuick("Tomorrow", 1)}><span className="t6-dq-ic">☀️</span>Tomorrow</button>
+        <button onClick={() => setQuick("Weekend", toSat)}><span className="t6-dq-ic">🛋️</span>Weekend</button>
+        <button onClick={() => setF({ dueISO: null, dueTime: null, due: "No date" })}><span className="t6-dq-ic">⊘</span>No date</button>
       </div>
-      <input type="datetime-local" className="input" value={dtVal} onChange={e => { const v = e.target.value; if (!v) { setF({ dueISO: null, dueTime: null, due: "No date" }); return; } const [iso, time] = v.split("T"); setF({ dueISO: iso, dueTime: time || "09:00", due: PPC.isoToDueLabel(iso) || iso }); }} />
-      <div className="field-label" style={{ marginTop: 8 }}>🔁 Repeat</div>
-      <SelectInput value={form.recur || ""} onChange={e => setF({ recur: e.target.value || null })}>
-        {RECUR.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-      </SelectInput>
+      <input type="datetime-local" className="input" value={form.dueISO ? `${form.dueISO}T${form.dueTime || "09:00"}` : ""} onChange={e => { const v = e.target.value; if (!v) { setF({ dueISO: null, dueTime: null, due: "No date" }); return; } const [iso, time] = v.split("T"); setF({ dueISO: iso, dueTime: time || "09:00", due: PPC.isoToDueLabel(iso) || iso }); }} />
+      <button className="t6-dr-repeat" onClick={() => setRepeatOpen(o => !o)}>
+        <span style={{ flex: 1, textAlign: "left" }}>🔁 {form.recur || "Repeat"}</span>
+        {form.recur ? <span className="t6-nt-x" onClick={(e) => { e.stopPropagation(); setF({ recur: null }); }}>✕</span> : <span className="muted">▾</span>}
+      </button>
+      {repeatOpen && (
+        <div className="t6-dr-list">
+          {REPEATS.map(lbl => <button key={lbl} className={form.recur === lbl ? "on" : ""} onClick={() => { setF({ recur: lbl }); setRepeatOpen(false); }}>{lbl}</button>)}
+          <button onClick={() => { setF({ recur: null }); setRepeatOpen(false); }}>Doesn’t repeat</button>
+        </div>
+      )}
     </div>
   );
 }
 
-function TaskFieldZone({ form, setForm, role, activeField, setActiveField }) {
+function TaskFieldZone({ form, setForm, role, activeField, setActiveField, iconOnly }) {
   const { userMap } = window.PPC;
+  const [anchor, setAnchor] = React.useState(null);   // clicked pill rect → popover anchor
   const [newReminder, setNewReminder] = React.useState("");
   const [newCheck, setNewCheck] = React.useState("");
   const [newLinkLabel, setNewLinkLabel] = React.useState("");
@@ -514,21 +553,26 @@ function TaskFieldZone({ form, setForm, role, activeField, setActiveField }) {
     }
   };
 
+  const openField = (e, key) => { const r = e.currentTarget.getBoundingClientRect(); const next = activeField === key ? null : key; setActiveField(next); setAnchor(next ? r : null); };
   return (
     <>
       <div className="t6-nt-fieldrow">
         {chips.map(c => (
-          <span key={c.k} className={`pill ${c.kind} t6-nt-chip`} onClick={() => c.field && setActiveField(c.field)}>
+          <span key={c.k} className={`pill ${c.kind} t6-nt-chip`} onClick={(e) => c.field && openField(e, c.field)}>
             {c.label}<span className="t6-nt-x" onClick={(e) => { e.stopPropagation(); c.clear(); }}>✕</span>
           </span>
         ))}
         {FIELD_PILLS.filter(f => !(f.single && fieldSet[f.key])).map(f => (
-          <button key={f.key} className={`t6-nt-pill ${activeField === f.key ? "on" : ""}`} title={f.name} aria-label={f.name} onClick={() => setActiveField(a => a === f.key ? null : f.key)}>
-            <span className="t6-nt-pemoji">{f.emoji}</span>{f.name}
+          <button key={f.key} className={`t6-nt-pill ${iconOnly ? "icon" : ""} ${activeField === f.key ? "on" : ""}`} title={f.name} aria-label={f.name} onClick={(e) => openField(e, f.key)}>
+            <span className="t6-nt-pemoji">{f.emoji}</span>{iconOnly ? null : f.name}
           </button>
         ))}
       </div>
-      {activeField && <div className="t6-nt-editor">{renderEditor()}</div>}
+      {activeField && anchor && (
+        <TaskFieldPopover anchor={anchor} onClose={() => { setActiveField(null); setAnchor(null); }}>
+          {renderEditor()}
+        </TaskFieldPopover>
+      )}
     </>
   );
 }
@@ -537,11 +581,11 @@ function NewTaskModal({ open, defaults, role, onClose }) {
   const { userMap, store, ONB_CARDS, ACT_CARDS } = window.PPC;
   const [form, setForm] = React.useState(tdBlankForm(defaults, role));
   const [activeField, setActiveField] = React.useState(null);   // which widget editor is open
-  const [rambleOpen, setRambleOpen] = React.useState(false);
+  const [mode, setMode] = React.useState("none");               // none | ramble | scan
   const [rambleText, setRambleText] = React.useState("");
   const [rambleBusy, setRambleBusy] = React.useState(false);
 
-  React.useEffect(() => { if (!open) return; setForm(tdBlankForm(defaults, role)); setActiveField(null); setRambleOpen(false); setRambleText(""); setRambleBusy(false); }, [open, defaults]);
+  React.useEffect(() => { if (!open) return; setForm(tdBlankForm(defaults, role)); setActiveField(null); setMode("none"); setRambleText(""); setRambleBusy(false); }, [open, defaults]);
 
   if (!open) return null;
 
@@ -551,6 +595,20 @@ function NewTaskModal({ open, defaults, role, onClose }) {
      the fields. The Task name keeps only the clean title; everything else becomes a
      removable chip. Works great with Wispr dictation (bulk text in one event). */
   const applyParse = (raw, which) => setForm(f => tdMergeParse(f, raw, which, role));
+
+  /* Ramble — structure ONE task from a brain-dump (fills the current form fields). */
+  const runRamble = async () => {
+    const txt = rambleText.trim();
+    if (!txt) return;
+    setRambleBusy(true);
+    try {
+      const p = await window.PPC.rambleParse(txt);
+      setForm(f => (window.tdApplyRamble ? window.tdApplyRamble(f, p, role) : f));
+      setMode("none"); setRambleText("");
+      window.toast?.("Structured into a task ✨", { icon: "✨" });
+    } catch (e) { window.toast?.("Couldn’t structure that — try again", { icon: "!" }); }
+    finally { setRambleBusy(false); }
+  };
 
   const submit = () => {
     const cleanTitle = form.title.trim();
@@ -577,18 +635,31 @@ function NewTaskModal({ open, defaults, role, onClose }) {
           <div className="t6-nt-top">
             <span className="t6-nt-eyebrow">New task</span>
             <div className="row gap-2" style={{ alignItems: "center" }}>
-              <button className={`t6-nt-ramble ${rambleOpen ? "on" : ""}`} onClick={() => setRambleOpen(o => !o)} title="Text Scan — paste a paragraph, get one task per sentence">
-                <Icon k="sparkle" className="ic sm" /> Text Scan
+              <button className={`t6-nt-ramble ${mode === "ramble" ? "on" : ""}`} onClick={() => setMode(m => m === "ramble" ? "none" : "ramble")} title="Ramble — structure ONE task from a brain-dump">
+                <Icon k="sparkle" className="ic sm" /> Ramble
+              </button>
+              <button className={`t6-nt-ramble ${mode === "scan" ? "on" : ""}`} onClick={() => setMode(m => m === "scan" ? "none" : "scan")} title="Text Scan — paste a paragraph, get one task per sentence">
+                <Icon k="board" className="ic sm" /> Text Scan
               </button>
             </div>
           </div>
-          {rambleOpen ? (
+          {mode === "scan" ? (
             <div className="t6-ramble">
               {window.TextScanPanel && React.createElement(window.TextScanPanel, {
                 role, defaults: { projectId: form.projectId || null, client: form.client || null },
-                onBack: () => setRambleOpen(false),
-                onDone: () => { setRambleOpen(false); onClose(); }
+                onBack: () => setMode("none"),
+                onDone: () => { setMode("none"); onClose(); }
               })}
+            </div>
+          ) : mode === "ramble" ? (
+            <div className="t6-ramble">
+              <textarea className="t6-ramble-ta" autoFocus value={rambleText} onChange={e => setRambleText(e.target.value)}
+                placeholder={"Dump everything about ONE task — what, when, who, priority, steps.\ne.g. “Call Abhishek tomorrow at 5, high priority, 5 minutes, hard deadline Monday, watchers Dhaval and Shrikant, it's for Google.”"} />
+              <div className="row gap-2" style={{ justifyContent: "flex-end", marginTop: 10 }}>
+                <button className="btn ghost sm" onClick={() => setMode("none")}>Back</button>
+                <button className="btn primary sm" disabled={rambleBusy || !rambleText.trim()} onClick={runRamble}>{rambleBusy ? "Structuring…" : "✨ Structure it"}</button>
+              </div>
+              <TaskFieldZone form={form} setForm={setForm} role={role} activeField={activeField} setActiveField={setActiveField} />
             </div>
           ) : (
           <>
