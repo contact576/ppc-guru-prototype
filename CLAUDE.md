@@ -655,6 +655,18 @@ North-star goal: answer *"what's my highest priority right now?"* at a glance.
   (4) **Watchers + Reminders are editable** in the task modal rail (chips with ✕ + "Add watcher" select / reminder
   input) — the read-only watchers sub-card was removed from `TaskBody`. (5) **`PERSIST_VERSION` bumped to 3** — old
   saved task/project data is discarded on boot so everyone gets the clean reseed (back to just the `team` project).
+- **Text Scan (replaces Ramble in the composers) + named widgets + rich date popover:**
+  (1) **`WisprFormatLink` removed everywhere** (NewTaskModal top bar + QuickAddBar hint).
+  (2) **Widget pills show their name again** (Todoist-style `emoji + name`, with a `title=` hover tooltip) — the
+  icon-only experiment is reverted. (3) **Text Scan** — paste a paragraph, get **one task per sentence/line**:
+  `window.PPC.textScanSplit(text)` splits on newlines + sentence boundaries (`(?<=[.!?;])\s+(?=[A-Z0-9…])` so "4 p.m."
+  doesn't split), each chunk runs through `parseQuickAdd`, and `tdParsedToPayload(parsed, role, defaults)` builds the
+  `addTask` payload. The shared **`TextScanPanel`** (`taskQuickAdd.jsx`, on `window`) renders textarea → "Scan text" →
+  a reviewable preview list (drop any with ✕) → "Create N tasks". It's wired into both `NewTaskModal` (the old "Ramble"
+  button is now **"Text Scan"**) and `QuickAddBar` (its `Text Scan` button). `rambleParse` stays on `window.PPC` for
+  back-compat but is unused by the UI. (4) **`DateRepeatEditor`** (`taskDetail.jsx`) is the Date widget's editor:
+  Today/Tomorrow/Next-week quick chips + a `datetime-local` (date **and** time) + a **Repeat** select
+  (Doesn't repeat / Every day / week / 2 weeks / month → sets `task.recur`).
 - Still stubs: real Google Calendar/Workspace sync.
 
 ## Local memory (persistence) — `src/persist.js`

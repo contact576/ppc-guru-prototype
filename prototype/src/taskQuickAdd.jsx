@@ -431,29 +431,89 @@ const QA_FIELD_KIND = {
   link: "outline", watcher: "accent", subtask: "ok", description: "outline"
 };
 
-/* ── WisprFormatLink — tiny "how to speak it" reference popover ───── */
-function WisprFormatLink() {
-  const [open, setOpen] = React.useState(false);
+/* ── Text Scan — paste a paragraph, get one task per sentence/line ──────
+   Splits on newlines + sentence boundaries (punctuation followed by a capital/
+   digit, so "4 p.m." doesn't split), parses each chunk with parseQuickAdd, and
+   creates a task per chunk. 100% local. */
+function textScanSplit(text) {
+  const raw = String(text || "");
+  const parts = raw.split(/\r?\n+/).flatMap(line => line.split(/(?<=[.!?;])\s+(?=[A-Z0-9“"'])/));
+  return parts.map(s => s.trim().replace(/[.;]+$/, "").trim()).filter(s => s.length > 1);
+}
+/* parseQuickAdd result → a store.addTask payload (used by Text Scan) */
+function tdParsedToPayload(p, role, defaults) {
+  const PPC = window.PPC;
+  return {
+    title: (p.title || "").trim() || "(untitled)",
+    reporter: role.id, assignee: p.assigneeId || role.id,
+    due: p.dueISO ? (p.due || PPC.isoToDueLabel(p.dueISO)) : "No date",
+    dueISO: p.dueISO || null, dueTime: p.dueTime || (p.dueISO ? "09:00" : null),
+    deadlineISO: p.deadlineISO || null, deadlineTime: p.deadlineTime || null,
+    recur: p.recur || null, priority: p.priority || "med",
+    client: p.client || (defaults && defaults.client) || null,
+    projectId: (defaults && defaults.projectId) || null,
+    sectionId: (defaults && defaults.sectionId) || null,
+    services: p.services || [], service: (p.services || [])[0] || null,
+    labels: p.labels || [], watchers: p.watchers || [], reminders: p.reminders || [],
+    links: p.links || [], checklist: p.checklist || [],
+    timeEstimateMin: p.timeEstimateMin != null ? p.timeEstimateMin : null, status: "open"
+  };
+}
+
+/* Reusable Text Scan panel — textarea → preview list → create N tasks. */
+function TextScanPanel({ role, defaults, onDone, onBack }) {
+  const store = useStore();
+  const [text, setText] = React.useState("");
+  const [results, setResults] = React.useState(null);   // null | [{raw, parsed}]
+  const process = () => {
+    const parts = textScanSplit(text);
+    if (!parts.length) { window.toast?.("No tasks found in that text", { icon: "!" }); return; }
+    setResults(parts.map(raw => ({ raw, parsed: window.parseQuickAdd(raw, {}) })));
+  };
+  const create = () => {
+    const made = results.map(r => store.addTask(tdParsedToPayload(r.parsed, role, defaults)));
+    window.toast?.(`Created ${made.length} task${made.length > 1 ? "s" : ""} ✨`, { icon: "✨" });
+    onDone && onDone(made);
+  };
   return (
-    <span className="t6-wf">
-      <button type="button" className={`t6-wf-link ${open ? "on" : ""}`} onMouseDown={e => e.preventDefault()} onClick={() => setOpen(o => !o)} title="The voice format our parser reads cleanly">
-        <Icon k="sparkle" className="ic sm" /> Wispr format
-      </button>
-      {open && (
+    <div className="t6-scan">
+      {!results ? (
         <>
-          <div className="t6-wf-scrim" onClick={() => setOpen(false)} />
-          <div className="t6-wf-pop" onClick={e => e.stopPropagation()}>
-            <div className="t6-wf-head">Speak (or type) in this shape <span className="t6-wf-sc">Wispr ⌥3 → “ERP task: adding”</span></div>
-            <p className="t6-wf-eg"><b>Call Ruchi about the ad account.</b> Due: June 17 at 1 pm. Priority: high. Duration: 5 minutes. Deadline: June 30. Service: Google. Client: Aurora Wellness. Watchers: Dhaval and Shrikant. Subtasks: pull report; review numbers. Description: she’s been waiting since last week.</p>
-            <ul className="t6-wf-rules">
-              <li><b>First sentence = the action only</b> — it becomes the title.</li>
-              <li>Each labeled sentence after it fills its widget (skip any you don’t need).</li>
-              <li><b>Description:</b> goes last — extra context/“why” lands in the description, not the title.</li>
-            </ul>
+          <div className="t6-scan-eyebrow">✦ Text Scan — paste a paragraph, each sentence becomes a task</div>
+          <textarea className="t6-ramble-ta" autoFocus value={text} onChange={e => setText(e.target.value)}
+            placeholder={"Paste a paragraph — each line/sentence becomes its own task.\ne.g. “Call Ravi tomorrow at 4pm. Email the deck Friday, p1. Grocery on Wednesday.”"} />
+          <div className="row gap-2" style={{ justifyContent: "flex-end", marginTop: 8 }}>
+            {onBack && <button className="btn ghost sm" onClick={onBack}>Back</button>}
+            <button className="btn primary sm" disabled={!text.trim()} onClick={process}>Scan text</button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="t6-scan-eyebrow">Found {results.length} task{results.length > 1 ? "s" : ""} — review, then create</div>
+          <div className="t6-scan-list">
+            {results.map((r, i) => (
+              <div key={i} className="t6-scan-item">
+                <span className="check" />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="t6-scan-title">{r.parsed.title || r.raw}</div>
+                  <div className="t6-scan-chips">
+                    {r.parsed.dueISO && <span className="pill accent">📅 {window.PPC.isoToDueLabel(r.parsed.dueISO)}{r.parsed.dueTime ? " " + window.PPC.fmtTime12(r.parsed.dueTime) : ""}</span>}
+                    {r.parsed.priority && r.parsed.priority !== "med" && <span className="pill warn">🚩 {r.parsed.priority}</span>}
+                    {r.parsed.timeEstimateMin != null && <span className="pill ok">⏱ {(window.PPC.bucketFor(r.parsed.timeEstimateMin) || {}).label || r.parsed.timeEstimateMin + "m"}</span>}
+                    {r.parsed.assigneeId && <span className="pill outline">+{((window.PPC.userMap[r.parsed.assigneeId] || {}).name || r.parsed.assigneeId).split(" ")[0]}</span>}
+                  </div>
+                </div>
+                <button className="t6-nt-x" title="Drop this one" onClick={() => setResults(results.filter((_, x) => x !== i))}>✕</button>
+              </div>
+            ))}
+          </div>
+          <div className="row gap-2" style={{ justifyContent: "flex-end", marginTop: 10 }}>
+            <button className="btn ghost sm" onClick={() => setResults(null)}>Back</button>
+            <button className="btn primary sm" disabled={!results.length} onClick={create}>Create {results.length} task{results.length > 1 ? "s" : ""}</button>
           </div>
         </>
       )}
-    </span>
+    </div>
   );
 }
 
@@ -529,20 +589,6 @@ function QuickAddBar({ role, defaultClient, defaultProject, defaultSection, onAd
     setActiveField(null);
   };
 
-  const runRamble = async () => {
-    const txt = rambleText.trim();
-    if (!txt) return;
-    setRambleBusy(true);
-    try {
-      const p = await window.PPC.rambleParse(txt);
-      setForm(f => (window.tdApplyRamble ? window.tdApplyRamble(f, p, role) : f));
-      setRambleOpen(false); setRambleText("");
-      window.toast?.("Structured into a task ✨", { icon: "✨" });
-    } catch (e) {
-      window.toast?.("Ramble failed — try again", { icon: "!" });
-    } finally { setRambleBusy(false); }
-  };
-
   const onKey = (e) => {
     if (e.key === "Enter") { e.preventDefault(); commit(); }
     else if (e.key === "Escape") { setForm(blank()); setActiveField(null); e.currentTarget.blur(); }
@@ -552,12 +598,9 @@ function QuickAddBar({ role, defaultClient, defaultProject, defaultSection, onAd
     <div className={`t6-qa ${focus || showZone ? "focus" : ""} ${compact ? "compact" : ""}`}>
       {rambleOpen ? (
         <div className="t6-qa-ramble">
-          <textarea className="t6-ramble-ta" autoFocus value={rambleText} onChange={e => setRambleText(e.target.value)}
-            placeholder={"Dump everything — what, when, who, priority, steps.\ne.g. “Call Abhishek tomorrow at 5, high priority, 5 minutes, hard deadline Monday, watchers Dhaval and Shrikant, it's for Google.”"} />
-          <div className="row gap-2" style={{ justifyContent: "flex-end", marginTop: 8 }}>
-            <button className="btn ghost sm" onClick={() => setRambleOpen(false)}>Back</button>
-            <button className="btn primary sm" disabled={rambleBusy || !rambleText.trim()} onClick={runRamble}>{rambleBusy ? "Structuring…" : "✨ Structure it"}</button>
-          </div>
+          <TextScanPanel role={role} defaults={{ projectId: defaultProject || null, sectionId: defaultSection || null, client: defaultClient || null }}
+            onBack={() => setRambleOpen(false)}
+            onDone={() => { setRambleOpen(false); setRambleText(""); }} />
         </div>
       ) : (
         <div className="t6-qa-input-row">
@@ -574,18 +617,18 @@ function QuickAddBar({ role, defaultClient, defaultProject, defaultSection, onAd
               onBlur={() => setFocus(false)}
             />
           </div>
-          <button className={`t6-qa-ramblebtn ${rambleOpen ? "on" : ""}`} onMouseDown={e => e.preventDefault()} onClick={() => { setRambleText(rt => rt || form.title || ""); setRambleOpen(true); }} title="Ramble — dump it all, it gets sorted into a task">
-            <Icon k="sparkle" className="ic sm" /> Ramble
+          <button className={`t6-qa-ramblebtn ${rambleOpen ? "on" : ""}`} onMouseDown={e => e.preventDefault()} onClick={() => setRambleOpen(o => !o)} title="Text Scan — paste a paragraph, get one task per sentence">
+            <Icon k="sparkle" className="ic sm" /> Text Scan
           </button>
           <button className="btn sm ghost" onMouseDown={e => e.preventDefault()} onClick={expand} title="Open full task form">⋯</button>
           <button className="btn sm primary" disabled={!ready} onMouseDown={e => e.preventDefault()} onClick={commit}>Add</button>
         </div>
       )}
-      {/* the SAME widgets as the New Task box — visible while you type or ramble */}
-      {showZone && window.TaskFieldZone && (
+      {/* the SAME widgets as the New Task box — visible while you type */}
+      {showZone && !rambleOpen && window.TaskFieldZone && (
         <div className="t6-qa-zone">
           <TaskFieldZone form={form} setForm={setForm} role={role} activeField={activeField} setActiveField={setActiveField} />
-          {!rambleOpen && <div className="t6-qa-hint">↵ to add · click a widget to set it · Ramble to dictate freely <WisprFormatLink /></div>}
+          <div className="t6-qa-hint">↵ to add · click a widget to set it · Text Scan turns a paragraph into many tasks</div>
         </div>
       )}
     </div>
@@ -631,9 +674,11 @@ function rambleParse(text) {
 if (window.PPC) {
   window.PPC.parseQuickAdd = parseQuickAdd;
   window.PPC.rambleParse = rambleParse;
+  window.PPC.textScanSplit = textScanSplit;
+  window.PPC.tdParsedToPayload = tdParsedToPayload;
   window.PPC.realToday = qaRealTodayISO;
   window.PPC.isoToDueLabel = (iso) => qaIsoToDueLabel(iso, qaRealTodayISO());
   window.PPC.fmtTime12 = qaFmtTime12;
   window.PPC.SERVICE_LABELS = QA_SVC_LABEL;
 }
-Object.assign(window, { parseQuickAdd, rambleParse, QuickAddBar, TenMinBanner, WisprFormatLink });
+Object.assign(window, { parseQuickAdd, rambleParse, QuickAddBar, TenMinBanner, TextScanPanel, tdParsedToPayload });
