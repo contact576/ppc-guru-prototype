@@ -47,7 +47,9 @@ const Icons = {
   whatsapp:  <path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5z" />,
   mail:      <g><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></g>,
   inbox:     <g><path d="M22 12h-6l-2 3h-4l-2-3H2" /><path d="M5.5 5h13l3 7v6a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2v-6l3-7z" /></g>,
-  pencil:    <g><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z" /></g>
+  pencil:    <g><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z" /></g>,
+  lines:     <g><path d="M5 7h14M5 12h14M5 17h9" /></g>,
+  wave:      <g><path d="M4 12v3M8 8v8M12 5v14M16 8v8M20 11v2" /></g>
 };
 
 const Icon = ({ k, ...p }) => <Ic d={Icons[k]} {...p} />;

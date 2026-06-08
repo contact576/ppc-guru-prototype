@@ -639,14 +639,14 @@ function QuickAddBar({ role, defaultClient, defaultProject, defaultSection, onAd
               onBlur={() => setFocus(false)}
             />
           </div>
-          <button className={`t6-qa-ramblebtn ${compact ? "icon" : ""}`} onMouseDown={e => e.preventDefault()} onClick={() => setMode("ramble")} title="Ramble — structure ONE task from a brain-dump">
-            <Icon k="sparkle" className="ic sm" />{compact ? null : " Ramble"}
-          </button>
           <button className={`t6-qa-ramblebtn ${compact ? "icon" : ""}`} onMouseDown={e => e.preventDefault()} onClick={() => setMode("scan")} title="Text Scan — paste a paragraph, get one task per sentence">
-            <Icon k="board" className="ic sm" />{compact ? null : " Text Scan"}
+            <Icon k="lines" className="ic sm" />{compact ? null : " Text Scan"}
+          </button>
+          <button className={`t6-qa-ramblebtn ${compact ? "icon" : ""}`} onMouseDown={e => e.preventDefault()} onClick={() => setMode("ramble")} title="Ramble — structure ONE task from a brain-dump">
+            <Icon k="wave" className="ic sm" />{compact ? null : " Ramble"}
           </button>
           {!compact && <button className="btn sm ghost" onMouseDown={e => e.preventDefault()} onClick={expand} title="Open full task form">⋯</button>}
-          <button className="btn sm primary" disabled={!ready} onMouseDown={e => e.preventDefault()} onClick={commit}>Add</button>
+          {!compact && <button className="btn sm primary" disabled={!ready} onMouseDown={e => e.preventDefault()} onClick={commit}>Add</button>}
         </div>
       )}
       {/* the SAME widgets as the New Task box — visible while you type. Section

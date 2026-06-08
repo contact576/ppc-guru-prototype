@@ -634,11 +634,11 @@ function NewTaskModal({ open, defaults, role, onClose }) {
         <div className="t6-nt-body">
           <div className="t6-nt-top">
             <span style={{ flex: 1 }} />
-            <button className={`t6-nt-ramble icon ${mode === "ramble" ? "on" : ""}`} onClick={() => setMode(m => m === "ramble" ? "none" : "ramble")} title="Ramble — structure ONE task from a brain-dump">
-              <Icon k="sparkle" className="ic sm" />
-            </button>
             <button className={`t6-nt-ramble icon ${mode === "scan" ? "on" : ""}`} onClick={() => setMode(m => m === "scan" ? "none" : "scan")} title="Text Scan — paste a paragraph, get one task per sentence">
-              <Icon k="board" className="ic sm" />
+              <Icon k="lines" className="ic sm" />
+            </button>
+            <button className={`t6-nt-ramble icon ${mode === "ramble" ? "on" : ""}`} onClick={() => setMode(m => m === "ramble" ? "none" : "ramble")} title="Ramble — structure ONE task from a brain-dump">
+              <Icon k="wave" className="ic sm" />
             </button>
           </div>
           {mode === "scan" ? (
