@@ -24,3 +24,15 @@
   [headers.values]
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
+
+# Never let the browser cache the HTML shell — always revalidate so a new deploy
+# (with bumped ?v= script tags) shows up on a normal reload, no hard-refresh needed.
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
