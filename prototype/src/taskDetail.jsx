@@ -633,15 +633,13 @@ function NewTaskModal({ open, defaults, role, onClose }) {
       <div className="t6-newtask">
         <div className="t6-nt-body">
           <div className="t6-nt-top">
-            <span className="t6-nt-eyebrow">New task</span>
-            <div className="row gap-2" style={{ alignItems: "center" }}>
-              <button className={`t6-nt-ramble ${mode === "ramble" ? "on" : ""}`} onClick={() => setMode(m => m === "ramble" ? "none" : "ramble")} title="Ramble — structure ONE task from a brain-dump">
-                <Icon k="sparkle" className="ic sm" /> Ramble
-              </button>
-              <button className={`t6-nt-ramble ${mode === "scan" ? "on" : ""}`} onClick={() => setMode(m => m === "scan" ? "none" : "scan")} title="Text Scan — paste a paragraph, get one task per sentence">
-                <Icon k="board" className="ic sm" /> Text Scan
-              </button>
-            </div>
+            <span style={{ flex: 1 }} />
+            <button className={`t6-nt-ramble icon ${mode === "ramble" ? "on" : ""}`} onClick={() => setMode(m => m === "ramble" ? "none" : "ramble")} title="Ramble — structure ONE task from a brain-dump">
+              <Icon k="sparkle" className="ic sm" />
+            </button>
+            <button className={`t6-nt-ramble icon ${mode === "scan" ? "on" : ""}`} onClick={() => setMode(m => m === "scan" ? "none" : "scan")} title="Text Scan — paste a paragraph, get one task per sentence">
+              <Icon k="board" className="ic sm" />
+            </button>
           </div>
           {mode === "scan" ? (
             <div className="t6-ramble">
