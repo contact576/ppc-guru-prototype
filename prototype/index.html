@@ -2776,6 +2776,7 @@
   .t6-qa-hint { font-size: 11.5px; color: var(--ink-4); width: 100%; margin-top: 6px; }
   /* quick-add: Ramble button + shared widget zone */
   .t6-qa-ramblebtn { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 500; border: 1px solid var(--line); background: var(--card); color: var(--accent-2); border-radius: 999px; padding: 5px 12px; cursor: pointer; white-space: nowrap; }
+  .t6-qa-ramblebtn.icon { padding: 6px; width: 32px; height: 32px; justify-content: center; gap: 0; border-radius: 8px; }
   .t6-qa-ramblebtn:hover, .t6-qa-ramblebtn.on { border-color: var(--accent); background: var(--accent-tint); }
   .t6-qa-zone { padding-left: 30px; }
   .t6-qa-zone .t6-nt-fieldrow { margin: 10px 0 2px; }
@@ -3043,7 +3044,7 @@
   .t6-menu-row { display: flex; align-items: center; padding: 3px 9px 2px; }
   .t6-menu-clear { background: transparent; border: 0; color: var(--accent); font-size: 11px; cursor: pointer; }
   .t6-menu-quick { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 2px 6px 4px; }
-  .t6-menu-quick button { background: var(--card-2); border: 1px solid var(--line); border-radius: 7px; padding: 6px 4px; font-size: 12px; color: var(--ink-2); cursor: pointer; }
+  .t6-menu-quick button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; background: var(--card-2); border: 1px solid var(--line); border-radius: 7px; padding: 6px 4px; font-size: 12px; color: var(--ink-2); cursor: pointer; }
   .t6-menu-quick button:hover { border-color: var(--accent); color: var(--accent); }
   .t6-menu-date, .t6-menu-sel { width: calc(100% - 12px); margin: 2px 6px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 7px; font-size: 12.5px; font-family: var(--sans); background: var(--card); color: var(--ink); outline: 0; }
   .t6-menu-prio { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; padding: 2px 6px 4px; }
@@ -3063,49 +3064,49 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
 <!-- Data & primitives -->
-<script src="src/data.js?v=20260607j"></script>
-<script src="src/phase3Data.js?v=20260607j"></script>
-<script src="src/phase4Data.js?v=20260607j"></script>
-<script src="src/liveData.js?v=20260607j"></script>
-<script src="src/phase5Sales.js?v=20260607j"></script>
-<script src="src/persist.js?v=20260607j"></script>
-<script type="text/babel" src="src/icons.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/primitives.jsx?v=20260607j"></script>
+<script src="src/data.js?v=20260607k"></script>
+<script src="src/phase3Data.js?v=20260607k"></script>
+<script src="src/phase4Data.js?v=20260607k"></script>
+<script src="src/liveData.js?v=20260607k"></script>
+<script src="src/phase5Sales.js?v=20260607k"></script>
+<script src="src/persist.js?v=20260607k"></script>
+<script type="text/babel" src="src/icons.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/primitives.jsx?v=20260607k"></script>
 
 <!-- Panels (unified profile + task detail + create modals) -->
-<script type="text/babel" src="src/clientProfile.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/clientBible.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/taskDetail.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/taskQuickAdd.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/newClient.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/aiAssistant.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/emailCompose.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/myDay.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/scenarios.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/autoTasks.jsx?v=20260607j"></script>
+<script type="text/babel" src="src/clientProfile.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/clientBible.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/taskDetail.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/taskQuickAdd.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/newClient.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/aiAssistant.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/emailCompose.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/myDay.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/scenarios.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/autoTasks.jsx?v=20260607k"></script>
 
 <!-- Screens -->
-<script type="text/babel" src="src/sidebar.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/dashboard.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/boards.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/content.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/tasks.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/sales.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/phase4Sales.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/phase4SalesExtras.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/salesWorkspace.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/forecast.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/platforms.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/insight.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/teamActivity.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/performance.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/concentration.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/commission.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/admin.jsx?v=20260607j"></script>
-<script type="text/babel" src="src/tasksWorkspace.jsx?v=20260607j"></script>
+<script type="text/babel" src="src/sidebar.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/dashboard.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/boards.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/content.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/tasks.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/sales.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/phase4Sales.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/phase4SalesExtras.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/salesWorkspace.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/forecast.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/platforms.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/insight.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/teamActivity.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/performance.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/concentration.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/commission.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/admin.jsx?v=20260607k"></script>
+<script type="text/babel" src="src/tasksWorkspace.jsx?v=20260607k"></script>
 
 <!-- App -->
-<script type="text/babel" src="src/app.jsx?v=20260607j"></script>
+<script type="text/babel" src="src/app.jsx?v=20260607k"></script>
 
 </body>
 </html>

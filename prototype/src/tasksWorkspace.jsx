@@ -163,6 +163,8 @@ function TwsCardMenu({ menu, store, today, onClose }) {
     return () => document.removeEventListener("keydown", onKey);
   }, []);
   const live = store.tasks.find(x => x.id === t.id) || t;   // reflect latest after each mutation
+  const dow = new Date(today + "T00:00:00").getDay();
+  let toSat = (6 - dow + 7) % 7; if (toSat === 0) toSat = 7;   // days until the upcoming Saturday
   const setDue = (label, iso) => { store.updateTask(t.id, { due: label, dueISO: iso, dueTime: null }); window.toast?.(`Due · ${label}`, { icon: "📅" }); onClose(); };
   const pickDate = (v) => { if (!v) return; const [iso, time] = v.split("T"); const label = PPC.isoToDueLabel ? PPC.isoToDueLabel(iso) : iso; store.updateTask(t.id, { due: label, dueISO: iso, dueTime: time || "09:00" }); window.toast?.(`Due · ${label}`, { icon: "📅" }); onClose(); };
   const clearDate = () => { store.updateTask(t.id, { due: "No date", dueISO: null, dueTime: null }); window.toast?.("Date cleared", { icon: "📅" }); onClose(); };
@@ -189,10 +191,10 @@ function TwsCardMenu({ menu, store, today, onClose }) {
         <div className="t6-menu-div" />
         <div className="t6-menu-label">Date</div>
         <div className="t6-menu-quick">
-          <button onClick={() => setDue("Today", PPC.shiftDate(today, 0))}>Today</button>
-          <button onClick={() => setDue("Tomorrow", PPC.shiftDate(today, 1))}>Tomorrow</button>
-          <button onClick={() => setDue("Next week", PPC.shiftDate(today, 7))}>Next wk</button>
-          <button onClick={clearDate}>No date</button>
+          <button onClick={() => setDue("Today", PPC.shiftDate(today, 0))}><span className="t6-dq-ic">📅</span>Today</button>
+          <button onClick={() => setDue("Tomorrow", PPC.shiftDate(today, 1))}><span className="t6-dq-ic">☀️</span>Tomorrow</button>
+          <button onClick={() => setDue("Weekend", PPC.shiftDate(today, toSat))}><span className="t6-dq-ic">🛋️</span>Weekend</button>
+          <button onClick={clearDate}><span className="t6-dq-ic">⊘</span>No date</button>
         </div>
         <input type="datetime-local" className="t6-menu-date" value={live.dueISO ? `${live.dueISO}T${live.dueTime || "09:00"}` : ""} onChange={(e) => pickDate(e.target.value)} />
         <div className="t6-menu-div" />

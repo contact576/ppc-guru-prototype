@@ -687,6 +687,15 @@ North-star goal: answer *"what's my highest priority right now?"* at a glance.
   (3) **"Start here" lays its top-3 ranked suggestions as three cards in ONE row** (`.t6-suggest-grid`,
   `grid-template-columns: repeat(3,1fr)`, collapses to 1 col under 1100px) so the task list below gets more vertical
   room; the per-card avatar was dropped (all "mine" on Today anyway).
+- **Section-composer widget bug fix + icon-only capture buttons + card-menu date icons:**
+  (1) **Bug:** in the compact section add-card composer, clicking a widget *before typing a title* blurred the input →
+  `showZone` went false → the widget row unmounted mid-click → "blank". Fixed two ways: widget pills/chips now
+  `onMouseDown={e=>e.preventDefault()}` (don't steal focus) **and** `showZone` is forced true when `compact` (the
+  section composer always shows its widgets). (2) **Ramble + Text Scan are icon-only in the compact composer**
+  (`.t6-qa-ramblebtn.icon`, sparkle + board glyphs, `title=` tooltips); the global/top bar keeps the labels.
+  (3) **The right-click card menu's date row now uses the same icon chips** as the add-card — 📅 Today · ☀️ Tomorrow ·
+  🛋️ Weekend · ⊘ No date (`.t6-dq-ic`, `toSat` = days to upcoming Saturday) — and priority stays P1–P4 flags, so
+  editing and adding a card mimic the same Todoist setting.
 - Still stubs: real Google Calendar/Workspace sync.
 
 ## Local memory (persistence) — `src/persist.js`

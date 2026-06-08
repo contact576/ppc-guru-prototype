@@ -541,7 +541,7 @@ function QuickAddBar({ role, defaultClient, defaultProject, defaultSection, onAd
     || form.deadlineISO || form.recur || (form.assignee && form.assignee !== role.id) || form.client
     || (form.services || []).length || (form.labels || []).length || (form.watchers || []).length
     || (form.reminders || []).length || (form.checklist || []).length);
-  const showZone = focus || ready || hasField || !!activeField || mode !== "none";
+  const showZone = compact || focus || ready || hasField || !!activeField || mode !== "none";
 
   const applyType = (raw) => setForm(f => (window.tdMergeParse ? window.tdMergeParse(f, raw, "title", role) : { ...f, title: raw }));
 
@@ -639,11 +639,11 @@ function QuickAddBar({ role, defaultClient, defaultProject, defaultSection, onAd
               onBlur={() => setFocus(false)}
             />
           </div>
-          <button className="t6-qa-ramblebtn" onMouseDown={e => e.preventDefault()} onClick={() => setMode("ramble")} title="Ramble — structure ONE task from a brain-dump">
-            <Icon k="sparkle" className="ic sm" /> Ramble
+          <button className={`t6-qa-ramblebtn ${compact ? "icon" : ""}`} onMouseDown={e => e.preventDefault()} onClick={() => setMode("ramble")} title="Ramble — structure ONE task from a brain-dump">
+            <Icon k="sparkle" className="ic sm" />{compact ? null : " Ramble"}
           </button>
-          <button className="t6-qa-ramblebtn" onMouseDown={e => e.preventDefault()} onClick={() => setMode("scan")} title="Text Scan — paste a paragraph, get one task per sentence">
-            <Icon k="board" className="ic sm" /> Text Scan
+          <button className={`t6-qa-ramblebtn ${compact ? "icon" : ""}`} onMouseDown={e => e.preventDefault()} onClick={() => setMode("scan")} title="Text Scan — paste a paragraph, get one task per sentence">
+            <Icon k="board" className="ic sm" />{compact ? null : " Text Scan"}
           </button>
           <button className="btn sm ghost" onMouseDown={e => e.preventDefault()} onClick={expand} title="Open full task form">⋯</button>
           <button className="btn sm primary" disabled={!ready} onMouseDown={e => e.preventDefault()} onClick={commit}>Add</button>

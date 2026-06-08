@@ -558,12 +558,12 @@ function TaskFieldZone({ form, setForm, role, activeField, setActiveField, iconO
     <>
       <div className="t6-nt-fieldrow">
         {chips.map(c => (
-          <span key={c.k} className={`pill ${c.kind} t6-nt-chip`} onClick={(e) => c.field && openField(e, c.field)}>
-            {c.label}<span className="t6-nt-x" onClick={(e) => { e.stopPropagation(); c.clear(); }}>✕</span>
+          <span key={c.k} className={`pill ${c.kind} t6-nt-chip`} onMouseDown={(e) => e.preventDefault()} onClick={(e) => c.field && openField(e, c.field)}>
+            {c.label}<span className="t6-nt-x" onMouseDown={(e) => e.preventDefault()} onClick={(e) => { e.stopPropagation(); c.clear(); }}>✕</span>
           </span>
         ))}
         {FIELD_PILLS.filter(f => !(f.single && fieldSet[f.key])).map(f => (
-          <button key={f.key} className={`t6-nt-pill ${iconOnly ? "icon" : ""} ${activeField === f.key ? "on" : ""}`} title={f.name} aria-label={f.name} onClick={(e) => openField(e, f.key)}>
+          <button key={f.key} className={`t6-nt-pill ${iconOnly ? "icon" : ""} ${activeField === f.key ? "on" : ""}`} title={f.name} aria-label={f.name} onMouseDown={(e) => e.preventDefault()} onClick={(e) => openField(e, f.key)}>
             <span className="t6-nt-pemoji">{f.emoji}</span>{iconOnly ? null : f.name}
           </button>
         ))}
