@@ -181,7 +181,7 @@ function TwsCardMenu({ menu, store, today, onClose }) {
   const top = Math.max(8, Math.min(menu.y, window.innerHeight - H - 8));
   const projects = store.projects.filter(p => !p.system);
   const curProj = store.projects.find(p => p.id === live.projectId);
-  const PRIOS = [["high", "P1", "p1"], ["med", "P2", "p2"], ["low", "P3", "p3"], [null, "P4", "p4"]];
+  const PRIOS = [["high", "High", "p1"], ["med", "Medium", "p2"], ["low", "Low", "p3"]];
 
   return (
     <>

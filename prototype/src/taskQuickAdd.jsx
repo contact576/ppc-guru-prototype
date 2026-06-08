@@ -645,7 +645,7 @@ function QuickAddBar({ role, defaultClient, defaultProject, defaultSection, onAd
           <button className={`t6-qa-ramblebtn ${compact ? "icon" : ""}`} onMouseDown={e => e.preventDefault()} onClick={() => setMode("scan")} title="Text Scan — paste a paragraph, get one task per sentence">
             <Icon k="board" className="ic sm" />{compact ? null : " Text Scan"}
           </button>
-          <button className="btn sm ghost" onMouseDown={e => e.preventDefault()} onClick={expand} title="Open full task form">⋯</button>
+          {!compact && <button className="btn sm ghost" onMouseDown={e => e.preventDefault()} onClick={expand} title="Open full task form">⋯</button>}
           <button className="btn sm primary" disabled={!ready} onMouseDown={e => e.preventDefault()} onClick={commit}>Add</button>
         </div>
       )}

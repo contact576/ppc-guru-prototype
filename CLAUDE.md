@@ -696,6 +696,13 @@ North-star goal: answer *"what's my highest priority right now?"* at a glance.
   (3) **The right-click card menu's date row now uses the same icon chips** as the add-card — 📅 Today · ☀️ Tomorrow ·
   🛋️ Weekend · ⊘ No date (`.t6-dq-ic`, `toSat` = days to upcoming Saturday) — and priority stays P1–P4 flags, so
   editing and adding a card mimic the same Todoist setting.
+- **3 priorities everywhere + priority-colored cards + decluttered section composer:**
+  (1) **Priority is High / Medium / Low only** — the `TwsCardMenu` `PRIOS` dropped P4 (now 3 flag chips, `.t6-menu-prio`
+  grid → 3 cols); the task-modal rail relabeled to "High/Medium/Low priority". (`PriorityPick` was already 3.)
+  (2) **Cards are tinted by priority** — `.t6-card.prio-high` light red/pink, `.prio-med` amber, `.prio-low` blue
+  (bg + matching border + hover), and list rows get a fainter version of the same. (3) The **compact section composer**
+  hides the `⋯` "open full form" button (the `+` was already hidden) — its top is just the input + the icon-only
+  Ramble (sparkle) & Text Scan (board) buttons + Add.
 - Still stubs: real Google Calendar/Workspace sync.
 
 ## Local memory (persistence) — `src/persist.js`

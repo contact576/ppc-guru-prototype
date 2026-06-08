@@ -94,9 +94,9 @@ function TaskModalRail({ task, role }) {
 
       <div className="field-label">Priority</div>
       <SelectInput value={task.priority} onChange={(e) => store.updateTask(task.id, { priority: e.target.value })}>
-        <option value="high">P1 · High</option>
-        <option value="med">P2 · Medium</option>
-        <option value="low">P3 · Low</option>
+        <option value="high">High priority</option>
+        <option value="med">Medium priority</option>
+        <option value="low">Low priority</option>
       </SelectInput>
 
       <div className="field-label">Labels</div>
