@@ -35,6 +35,18 @@ That is a precise, defensible wedge, and it maps exactly onto Jaydeep's assets:
 - **Cross-account ad data** (his agency) = the benchmark moat GHL/PhysioFunnels can't build.
 - **GHL/PhysioFunnels is the competitor to beat** — beat it on native-ness, automatic attribution, and EMR integration, not on generic features.
 
+## Round 2 — PT-specific platforms + aesthetics CRMs (17 more checked)
+
+Checked the clusters we'd missed: big US PT platforms (WebPT, Prompt, Raintree, Clinicient/Net Health, PtEverywhere, TheraOffice, HENO…) and aesthetics/med-spa growth CRMs (Zenoti, Boulevard, Mangomint, PatientNow, Aesthetic Record, Mindbody, Symplast…). Detail in `clinic_crm_teardown_C.md`.
+
+**No new true counterexample.** The same diagonal gap holds across all 17: a platform is either **PT-native *without* ad-ROI**, or does **real ad-ROI but in aesthetics/salon**, or gets ad-ROI **only via integration**. Nobody does *PT-native × native-automatic-ad-spend→confirmed-booking ROI.* The wedge is still unoccupied.
+
+**But two findings sharpen the risk:**
+1. **WebPT Reach = the #1 threat (watch closely).** It's already **PT-native, owns the EMR, and has the lead pipeline + nurture + lead-source reporting** — it is *one feature* (ad-spend ingestion → CPA/ROAS vs confirmed bookings) away from collapsing the wedge. Our defense can't be "we have ad-ROI" alone (WebPT could add it); it must also be **(a) EMR-independent** (we work across Jane/Cliniko/Juvonno; WebPT Reach only serves WebPT clinics), **(b) the cross-account benchmark** (WebPT sees only its own clinics' data per-tenant; we see across accounts), and **(c) speed.**
+2. **Aesthetics already ships the full wedge — proof it works + a warning.** Symplast, Aesthetic Record/LeadAR, Zenoti do EMR-connected ad-spend→booked-consultation ROI *in aesthetics.* It's buildable and the model sells; the risk is one of them porting down into PT/physio. *(Several claims ⚠ from third-party reviews — vendor sites 403'd.)*
+
+**Net:** the wedge is real and unoccupied, but it's a **speed race vs WebPT Reach**, and our moat must rest on EMR-independence + cross-account benchmark, not on "having ad-ROI" alone.
+
 ## Honest caveats
 - GHL's ad-ROI mechanism is well-documented (imports Meta spend, links opportunity value to ad/adset) — the weakness is the *manual* close-signal, not the absence of ROI.
 - Several vendor pages blocked the fetch bot; verdicts on the 6–9 columns lean on marketing copy + third-party reviews. Confidence: medium-high on the headline gap, lower on exact pricing.
