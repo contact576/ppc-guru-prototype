@@ -24,9 +24,12 @@
 
 | # | Idea | One-line bet | Stage reached | Current verdict |
 |---|---|---|---|---|
-| 1 | **AI Voice Front Desk** | AI answers/books/recovers calls for clinics, priced per booking | Census + weakness done | **ALIVE but contested** — physio+Jane taken (Rebookly/Kickcall), home-services owned (Avoca $1B). Edge must be distribution + Canada/accent + reliability. Not yet scored. |
-| 2 | **Marketing-agency-replacement software** | Software runs Google/Meta/TikTok ads so owner drops the agency | Census done | **WEAK** — platform kill-zone (Advantage+/PMax automate it free); best comps are $38M exits, not $1B. Only viable as vertical done-for-you + software margin. |
-| 3 | *(open slot)* | — | — | Next vertical to run through the funnel |
+| 1 | **Vertical CRM — Canadian immigration (RCIC)** | AI-native, CICC-compliant case-management CRM for immigration consultants | **Full funnel scored** | **68/100 — 🟡 PROMISING-WITH-FIX.** Only non-kill-zone of 4 verticals screened; 80–95% margin, break-even ~30–45 seats. BUT TAM ~12k RCICs → ~$15–22M ARR ceiling caps standalone <$1B (fix = architect multi-jurisdiction from day 1). Only 2 client distribution (edge = ICP knowledge + immigration ad-CPC data, not inherited product data). Live race: VisaFlo, Visto AI. `score_crm.md` |
+| 2 | **AI Voice Front Desk (physio)** | AI answers/books/recovers clinic calls, priced per booking | **Full funnel scored** | **58/100 — 🔴 DROP as standalone.** Wedge crowded (6–8 players + reseller flood + Retell's own Jane integration); tech commoditized; existential risk = Jane App shipping first-party front desk (can't get inside). Economics pass at $200+/mo. Pursue ONLY as agency margin bolt-on. `score_aivoice_physio.md` |
+| 3 | **Marketing-agency-replacement software** | Software runs Google/Meta/TikTok ads so owner drops the agency | Census done | **🔴 WEAK** — platform kill-zone (Advantage+/PMax automate it free); best comps are $38M exits, not $1B. Only viable as vertical done-for-you + software margin. |
+| 4 | *(open slot)* | — | — | Next vertical to run through the funnel |
+
+**Other verticals screened for CRM gap (Stream A, rejected):** Real estate = platform kill-zone (Zillow owns Follow Up Boss; eXp gives CRM free; realtor count declining). Trades = saturated (Jobber 100k+, ServiceTitan $6B). Physio = Jane App owns it (retention-layer-beside-Jane only, roadmap-dependent).
 
 *Add a row whenever a new idea enters. Run it through the 7 gates. Most should die early — that's the point.*
 
@@ -68,8 +71,8 @@
 - **Open:** who the 1–2 co-builders/advisors are for the chosen bet.
 
 ### 8. Opportunity Score (synthesis)
-- **Where we stand:** Rubric defined (8 weighted parameters, bar ≥70/100) in the framework. Not yet run on any candidate.
-- **Open:** score idea #1 (AI voice) and #2 (agency software) formally; rank.
+- **Where we stand:** Rubric run on two candidates via parallel funnel. **Immigration CRM = 68/100 (promising-with-fix)** edges **AI-voice physio = 58/100 (drop-as-standalone)**. Neither cleared the 70 GO bar — both have a specific fixable flaw (CRM: TAM ceiling → needs multi-jurisdiction expansion thesis; voice: no durable moat → only an agency bolt-on).
+- **Open:** decide whether to (a) deepen the immigration-CRM bet with the multi-jurisdiction expansion thesis to push past 70, (b) run a 3rd candidate, or (c) reframe. Validation (customer discovery) not yet started on either.
 
 ### 9. OPEN QUESTIONS (the honest gaps)
 - Which **vertical** is the real first wedge — physio, realtors, contractors, psychology? (Run each through the funnel; don't assume.)
