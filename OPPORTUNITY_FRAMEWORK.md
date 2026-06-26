@@ -58,6 +58,8 @@
 
 ### Stage 6 — BUSINESS MODEL & PRICING  *(skill: /opportunity-score, model section)*
 - Outcome-based pricing? Gross margin after AI/infra cost? Expansion path? Can it reach venture scale (path to $100M+ rev), or is it a nice $1–5M lifestyle business? (Both are valid — but name which.)
+- Run `/financial-model` for investment-vs-outcome simulations: build cost (effort + cash), per-customer COGS, margin, CAC, LTV, payback, break-even count. Two hard gates: **price-vs-COGS** (catches the "AI-at-$50/mo bleeds money" trap — per-minute AI needs $200–500+; low-inference software supports $50–100) and **free/cheap-wedge viability** (loss-leader → data → upsell only works if free-tier COGS ≈ 0 and the upsell is real).
+- **Business-model patterns to weigh:** (a) straight paid SaaS; (b) **free/cheap distribution-wedge → accumulate proprietary data → upsell** (fits Jaydeep's owned distribution; only viable for cheap-to-serve software, NOT per-minute AI); (c) outcome-priced service-as-software.
 - **Gate:** high-margin, expandable, defensible, with a credible path to the scale Jaydeep wants.
 
 ### Stage 7 — OPPORTUNITY SCORE + BUILD SPEC  *(skill: /opportunity-score)*
@@ -94,6 +96,7 @@ Score each 0–10, multiply by weight, sum to /100. Run via `/opportunity-score`
 | 3 | `/market-census` | Player census table (Builder/Reseller/Platform + scale) |
 | 3b | `/growth-teardown` | How players acquire customers + category winning-channel + asset fit |
 | 5b | `/build-moat` | Cloneability/defensibility scorecard + hard-scope zone verdict |
+| 6 | `/financial-model` | Investment-vs-outcome simulations + price-vs-COGS & free-wedge gates |
 | 5–7 | `/opportunity-score` | Scored rubric + go/no-go + build spec if passing |
 
 ---

@@ -46,8 +46,9 @@
 - **Open:** Builder/Reseller/Platform tagging not yet applied rigorously (the key cut). Run `/market-census` per market. No SimilarWeb/SEO-footprint layer yet (tool gap).
 
 ### 3. Pricing Models
-- **Where we stand:** Mapped per-seat → per-outcome shift. Agency benchmark: 10–15% of spend or $1,500–3,000/mo min; AI services $2,000–8,000/client/mo at 60–75% margin.
-- **Open:** no per-outcome pricing model built for a specific bet yet (Stage 6).
+- **Where we stand:** Mapped per-seat → per-outcome shift. Agency benchmark: 10–15% of spend or $1,500–3,000/mo min; AI services $2,000–8,000/client/mo at 60–75% margin. **NEW — `/financial-model` skill (Stage 6):** runs investment-vs-outcome simulations + two hard gates. **Key insight: the $50–100/mo price target only has healthy margin for LOW-inference software (booking/dashboard/reporting, ~$2–8 COGS → 85–95% margin); per-minute AI (voice) runs ~$25–75 COGS/clinic → $50–100 bleeds, needs $200–500+.** So price target steers product type.
+- **Business-model options on the table:** straight paid SaaS · **free/cheap distribution-wedge → proprietary data → upsell** (Jaydeep's idea; fits his owned distribution; only works for cheap-to-serve software, not per-minute AI) · outcome-priced service-as-software.
+- **Open:** run `/financial-model` on the chosen candidates.
 
 ### 4. Business Model
 - **Where we stand:** Converged on **service-as-a-software** (AI does the labor, charge for the outcome). Exit comps: AdCreative.ai $38.7M, Smartly.io ~$299M PE — good, not billion. Billion-$ outcomes are infra/platform or services-led.
