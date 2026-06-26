@@ -72,9 +72,21 @@
 - **Where we stand:** Debated the "equity-for-time collective" (many unpaid contributors for shares). **Verdict: reject as primary strategy** — adverse selection (A-players don't work free), commitment evaporates, coordination drag, cap-table destruction, legal risk. **Winning model:** 1–3 deeply-committed co-builders with real equity + AI executors (the true "infinite employees") + advisor equity (0.1–0.5%, narrow) + revenue-share contractors paid from outcomes + use agency cash to pay a few great people. Concentrate ownership in very few humans; multiply with AI.
 - **Open:** who the 1–2 co-builders/advisors are for the chosen bet.
 
-### 8. Opportunity Score (synthesis)
-- **Where we stand:** Rubric run on two candidates via parallel funnel. **Immigration CRM = 68/100 (promising-with-fix)** edges **AI-voice physio = 58/100 (drop-as-standalone)**. Neither cleared the 70 GO bar — both have a specific fixable flaw (CRM: TAM ceiling → needs multi-jurisdiction expansion thesis; voice: no durable moat → only an agency bolt-on).
-- **Open:** decide whether to (a) deepen the immigration-CRM bet with the multi-jurisdiction expansion thesis to push past 70, (b) run a 3rd candidate, or (c) reframe. Validation (customer discovery) not yet started on either.
+### 8. Opportunity Score (synthesis) — THE 4×2 MATRIX
+Ran CRM + AI-voice across all 4 distribution verticals. **Scores /100 (bar = 70):**
+
+| Vertical | CRM | AI Voice | System-of-record · integration tier |
+|---|---|---|---|
+| Construction | 53 ❌ | 60 ❌ | Jobber (owns SoR + ships own AI receptionist) · Tier 2 |
+| Clinics | **72 ✅** | 54 ❌ | Jane App · **Tier 3 partner-gated** |
+| Immigration | 62 ❌ | **72 ✅** | Officio/spreadsheets · IRCC Tier 3 (irrelevant to voice) |
+| Realtor | 39 ❌ | **77 ✅** | Brokerage CRM + MLS · CRM Tier 3 / voice Tier 1–2 |
+
+**★ WINNER — "Instant Realtor ISA" = 84/100 (STRONG GO).** A realtor speed-to-lead play: **free instant-auto-text wedge** (near-zero COGS, spreads through the 10k network at ~zero CAC, generates proprietary call/booking data) **→ paid AI-voice + appointment-booking + CRM-write-back upsell at $249–349/mo.** Skips the MLS Tier-3 wall (calls a person, doesn't query listings); rides on top of whatever free CRM the agent has; the free-wedge→data→upsell model turns distribution into a moat GPT-wrapper resellers can't copy.
+
+**Patterns:** (1) CRM is weak almost everywhere (kill-zones / commodity) — only clinic-retention CRM clears, barely, propped by distribution. (2) AI voice wins where Jaydeep's lead-funnel IS the wedge (realtor 77, immigration 72) and loses where the SoR ships its own (construction-Jobber, clinics-Jane). (3) The decisive variable in every cell = **distribution + owned lead-funnel.** (4) Voice tiers must price **$200+** (per-minute COGS $25–75/mo; $50 bleeds).
+- **Evidence:** `matrix_construction.md`, `matrix_clinics.md`, `matrix_immigration.md`, `matrix_realtor.md`
+- **Open:** validate the winner (Instant Realtor ISA) with real realtors from the 10k network; pressure-test the $249–349 voice upsell COGS; design the free-text-wedge MVP.
 
 ### 9. OPEN QUESTIONS (the honest gaps)
 - Which **vertical** is the real first wedge — physio, realtors, contractors, psychology? (Run each through the funnel; don't assume.)
