@@ -10,11 +10,12 @@
 
 **Find one billion-dollar bet worth devoting life to, buildable in 1–2 years by a radically lean team (Jaydeep + Shrikaanth + AI executors + a couple advisor/rev-share helpers).**
 
-**Unfair assets (the entry — every bet must use these):**
-- 7 physiotherapy clinics · 1 psychology clinic · ~4 general-contractor clients
-- A ~10,000-realtor network across Canada
+**Unfair assets (the entry — every bet must use these) — CORRECTED:**
+- **Lead-generation domain expertise + proprietary paid ad/conversion data — concentrated in CONSTRUCTION and PHYSIO** (the verticals we actively run paid lead-gen for). THIS is the real moat input.
+- 7 physiotherapy clinics · 1 psychology clinic · ~4 general-contractor clients (owned/served → real domain depth + pilot access)
 - A running PPC marketing agency (cash flow + ops know-how + the PPC-Guru prototype)
-- Founder/market fit: feels these pains daily; can be customer #1
+- ⚠️ **NOT a moat:** the "10k realtors" is realtor *data* only (realtor.ca/MLS is PUBLIC). No captive realtor distribution. No domain expertise in realtor or immigration → those verticals are DEMOTED.
+- Founder/market fit: feels construction + physio lead-gen pains daily; can be customer #1.
 
 **Locked beliefs:** outcome > tool · vertical > horizontal · moat = distribution/data/integration/trust · lean + AI leverage · painkillers only. (Full text in the framework.)
 
@@ -86,7 +87,8 @@ Ran CRM + AI-voice across all 4 distribution verticals. **Scores /100 (bar = 70)
 
 **Patterns:** (1) CRM is weak almost everywhere (kill-zones / commodity) — only clinic-retention CRM clears, barely, propped by distribution. (2) AI voice wins where Jaydeep's lead-funnel IS the wedge (realtor 77, immigration 72) and loses where the SoR ships its own (construction-Jobber, clinics-Jane). (3) The decisive variable in every cell = **distribution + owned lead-funnel.** (4) Voice tiers must price **$200+** (per-minute COGS $25–75/mo; $50 bleeds).
 - **Evidence:** `matrix_construction.md`, `matrix_clinics.md`, `matrix_immigration.md`, `matrix_realtor.md`
-- **Open:** validate the winner (Instant Realtor ISA) with real realtors from the 10k network; pressure-test the $249–349 voice upsell COGS; design the free-text-wedge MVP.
+- **⚠️ CORRECTION (premise fix — supersedes the winner above):** the realtor "Instant ISA" 84 and the realtor/immigration scores leaned on a "10k-realtor distribution" premise that is FALSE — Jaydeep has only realtor *data* (and realtor.ca is public, not a moat), and NO domain expertise in realtor or immigration. Re-scored on the TRUE asset (lead-gen expertise + proprietary paid conversion data), those verticals collapse. **The real arena = CONSTRUCTION and PHYSIO** — where we have domain expertise + owned paid data. The matrix over-weighted distribution on a false input.
+- **Next (the real path):** generate product CONCEPTS anchored in construction + physio that (a) exploit our lead-gen/conversion data, (b) obey CRM gravity (fill a gap in / integrate with their CRM, or find a no-CRM segment), (c) use the researched tools (AI voice, attribution, etc.); then score each through the lenses. Validate with our real construction clients (Bascoe, Brothers Renovation, GNC, Lavish Artigiano…) and our 7 physio clinics.
 
 ### 9. OPEN QUESTIONS (the honest gaps)
 - Which **vertical** is the real first wedge — physio, realtors, contractors, psychology? (Run each through the funnel; don't assume.)
