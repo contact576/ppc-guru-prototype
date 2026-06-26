@@ -38,6 +38,11 @@
 - Enrich: funding, LinkedIn followers + headcount (IG is noise), traffic if available.
 - **Gate:** market is *winnable* — fragmented, reseller-heavy, or has an open bottom tier — and NOT a platform-owned kill-zone (e.g., ad-buying owned by Meta Advantage+/Google PMax). Kill-zone → drop.
 
+### Stage 3b — GROWTH & BRAND TEARDOWN  *(skill: /growth-teardown)*
+- For the real players: reverse-engineer **how they actually acquire customers** — paid (Meta/YouTube/TikTok ad library), organic social (IG/YouTube/TikTok/**X**/LinkedIn scale + cadence + engagement), influencer/affiliate ties, partnerships/integrations, content/SEO engine, PR/funding-driven.
+- Category verdict: is this market won by **product / paid spend / brand-influencer / partnerships**? Where is the GTM white space?
+- **Gate (the asset-fit check):** does the winning channel match Jaydeep's assets (owned businesses, ~10k-realtor network, agency, content ability)? Won by a channel we own → huge edge. Won by a channel we can't access → warning. This feeds Stage 5.
+
 ### Stage 4 — WEAKNESS MINING  *(skill: /pain-mine, incumbent mode)*
 - Mine 50+ reviews (G2/Capterra/Trustpilot) + Reddit for the **repeated, ownable incumbent weakness** (e.g., Weave: "support vanishes after onboarding"; billing surprises).
 - **Gate:** a specific, repeated weakness we can build the positioning around. No clear opening → weak idea.
@@ -82,6 +87,7 @@ Score each 0–10, multiply by weight, sum to /100. Run via `/opportunity-score`
 | 1, 4 | `/pain-mine` | Pain/weakness report for a vertical or incumbent |
 | 2 | `/demand-scan` | Demand verdict (volume/trend/seasonality/intent) |
 | 3 | `/market-census` | Player census table (Builder/Reseller/Platform + scale) |
+| 3b | `/growth-teardown` | How players acquire customers + category winning-channel + asset fit |
 | 5–7 | `/opportunity-score` | Scored rubric + go/no-go + build spec if passing |
 
 ---

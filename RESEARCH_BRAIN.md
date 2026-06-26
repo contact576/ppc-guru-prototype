@@ -53,9 +53,9 @@
 - **Where we stand:** Converged on **service-as-a-software** (AI does the labor, charge for the outcome). Exit comps: AdCreative.ai $38.7M, Smartly.io ~$299M PE — good, not billion. Billion-$ outcomes are infra/platform or services-led.
 - **Open:** which model variant for the chosen vertical; path-to-$100M test.
 
-### 5. SEO / Distribution
-- **Where we stand:** Identified distribution (owned businesses + realtor network) as the #1 asset → near-zero CAC for first 50–100 customers. SEO difficulty scored on candidate terms.
-- **Open:** competitor SEO footprint (keywords ranked, traffic) — needs a paid tool. How WE rank/play the keyword game — unbuilt.
+### 5. SEO / Distribution / Growth
+- **Where we stand:** Identified distribution (owned businesses + realtor network) as the #1 asset → near-zero CAC for first 50–100 customers. SEO difficulty scored on candidate terms. **NEW lens added — Growth & Brand Teardown (`/growth-teardown`, Stage 3b):** for any market, reverse-engineer HOW players actually acquire customers across ALL channels (Meta/YouTube/TikTok paid via Ad Library; IG/YouTube/TikTok/X/LinkedIn organic; influencer/affiliate; partnerships; content/SEO; PR/funding) → category "winning channel" verdict + asset-fit gate. This is the distribution lens — the dimension where our moat is supposed to live, so it's central not optional.
+- **Open:** RUN the growth teardown on a chosen idea's real players (not yet done). Competitor SEO footprint (keywords ranked, traffic) — needs a paid tool. How WE play the winning channel — unbuilt.
 
 ### 6. Architecture / Build
 - **Where we stand:** For AI voice — full build bible: STT/LLM/TTS stack, Retell-orchestrated, barge-in, real-time-vs-offline split, provider-abstraction, self-improving eval loop, compliance (HIPAA/PHIPA/PIPEDA/TCPA/CASL/BIPA/STIR-SHAKEN). 20-page internal briefing PDF.
