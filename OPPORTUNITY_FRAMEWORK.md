@@ -54,7 +54,8 @@
 ### Stage 5b — BUILD-MOAT & REPLICABILITY  *(skill: /build-moat)*
 - The hard-scope defensibility gate. Score five axes: frontend clonability · backend complexity · proprietary-data dependence · algorithm/model opacity · **OUR moat-input access**.
 - Map to a zone: 🟥 **too easy** (commodity CRUD — no moat unless distribution saves it) · 🟥 **too hard/locked** (data/algorithm-locked and we lack the input → we'd clone the shell and lose on quality forever) · 🟩 **sweet spot** (hard enough to deter clones AND we uniquely hold/can-acquire the moat input — where Jaydeep's proprietary data turns complexity into advantage).
-- **Gate (hard scope):** DROP if 🟥 too-easy with no distribution moat, or 🟥 locked with no path to the proprietary input. PROCEED only if 🟩 — separate UI-clonability from quality-replicability; "we can copy the frontend" is never sufficient.
+- **Integration access (the 4-tier gate):** can we connect to the vertical's system-of-record (CRM/EMR/tools they run on)? Tier 1 open API / Tier 2 OAuth+review = feasible · Tier 3 partner-gated (fee/agreement) · Tier 4 no API (scrape only ⚠️). A Tier 3–4 dominant tool with no partner path = feasibility blocker (score down); if we crack it = a moat. Name the actual tool + tier — "integrate later" is not an answer.
+- **Gate (hard scope):** DROP if 🟥 too-easy with no distribution moat, 🟥 locked with no path to the proprietary input, or the industry's system-of-record is Tier 4/partner-gated with no integration path. PROCEED only if 🟩 — separate UI-clonability from quality-replicability; "we can copy the frontend" is never sufficient.
 
 ### Stage 6 — BUSINESS MODEL & PRICING  *(skill: /opportunity-score, model section)*
 - Outcome-based pricing? Gross margin after AI/infra cost? Expansion path? Can it reach venture scale (path to $100M+ rev), or is it a nice $1–5M lifestyle business? (Both are valid — but name which.)

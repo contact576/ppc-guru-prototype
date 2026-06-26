@@ -15,7 +15,14 @@ The lens that answers: **"Even if demand is real and we can reach customers — 
 2. **Backend logic complexity** — CRUD wrapper / moderate systems / deep distributed-or-real-time systems. Can we infer and rebuild the logic, or is it genuinely hard engineering?
 3. **Proprietary-data dependence** — none / helpful / **essential**. Does the product's quality come from a dataset the incumbent owns and we'd have to accumulate? (e.g., a fraud model, a ranking, a benchmark set.)
 4. **Algorithm / model opacity** — deterministic & knowable / tunable / **black-box tuned on data we lack**. If the value is a finely-tuned model/ranking whose "weightage" we can't see, cloning the UI gets us *none* of the quality. We'd have to re-derive the fundamentals from data we may not have.
-5. **OUR moat-input access** — do WE uniquely hold the required input (proprietary data, domain knowledge, distribution, labeled outcomes)? This is the decisive axis — Jaydeep's 38 ad accounts, clinic conversion data, realtor-network behavior, and agency domain knowledge are real proprietary inputs most competitors lack.
+5. **OUR moat-input access** — do WE uniquely hold the required input (proprietary data, domain knowledge, distribution, labeled outcomes)? This is the decisive axis — Jaydeep's 24 Meta + ~20 Google ad accounts, clinic conversion data, realtor-network behavior, and agency domain knowledge are real proprietary inputs most competitors lack.
+
+6. **Integration access to the industry's system-of-record (the 4-tier gate).** Whatever we build MUST connect smoothly to the CRM/EMR/tools the vertical already runs on. Identify the dominant tool(s) and rank API access:
+   - **Tier 1 — Open public API:** docs public, instant key (Stripe/Twilio/OpenAI). Easy (hours–days), just accept terms.
+   - **Tier 2 — OAuth + app review:** users connect their own account, platform reviews your app (Google/Meta/QuickBooks/HubSpot). Medium (days–weeks), app approval, no business deal.
+   - **Tier 3 — Partner-gated API:** application/approval, sometimes fee or rev-share, formal agreement (many EMRs, Salesforce ISV, some banking). Hard (weeks–months).
+   - **Tier 4 — No API:** closed system; only scraping/browser automation. Very hard + fragile, often against ToS. ⚠️
+   **Cuts both ways:** a Tier 3–4 system-of-record is a feasibility BARRIER for us — but if we secure partner access it becomes a real moat (switching cost + rivals locked out). If the dominant tool is Tier 4 / partner-gated AND we have no path in, the product can't connect → score DOWN hard (and prefer building where MCPs/connectors already reach the stack — e.g., we already pull Google via Adzviser and Meta via the Meta connector).
 
 ## The hard scope (the gate)
 
@@ -35,3 +42,4 @@ Map the idea to one of three zones:
 - "We can clone the frontend" is never sufficient — explicitly separate UI-clonability from quality-replicability (the model/data/ranking).
 - Don't assume we can "just collect the data later." State concretely where the proprietary data or labeled outcomes come from, or admit we can't get them.
 - A black-box AI product where we can't see or re-derive the weighting, and have no comparable training data, is a 🟥 even if the demand is huge.
+- Always name the vertical's actual system-of-record and its integration tier (e.g., physio→Jane App; immigration→Officio; realtor→the brokerage CRM). "We'll integrate later" is not an answer — a Tier-4 dominant tool with no partner path is a structural blocker, not a detail.
