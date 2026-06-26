@@ -51,6 +51,11 @@
 - Do our owned assets give an unfair, near-zero-CAC entry to the first 50–100 customers? Which moat compounds (distribution / data / integration / trust)?
 - **Gate:** we have an *unfair right to win* AND a moat that compounds. If our first customers cost the same as anyone's, and there's no compounding moat → it's a fair fight we'll likely lose. Drop.
 
+### Stage 5b — BUILD-MOAT & REPLICABILITY  *(skill: /build-moat)*
+- The hard-scope defensibility gate. Score five axes: frontend clonability · backend complexity · proprietary-data dependence · algorithm/model opacity · **OUR moat-input access**.
+- Map to a zone: 🟥 **too easy** (commodity CRUD — no moat unless distribution saves it) · 🟥 **too hard/locked** (data/algorithm-locked and we lack the input → we'd clone the shell and lose on quality forever) · 🟩 **sweet spot** (hard enough to deter clones AND we uniquely hold/can-acquire the moat input — where Jaydeep's proprietary data turns complexity into advantage).
+- **Gate (hard scope):** DROP if 🟥 too-easy with no distribution moat, or 🟥 locked with no path to the proprietary input. PROCEED only if 🟩 — separate UI-clonability from quality-replicability; "we can copy the frontend" is never sufficient.
+
 ### Stage 6 — BUSINESS MODEL & PRICING  *(skill: /opportunity-score, model section)*
 - Outcome-based pricing? Gross margin after AI/infra cost? Expansion path? Can it reach venture scale (path to $100M+ rev), or is it a nice $1–5M lifestyle business? (Both are valid — but name which.)
 - **Gate:** high-margin, expandable, defensible, with a credible path to the scale Jaydeep wants.
@@ -88,6 +93,7 @@ Score each 0–10, multiply by weight, sum to /100. Run via `/opportunity-score`
 | 2 | `/demand-scan` | Demand verdict (volume/trend/seasonality/intent) |
 | 3 | `/market-census` | Player census table (Builder/Reseller/Platform + scale) |
 | 3b | `/growth-teardown` | How players acquire customers + category winning-channel + asset fit |
+| 5b | `/build-moat` | Cloneability/defensibility scorecard + hard-scope zone verdict |
 | 5–7 | `/opportunity-score` | Scored rubric + go/no-go + build spec if passing |
 
 ---
