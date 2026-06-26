@@ -2,16 +2,21 @@
 
 *Tested the founder's claim: "All physio/clinic platforms are EMR/clinical only — none is a real sales/marketing/automation CRM that captures and converts NEW leads." We tried hard to disprove it. Detail in `clinic_crm_teardown_A.md` (EMR-first) + `clinic_crm_teardown_B.md` (patient-engagement/growth). Live vendor-site research, June 2026; some pages 403'd → medium-high confidence on the decisive columns.*
 
-## Verdict: he's ~90% right. The gap is real.
+## Verdict: not 100% absolute (Pabau breaks it), but the *true* gap is real and sharper than first thought.
+
+Refinement after the full EMR teardown: **two** things already touch lead-CRM — **Pabau** (clinic-native: lead forms + pipeline + automation, but med-spa-skewed and NO native paid-ad ROI) and **GoHighLevel/PhysioFunnels** (full ad-ROI but generic + EMR-blind + manual). So the defensible wedge is NOT "nobody does lead CRM." It is the narrower, still-empty claim:
+
+> **No physio-native EMR/PM does speed-to-lead + pipeline + *automatic, native* paid-ad→booked-CONFIRMED-patient ROI.** Pabau has the pipeline but not native ad-ROI; GHL has ad-ROI but it's manual and EMR-blind. The automatic ad→confirmed-visit join (via Jane→Google Calendar) is the seam neither occupies.
 
 The decisive test was four columns — **(6) new-lead capture · (7) sales pipeline · (8) marketing automation for non-patients · (9) ad-source→booked-patient ROI attribution.** Almost nothing does them.
 
 | Group | Platforms | New-lead / pipeline / automation / ad-ROI? |
 |---|---|---|
-| **EMR-first (clinical)** | Jane, Cliniko, Noterro, Practice Perfect, ClinicSense, Jituzu, Carepatron, Juvonno, Pabau, Power Diary | **No on all four.** EMR + scheduling + billing + *existing-patient* reminders/recall. Marketing = retention (Mailchimp to current patients, review asks). Several explicitly tell you to bolt on HubSpot/Zoho/Pipedrive for the CRM job. |
+| **EMR-first (clinical)** | Jane, Cliniko, Noterro, Practice Perfect, ClinicSense, Jituzu, Carepatron, Juvonno, Power Diary | **No on all four.** EMR + scheduling + billing + *existing-patient* reminders/recall. Marketing = retention (Mailchimp to current patients, review asks). Several explicitly tell you to bolt on HubSpot/Zoho/Pipedrive for the CRM job. Jane and Power Diary literally lack an acquisition-channel field; Cliniko's own copy admits it can't tie spend to new-patient acquisition. |
 | **Patient-engagement / "growth"** | Tebra/PatientPop, Weave, RevenueWell, Solutionreach, NexHealth, Phorest, Curogram, Artera, Rocket Referrals | **No on ad-ROI; "growth" = reputation/recall/reactivation of people already in the chart.** Tebra is the tell: marketers bolt **Zoho** onto it because it "captured ad inquiries but lacked structured follow-up and no visibility into which campaigns convert." |
 | **Generic local-biz CRM** | Podium, Birdeye | Partial 6+7+8, **No 9** — webchat lead capture + light pipeline, not clinic-tuned, no ad-spend→booking join. |
-| **★ The one counterexample** | **GoHighLevel** (repackaged for physio as **PhysioFunnels** by Paul Gough) | **Yes on all four** — BUT three fatal caveats (below). |
+| **★ Counterexample #1 (clinic-native)** | **Pabau** | **Yes on 6+7+8** — embeddable lead forms, real stage-based sales pipelines, stage-triggered email/SMS automation. **🟡 col 9 (ad-ROI): integration-shaped, NOT a native paid-ad→booked-patient dashboard** (leads-by-source only). Skewed to **med-spa/aesthetics**, opaque pricing. *Medium confidence — vendor pages blocked the fetch bot.* |
+| **★ Counterexample #2 (bolt-on)** | **GoHighLevel** (repackaged for physio as **PhysioFunnels** by Paul Gough) | **Yes on all four** — BUT three fatal caveats (below). |
 
 ## The only thing that fills the gap — and why it leaves the door open
 
