@@ -35,9 +35,10 @@
 ## THE THINKING NODES
 
 ### 1. Market Gap / Demand
-- **Where we stand:** Built a 21-tab Data Bible (keywords USA/Canada/World, seasonality, 4-yr YoY, CPC, SEO difficulty, Opportunity Score). Corrected a branded-vs-real-demand flaw. Top low-SEO-difficulty in-lane terms: social-media-reporting tool, client-retention software, PM-software-for-agencies, CRM-with-marketing-automation.
-- **Evidence:** `SaaS_Gap_Research_DATA_BIBLE.xlsx` / `.docx`, `SaaS_Gap_Research_Consolidated_Report.md`
-- **Open:** demand data is keyword-search-based only; real demand = customers paying. Need per-vertical demand scans via `/demand-scan`.
+- **Where we stand:** Built a 21-tab Data Bible (keywords USA/Canada/World, seasonality, 4-yr YoY, CPC, SEO difficulty, Opportunity Score). Corrected a branded-vs-real-demand flaw. **NEW — first REAL first-party demand pull (rung-1):** via Adzviser→Google Ads on physio Clinic #1 (Rehab Clinic, Toronto). 3,012 real patient queries / 91 days; $2,315 spend → 345 lead-actions at **$6.72 CPA, $2.67 CPC**. Demand is overwhelmingly **local "near me" + city-geo** for physio/massage/RMT → ends in a **phone call** (the AI-front-desk surface). 89% long tail = curiosity, not buyers.
+- **Tooling proven:** I can pull live keyword/search-term/CPC/conversion data directly from the 38 connected Adzviser workspaces (physio, home-services, immigration, etc.). Ubersuggest/Keyword Planner CSVs ingest for market-wide volume + SEO difficulty.
+- **Evidence:** `demand_physio_rehabclinic.md` (Clinic #1), `SaaS_Gap_Research_DATA_BIBLE.xlsx` / `.docx`, `SaaS_Gap_Research_Consolidated_Report.md`
+- **Open:** pull other ~5 physio clinics → aggregate vertical CPA range; get missed/unanswered-call rate (CallRail) to harden the AI-voice ROI; anchor to market-wide volume + SEO difficulty (Ubersuggest).
 
 ### 2. Player Census (competition)
 - **Where we stand:** Deep AI-voice competitor map — funding, social scale (Apify-verified LinkedIn/headcount; IG proven to be noise), niche map. Scale chasm confirmed: funded tier 15k–330k LinkedIn / 100–3,300 emp; direct physio micro-players 2–166 / 0–20 (open land-grab). Agency-replacement landscape mapped.
