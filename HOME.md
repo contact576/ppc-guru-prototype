@@ -17,6 +17,7 @@
 - [[PROJECT_BRIEF_v2]] — locked decisions (supersedes [[PROJECT_BRIEF]])
 - [[DATA_ARCHITECTURE]] — where every piece of data lives
 - [[PHYSIO_WORKFLOW]] — day-to-day + Jane gaps + V1 modules
+- [[JANE_TEARDOWN]] — ★ full Jane teardown (modules · pricing · attribution gap · residency moat) from a 1,972-page crawl
 - [[JANE_INTEGRATION]] — Jane API/JDP reality (corrected)
 - [[MVP_PLAN]] — ★ stack costs (MVP vs live) + HIPAA timing + central-brain compliance
 - [[BILLION_ROADMAP]] — staged $1B roadmap
