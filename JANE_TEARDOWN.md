@@ -86,6 +86,16 @@ The stories + blog extracts (`bible_stories.md` = 31-quote bank, `bible_blog.md`
 - **Discovery channel:** owners find software via **discipline-specific Facebook groups + forums + peer referral** — a distribution clue for us, not just Jane.
 - **"Farm vs hunt"** (retention vs acquisition) — a reusable owner metaphor.
 
+## 6b. Competitive-risk check — is Jane entering our space? (NO) `[V — research/jane_ai_videos/extract_ai_competitive.md]`
+
+Mined Jane's "AI at Jane" playlist (7 videos) for the #1 strategic risk: Jane moving into lead-capture / marketing / attribution / AI voice. **Verdict: it isn't.**
+- Jane's shipped/teased AI is **exclusively clinical charting** — **AI Scribe** (voice-to-chart) + smart-template prompts. Four of seven videos are AI Scribe. `[V]`
+- **Zero** AI voice/phone/receptionist, **zero** lead capture, **zero** marketing automation, **zero** attribution, **zero** pre-patient CRM in any of it. `[V]`
+- Jane's only marketing-adjacent AI content is a **self-help SEO webinar that explicitly disclaims being a Jane product** ("It's not that Jane is better than another platform for that"). `[V]`
+- Posture: **opt-in, no-train-on-your-data, "support not replace"** — cautious, clinical-admin-only. `[E]` That posture suggests the acquisition/attribution lane stays vacant for the foreseeable future.
+
+**So the wedge is not just open today — Jane's own AI direction signals it intends to stay in the chart, not the funnel.** (Still watch WebPT Reach — the EMR-side ad-ROI threat flagged in `CLINIC_CRM_GAP.md` — not Jane.)
+
 ## 7. Where Jane plugs into our modules (the seams)
 
 | Our module | Jane seam | Mechanism |
