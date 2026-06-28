@@ -97,6 +97,14 @@ Ran CRM + AI-voice across all 4 distribution verticals. **Scores /100 (bar = 70)
 ### 8b. CUSTOMER DISCOVERY (primary validation — STARTED)
 - **2/2 physio owners (founder network):** neither uses ANY CRM (both Jane-only, by inheritance not choice); **nothing tracked before the patient hits the EMR** (unprompted confirmation of the pre-patient wedge); both <10 staff; both **love the AI voice idea** + want **automated insurance-renewal emails**. Caveats: n=2, friendly bias, "love"≠"pay" (no price/LOI yet). **Reshape:** the pull is voice + retention, NOT spontaneously ad-ROI → lead with voice wedge, build ad-ROI moat behind. Evidence + interview guide: `CUSTOMER_DISCOVERY.md`. Next: 8–12 interviews probing willingness-to-pay + whether ad-ROI pain lands unprompted.
 
+### 8c. V1 PRODUCT BLUEPRINT (physio, beside Jane) — from `PHYSIO_WORKFLOW.md`
+Jane owns the middle (booking/charting/billing/reminders) — **don't compete there.** The Jane-shaped holes = lead capture, ad-ROI attribution, speed-to-lead pipeline, AI voice, follow-up automation, reactivation, reviews, growth reporting. Top day-to-day money leaks: missed/after-hours calls (~$400–1k LTV each), slow lead follow-up (5-min response = up to 21× convert), first-visit drop-off, no reactivation, owner blind on CAC (only ~26% know it). **V1 = ONE connected funnel beside Jane (via GCal bridge):**
+- **A — Missed-Call & After-Hours Capture** (AI voice + instant missed-call text-back → books into GCal slot). The wedge/biggest leak, BUT crowded (CallHero, PainHero, Lyngo) → win by closing the loop, not on "AI answers."
+- **B — Speed-to-Lead Inbox + Pipeline** (physio-native CRM unifying form/DM/call/walk-in + auto-first-text + cadence). No Jane-aware physio CRM exists.
+- **C — Ad-to-Patient Attribution + Owner Growth Dashboard** (ad spend → booked → paying patient; CAC, source-ROI, retention). **The one nobody owns = the moat + the home for the founder's ad data.**
+- Flow: A captures → B converts → C proves ROI. Fast-follow: D rebooking nudges, E reactivation engine (insurance-reset trigger). Deprioritize: intake/insurance (Jane's strength), standalone reviews (ClinicSense et al.).
+- ⚠️ Stats are vendor-sourced [MED] — re-validate against the founder's own clinic data before anchoring pricing.
+
 ### 9. OPEN QUESTIONS (the honest gaps)
 - Which **vertical** is the real first wedge — physio, realtors, contractors, psychology? (Run each through the funnel; don't assume.)
 - Is the bet a **billion-$ venture** or a strong **$1–5M lifestyle** business? Be honest per idea.
