@@ -21,10 +21,11 @@
 - [[JANE_INTEGRATION]] — Jane API/JDP reality (corrected)
 - [[MVP_PLAN]] — ★ stack costs (MVP vs live) + HIPAA timing + central-brain compliance
 - [[BILLION_ROADMAP]] — staged $1B roadmap
-- **Module specs:** [[MODULE_A_voice|Module A · AI Voice]] (more coming)
+- **Module specs:** [[MODULE_A_voice|Module A · AI Voice (spec)]] · [[MODULE_A_script|Module A · Voice-agent design (scripts + jobs)]] (more coming)
 
 ## 📖 Vertical Bible (customer + industry)
 - [[VERTICAL_BIBLE]] — personas · journey · pains · language · objections
+- [[VOICE_OF_CUSTOMER]] — ★ ~150 verbatim quotes (Radio Front Desk + Jane stories/blog), 7 themes
 - [[SOURCES]] — source log + gaps · [[Vertical_Map.canvas|📖 Vertical Canvas]]
 
 ## 🔭 Background / earlier exploration

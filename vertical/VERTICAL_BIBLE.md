@@ -4,6 +4,8 @@
 
 **How to read the graph.** Concepts are linked Obsidian-style with `[[wikilinks]]` so Graph view forms a knowledge network. Personas link to the [[Patient Journey]] stage where they act, to the [[Pains & Money Leaks]] they feel, and to the product **Module** (A–H, defined in [[PHYSIO_WORKFLOW]]) that addresses each.
 
+**★ Verbatim evidence layer.** The real-quote backing for this Bible now lives in [[VOICE_OF_CUSTOMER]] — ~150 deduped verbatim quotes from **Radio Front Desk** (Jane's podcast, 81 episodes / 177k words) + Jane customer stories + Jane blog, organized by theme and source-tagged. It **supersedes the paraphrased `[PATTERN]`/`[REVIEW-PHRASE]` placeholders in §6** — cite verbatim from there going forward. Raw transcripts: `research/radio_front_desk/`; Jane teardown: [[JANE_TEARDOWN]].
+
 **Confidence tags.**
 - `[HIGH]` — corroborated across multiple independent sources, or a peer-reviewed / first-party stat.
 - `[MED]` — directional; single decent source, industry-typical, or vendor-marketing-flavoured.
