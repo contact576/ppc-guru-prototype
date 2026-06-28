@@ -15,7 +15,8 @@
 
 ## 🛠️ Product & build
 - [[PROJECT_BRIEF_v2]] — locked decisions (supersedes [[PROJECT_BRIEF]])
-- [[DATA_ARCHITECTURE]] — where every piece of data lives
+- [[DATA_ARCHITECTURE]] — where every piece of data lives (our CRM vs Jane)
+- [[DATA_SPINE]] — ★ the shared runtime data model: entities · one-writer-per-field · attribution chain · module map
 - [[PHYSIO_WORKFLOW]] — day-to-day + Jane gaps + V1 modules
 - [[JANE_TEARDOWN]] — ★ full Jane teardown (modules · pricing · attribution gap · residency moat) from a 1,972-page crawl
 - [[JANE_INTEGRATION]] — Jane API/JDP reality (corrected)

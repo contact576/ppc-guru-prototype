@@ -14,6 +14,8 @@
 
 **Rule:** ONE source of truth per layer. Knowledge = the repo (view in Obsidian). Runtime = the app DB. Don't scatter.
 
+> **★ The RUNTIME layer is now fully specced in [[DATA_SPINE]]** — the entities, the one-writer-per-field contract, the event-driven module decoupling, and the ad→lead→booking→revenue attribution chain. Read it before building any module.
+
 ## ★ The lead-data flow — YOU ARE RIGHT, this corrects my earlier suggestion
 
 You spotted the flaw: **if leads go straight into Jane (or Jane's booking page), WE never get the data → no automation, no attribution.** Correct. So the model is:
