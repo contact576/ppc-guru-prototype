@@ -22,7 +22,7 @@ const Money = ({ n }) => <span className="mono">{PR.fmtMoney(n)}</span>;
 
 // ── top bar ────────────────────────────────────────────────────────
 function TopBar({ screen, setScreen }) {
-  const tabs = [["onboard", "Onboard"], ["calls", "Call Inbox"], ["dashboard", "Dashboard"], ["leads", "Leads"]];
+  const tabs = [["onboard", "Onboard"], ["today", "Today"], ["calls", "Call Inbox"], ["dashboard", "Dashboard"], ["leads", "Leads"]];
   return (
     <div className="topbar wrap" style={{ maxWidth: 1180 }}>
       <div className="brand">Patient<em>ROI</em><span className="dot">.</span></div>
@@ -499,12 +499,85 @@ function Onboarding({ goTo }) {
   );
 }
 
+// ── Today — the daily driver ("while you were closed" recap) ───────
+function Today({ goTo }) {
+  const ah = PR.calls.filter(c => c.after_hours);
+  const booked = ah.filter(c => c.outcome === "booked");
+  const ahRev = booked.reduce((s, c) => { const l = PR.leadById(c.lead_id); return s + (l ? (l.first_visit_revenue || 0) : 0); }, 0);
+  const needs = PR.leads.filter(l => ["qualified", "contacted"].includes(l.status));
+  const upcoming = PR.bookings.slice(0, 6);
+  const start = needs[0];
+  const Big = ({ n, l, accent }) => (
+    <div><div style={{ fontSize: 30, fontFamily: "var(--serif)", color: accent ? "var(--accent)" : "var(--ink)" }} className="mono">{n}</div><div className="muted" style={{ fontSize: 12 }}>{l}</div></div>
+  );
+  return (
+    <div className="wrap" style={{ maxWidth: 1180, paddingTop: 24, paddingBottom: 60 }}>
+      <div className="eyebrow">good morning · Tuesday, June 28</div>
+      <div className="h1">Here's your <em>day</em></div>
+
+      <div className="card" style={{ padding: 20, background: "var(--card-2)", marginTop: 18 }}>
+        <div className="eyebrow">while you were closed</div>
+        <div style={{ display: "flex", gap: 30, flexWrap: "wrap", marginTop: 8, alignItems: "baseline" }}>
+          <Big n={ah.length} l="after-hours calls answered" />
+          <Big n={booked.length} l="booked overnight" accent />
+          <Big n={PR.fmtMoney(ahRev)} l="first-visit revenue secured" accent />
+        </div>
+        <div className="muted" style={{ fontSize: 13, marginTop: 8 }}>Every one of these would have gone to voicemail — and to whoever answered first.</div>
+      </div>
+
+      {start && (
+        <div className="card" style={{ padding: 16, marginTop: 14, borderLeft: "3px solid var(--accent)" }}>
+          <div className="eyebrow">start here</div>
+          <div style={{ fontWeight: 600, marginTop: 3, fontSize: 15 }}>Call {start.name} back</div>
+          <div className="muted" style={{ fontSize: 13, marginTop: 2 }}>{start.discipline} · {start.status === "qualified" ? "on the cancellation list — text them the moment a spot opens" : "warm lead — follow up today"} · came in via {PR.channelById(start.source_channel_id).platform}</div>
+          <button className="btn primary" style={{ marginTop: 10 }} onClick={() => goTo("calls")}>Open the call →</button>
+        </div>
+      )}
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 20 }}>
+        <div>
+          <div className="eyebrow" style={{ marginBottom: 8 }}>needs your callback ({needs.length})</div>
+          {needs.map(l => {
+            const ch = PR.channelById(l.source_channel_id);
+            return (
+              <div key={l.lead_id} className="card" style={{ padding: "12px 14px", marginBottom: 8, display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 600 }}>{l.name}</div>
+                  <div className="muted" style={{ fontSize: 12 }}>{l.discipline} · {ch ? ch.platform : "—"}</div>
+                </div>
+                <span className={`pill ${l.status === "qualified" ? "accent" : ""}`}>{l.status}</span>
+              </div>
+            );
+          })}
+        </div>
+        <div>
+          <div className="eyebrow" style={{ marginBottom: 8 }}>upcoming appointments</div>
+          {upcoming.map(b => {
+            const l = PR.leadById(b.lead_id);
+            const d = new Date(b.slot_time);
+            return (
+              <div key={b.booking_id} className="card" style={{ padding: "12px 14px", marginBottom: 8, display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 600 }}>{l ? l.name : "—"} <span className="muted" style={{ fontWeight: 400, fontSize: 12 }}>· {b.service}</span></div>
+                  <div className="muted" style={{ fontSize: 12 }}>{d.toLocaleDateString("en-CA", { weekday: "short", month: "short", day: "numeric" })} · {d.toLocaleTimeString("en-CA", { hour: "numeric", minute: "2-digit" })} · {b.clinician}</div>
+                </div>
+                <span className={`pill ${b.handoff_state === "in-emr" ? "ok" : "warn"}`}>{b.handoff_state === "in-emr" ? "in Jane" : "to confirm"}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [screen, setScreen] = useState("onboard");
   return (
     <div>
       <TopBar screen={screen} setScreen={setScreen} />
       {screen === "onboard" && <Onboarding goTo={setScreen} />}
+      {screen === "today" && <Today goTo={setScreen} />}
       {screen === "calls" && <CallInbox />}
       {screen === "dashboard" && <Dashboard />}
       {screen === "leads" && <Leads />}
