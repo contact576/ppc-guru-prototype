@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PatientROI — clinic acquisition CRM (MVP1 demo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400..600&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F4EE; --paper-2:#F1ECE3; --card:#FFFFFF; --card-2:#FBF8F2;
+    --ink:#1B1714; --ink-2:#4A423B; --ink-3:#7C7368; --ink-4:#A09689;
+    --line:#E7E0D5; --line-2:#D9D1C4; --line-strong:#C7BDAD;
+    --accent:#C5552D; --accent-2:#A8431F; --accent-tint:#F6E4D7;
+    --ok:#3F7D5A; --ok-tint:#E3F0E7; --warn:#B5852A; --warn-tint:#F6EBD2;
+    --danger:#B23A2E; --danger-tint:#F4DDD8; --client:#4E6FAE; --client-tint:#E2E8F3;
+    --serif:"Newsreader",Georgia,serif; --sans:"Geist",ui-sans-serif,system-ui,sans-serif;
+    --mono:"Geist Mono",ui-monospace,Menlo,monospace;
+    --r-1:6px; --r-2:10px; --r-3:14px; --r-4:20px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  /* top bar */
+  .topbar{display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .brand{font-family:var(--serif);font-size:20px;font-weight:600;letter-spacing:-.01em}
+  .brand em{color:var(--accent);font-style:italic}
+  .brand .dot{color:var(--accent)}
+  .demo-tag{font-size:11px;color:var(--ink-3);border:1px solid var(--line-2);border-radius:999px;padding:2px 9px;text-transform:uppercase;letter-spacing:.06em}
+  .tabs{display:flex;gap:4px;margin-left:auto}
+  .tab{padding:7px 14px;border-radius:999px;border:1px solid transparent;color:var(--ink-3);cursor:pointer;font-weight:500;font-size:13px;background:none}
+  .tab:hover{color:var(--ink)}
+  .tab.on{background:var(--ink);color:var(--paper)}
+  /* page head */
+  .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);font-weight:600}
+  .h1{font-family:var(--serif);font-size:30px;font-weight:500;letter-spacing:-.015em;margin:6px 0 2px}
+  .h1 em{font-style:italic;color:var(--accent)}
+  .sub{color:var(--ink-3);font-size:14px;max-width:64ch}
+  /* cards */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-3)}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid var(--line-2);color:var(--ink-2);background:var(--card-2)}
+  .pill .pdot{width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block}
+  .pill.ok{color:var(--ok);background:var(--ok-tint);border-color:transparent}
+  .pill.warn{color:var(--warn);background:var(--warn-tint);border-color:transparent}
+  .pill.danger{color:var(--danger);background:var(--danger-tint);border-color:transparent}
+  .pill.client{color:var(--client);background:var(--client-tint);border-color:transparent}
+  .pill.accent{color:var(--accent);background:var(--accent-tint);border-color:transparent}
+  .btn{font-family:var(--sans);font-size:13px;font-weight:600;padding:9px 16px;border-radius:var(--r-2);border:1px solid var(--line-2);background:var(--card);color:var(--ink);cursor:pointer}
+  .btn:hover{border-color:var(--line-strong)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{background:var(--accent-2)}
+  .muted{color:var(--ink-3)}
+  .scrim{position:fixed;inset:0;background:rgba(27,23,20,.38);z-index:40}
+  .modal{position:fixed;z-index:41;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,92vw);max-height:88vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:var(--r-4);box-shadow:0 24px 60px rgba(27,23,20,.22)}
+  @media(max-width:640px){.h1{font-size:24px}.tabs{gap:0}.tab{padding:6px 9px}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="src/data.js?v=20260628a"></script>
+<script type="text/babel" src="src/app.jsx?v=20260628a"></script>
+</body>
+</html>

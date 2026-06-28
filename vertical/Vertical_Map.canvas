@@ -1,0 +1,25 @@
+{
+  "nodes": [
+    {"id":"center","type":"text","text":"# 📖 Vertical Bible\nAllied-health clinic (physio · chiro · massage/RMT)\nCanada · the customer + industry truth\n→ feeds product, voice-agent scripts, marketing, RAG brain","x":-220,"y":-640,"width":440,"height":120},
+    {"id":"owner","type":"text","text":"## 👤 CLINIC OWNER persona\nGoals · money/marketing mindset · fears · why they resist tools · what they trust · daily pressure","x":-760,"y":-420,"width":320,"height":180,"color":"6"},
+    {"id":"frontdesk","type":"text","text":"## ☎️ FRONT-DESK persona\nDaily reality · phone/booking/intake · what overwhelms them · scripts/phrases · where leads drop","x":-220,"y":-420,"width":320,"height":180,"color":"6"},
+    {"id":"patient","type":"text","text":"## 🧑‍🦽 PATIENT persona(s)\nWhy they seek care · how they CHOOSE a clinic · book vs ghost · no-show/drop-off · anxieties","x":320,"y":-420,"width":320,"height":180,"color":"6"},
+    {"id":"journey","type":"text","text":"## 🛤️ PATIENT JOURNEY\nDiscovery → inquiry → booking → 1st visit → plan-of-care → retention/reactivation (friction at each step)","x":-760,"y":-160,"width":320,"height":180,"color":"5"},
+    {"id":"pains","type":"text","text":"## 💸 PAINS & MONEY LEAKS\nMissed/after-hours calls · slow follow-up · no-shows · no reactivation · marketing blindness (extends PHYSIO_WORKFLOW)","x":-220,"y":-160,"width":320,"height":180,"color":"1"},
+    {"id":"language","type":"text","text":"## 🗣️ LANGUAGE BANK\nReal phrases owners / front-desk / patients use → voice-agent scripts + marketing copy (quote real reviews/forums)","x":320,"y":-160,"width":320,"height":180,"color":"3"},
+    {"id":"beliefs","type":"text","text":"## 🧠 BELIEFS & OBJECTIONS\nWhat owners believe about ads/marketing/software · the objections we'll hear when selling","x":-220,"y":100,"width":320,"height":180,"color":"3"},
+    {"id":"sources","type":"text","text":"## 📚 SOURCES\nJane: Radio Front Desk · How I Use Jane · Behind the Practice · Reddit · reviews · forums.\n(Human to paste podcast transcripts → deepen)","x":320,"y":100,"width":320,"height":180,"color":"4"}
+  ],
+  "edges": [
+    {"id":"e1","fromNode":"center","toNode":"owner"},
+    {"id":"e2","fromNode":"center","toNode":"frontdesk"},
+    {"id":"e3","fromNode":"center","toNode":"patient"},
+    {"id":"e4","fromNode":"center","toNode":"journey"},
+    {"id":"e5","fromNode":"center","toNode":"pains"},
+    {"id":"e6","fromNode":"center","toNode":"language"},
+    {"id":"e7","fromNode":"center","toNode":"beliefs"},
+    {"id":"e8","fromNode":"center","toNode":"sources"},
+    {"id":"e9","fromNode":"patient","toNode":"journey"},
+    {"id":"e10","fromNode":"pains","toNode":"language"}
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "nodes": [
+    {"id":"s0","type":"text","text":"# Stage 0 · Build MVP1\nA→B→C loop on SYNTHETIC data\n~$100–500 · NO PHI, no compliance","x":-400,"y":-700,"width":360,"height":120,"color":"4"},
+    {"id":"s1","type":"text","text":"# Stage 1 · Demo + LOIs\nShow MVP1 to your clinics + warm clients\nCollect 'I'd pay $X' / LOIs (still synthetic)","x":-400,"y":-540,"width":360,"height":120,"color":"4"},
+    {"id":"s2","type":"text","text":"# Stage 2 · Flip CHEAP compliant baseline (~$1–3k)\nBAAs (free) + CA hosting + minimal PHI + 1-hr lawyer\nREAL pilot in 1–2 of YOUR clinics","x":-400,"y":-380,"width":360,"height":120,"color":"5"},
+    {"id":"s3","type":"text","text":"# Stage 3 · Iterate + first PAYING external clinic ★\nHarden modules from real usage\nKILL-CRITERION: an external clinic pays","x":-400,"y":-220,"width":360,"height":120,"color":"5"},
+    {"id":"s4","type":"text","text":"# Stage 4 · Go heavier\n5–15 paying clinics\nAdd B (pipeline) + C (attribution)","x":-400,"y":-60,"width":360,"height":110,"color":"3"},
+    {"id":"s5","type":"text","text":"# Stage 5 · Bulk + marketing triggers\nContent / SEO / YouTube · direct-to-owner\nSelf-serve simple onboarding","x":-400,"y":90,"width":360,"height":110,"color":"3"},
+    {"id":"s6","type":"text","text":"# Stage 6 · Robust sales + automation\nSales system · agency-enablement channel","x":-400,"y":240,"width":360,"height":100,"color":"3"},
+    {"id":"s7","type":"text","text":"# Stage 7 · Modules + DB compound\nDe-identified fleet-learning · benchmark turns on\nExpand: dental → US","x":-400,"y":380,"width":360,"height":110,"color":"6"},
+    {"id":"note","type":"text","text":"💡 Spend scales WITH revenue.\nStart cheap (synthetic), flip the cheap\ncompliant baseline only at a real patient,\nadd modules + spend as money comes in.","x":80,"y":-160,"width":320,"height":160,"color":"2"}
+  ],
+  "edges": [
+    {"id":"e0","fromNode":"s0","toNode":"s1"},
+    {"id":"e1","fromNode":"s1","toNode":"s2"},
+    {"id":"e2","fromNode":"s2","toNode":"s3"},
+    {"id":"e3","fromNode":"s3","toNode":"s4"},
+    {"id":"e4","fromNode":"s4","toNode":"s5"},
+    {"id":"e5","fromNode":"s5","toNode":"s6"},
+    {"id":"e6","fromNode":"s6","toNode":"s7"}
+  ]
+}
