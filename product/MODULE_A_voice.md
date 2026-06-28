@@ -181,6 +181,30 @@ FALLBACK ladder (never a dead end):
 
 **Safe-blocks config angle:** the clinic customizes *within guardrails* — which insurers they direct-bill, discipline list, clinician roster, hours, escalation rules, FR/EN default, recording-disclosure (locked on). A **compliance red-flag linter** blocks non-PHIPA-safe configs (brief Phase-1/3). This is the adoption magic *and* the moat vs a generic voice bot: the clinic feels it's "their" receptionist without being able to break compliance.
 
+### 2.8 Telephony connection — how OUR system gets onto the clinic's phone line
+
+The founder's question: *"Whatever phone system they have, do we need to connect it to our ERP to get the voice recordings / what the receptionist says, to train our model?"* Two separate jobs, and conflating them is the trap:
+
+- **Job 1 — let the AI answer the calls the clinic is losing** (after-hours + overflow + ad lines). This is Module A's whole reason to exist, and it is **lightweight**.
+- **Job 2 — record the *human receptionist's* live calls to mine/train on** (capture how the best front desk actually talks). This is a **separate, heavier, optional** ambition — do not let it gate the wedge.
+
+| | **(A) Call-forwarding — Day-1 default** | **(B) PBX / number-porting — later, optional** |
+|---|---|---|
+| **How** | Clinic sets *conditional call forwarding* on their existing line: forward-on-no-answer + forward-after-hours → our tracking number → Retell. Plus dedicated tracking numbers on each ad. **No change to their phone system.** | We become (or sit inside) the clinic's phone system — port the main number to a SIP/PBX we control (or insert as a trunk), so **every** call (incl. the human receptionist's) flows through us. |
+| **Works with** | **Any** phone setup (POTS, VoIP, cell, RingCentral, Ooma, whatever) — they keep their telco. `[E]` | Only after migrating/porting; telco-dependent; per-clinic engineering. |
+| **Captures** | Calls the AI handles (missed/after-hours/overflow/ad) — recording + transcript + source tag, all in OUR CRM. **Does NOT capture the human receptionist's in-hours calls.** | **Every** call including the human front desk → full recording corpus. |
+| **Setup effort** | Minutes — a forwarding code (\*61/\*21) or a VoIP toggle the clinic (or we, screen-share) flip. Zero hardware. `[E]` | Heavy — porting paperwork, number migration risk, PBX config, support burden. Real switching cost & liability. |
+| **Compliance load** | Lower — we only record AI-handled calls; recording-disclosure safe-block fires at pickup. | Higher — recording **all** human calls = two-party-consent exposure, staff-consent, a much bigger PHI surface (PHIPA). `[E/VERIFY]` |
+| **Cost** | Just the tracking numbers + per-min Retell (see §2.7). | PBX/SIP seats + porting + ongoing telecom support. |
+| **Verdict** | **★ This is Day 1.** Delivers the entire wedge (capture the lost call, tie it to ad source, book into our pipeline) with no phone-system change and minimal compliance load. | **Defer.** A premium "front-desk intelligence / QA-coaching" upsell (cf. Avoca's CSR coaching, Smith.ai transcripts) — only worth the weight once clinics are paying and ask for it. |
+
+**Do we need to connect to their phone system to train the model? — No, not at the start.** Training/grounding the agent does **not** require the receptionist's calls:
+1. The **RAG central brain** is grounded on *market/industry data* (the Bible), **PHI-free** — that's what gives the agent its clinic-savvy tone, and it needs zero clinic call data (`PROJECT_BRIEF_v2.md`, §2.4 here).
+2. The agent then **learns from its own AI-handled calls** (de-identified) — the forwarding model already captures those. We improve the script from *our* transcripts, not theirs.
+3. Capturing the **human receptionist** is a *nice-to-have data asset* (mine the best desk's phrasing), not a *prerequisite* — and it carries the heaviest consent/PHI cost. Treat it as Job 2, gated behind real demand + a consent/PHIPA review, via model (B).
+
+**Net:** Module A connects via **conditional call-forwarding to tracking numbers** (model A) on Day 1 — any phone system, minutes to set up, captures exactly the calls that leak money, feeds Module B/C. Number-porting/PBX (model B) is a deferred premium path, justified only when a paying clinic wants full human-call QA/recording and we've cleared the added two-party-consent/PHIPA load.
+
 ---
 
 ## PART 3 — Open questions (founder input / Jane-subscription test)
@@ -188,7 +212,7 @@ FALLBACK ladder (never a dead end):
 1. **Retell Canadian data residency** — can processing be pinned to a Canadian region for a PHIPA promise that matches Kickcall's "never leaves Canada"? **Verify before any residency claim.** `[VERIFY]`
 2. **Availability source per clinic** — for Jane clinics, do we read availability via (a) the GCal mirror, (b) front-desk-maintained template, or (c) wait for JDP read access? Needs a **live Jane subscription test** (carried from `JANE_INTEGRATION.md` open Qs — does JDP expose appointment *write*, and does the booking URL accept prefill/UTM?).
 3. **EMR handoff mechanics at launch** — manual front-desk confirm vs RPA bot filling Jane's form vs JDP partner API. Which is the V1 default, and at what volume does RPA/JDP become worth it? Founder + first-clinic call.
-4. **Forward-on-no-answer vs dedicated AI number** — clinic-by-clinic phone setup; what's the default and who configures it (us, the clinic, their telco)?
+4. **Forward-on-no-answer vs dedicated AI number** — **resolved to a default in §2.8**: conditional call-forwarding to tracking numbers (model A), any phone system, no porting. Remaining: who flips the forwarding code at onboarding (we screen-share vs clinic vs their telco), and the exact per-telco forwarding sequence to document. Number-porting/PBX (model B, full human-call capture) is deferred to a premium tier pending a two-party-consent/PHIPA review.
 5. **Escalation policy** — when does the AI transfer to a human vs take a message? Per-clinic, but needs a sane default + the owner's risk tolerance (the "robot embarrassing me" fear, `VERTICAL_BIBLE.md` §7).
 6. **Insurer direct-bill config** — confirm the canonical CA insurer list + per-clinic which-plans-we-bill, and the exact honest hedge wording (legal/compliance review of the insurance script).
 7. **Script refinement from real data** — the Bible flags that verbatim transcripts/reviews weren't scrapeable (403s). **A human pasting real Radio Front Desk transcripts + 50–100 Google/RateMD reviews** would replace the `[PATTERN]`/`[REVIEW-PHRASE]` paraphrases with verbatim language and materially sharpen the agent's tone.
