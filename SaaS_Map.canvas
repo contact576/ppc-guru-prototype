@@ -1,0 +1,25 @@
+{
+  "nodes": [
+    {"id":"center","type":"text","text":"# 🏥 Practitioner Growth Platform\nAllied-health clinic (physio+chiro+massage) → multi-vertical\nCanada-first · beside the EMR","x":-180,"y":-620,"width":360,"height":110},
+    {"id":"market","type":"text","text":"## MARKET ✅\n- Gap confirmed (no clinic-native ad→booked CRM)\n- 44.5% run ads (measured)\n- Beachhead: allied-health clinic, Canada\n- $1B roadmap drafted","x":-720,"y":-400,"width":320,"height":200,"color":"4"},
+    {"id":"product","type":"text","text":"## PRODUCT V1 (beside EMR) ✅\n- A · Missed-call & after-hours capture (wedge)\n- B · Speed-to-lead pipeline (clinic CRM)\n- C · Ad→patient attribution + dashboard (MOAT)\n- D/E · Rebooking + reactivation 🔵","x":-180,"y":-400,"width":320,"height":200,"color":"4"},
+    {"id":"integration","type":"text","text":"## INTEGRATION 🔵\n- Own-the-funnel (leads in OUR CRM) ✅\n- EMR adapter layer (1 plugin / EMR)\n- Cliniko + Juvonno = open API ✅\n- Jane = JDP partner API + own-funnel\n- ⚠️ GCal can't create bookings","x":360,"y":-400,"width":320,"height":200,"color":"5"},
+    {"id":"compliance","type":"text","text":"## COMPLIANCE ✅\n- Verified BAA stack (Retell/Notifyre/SES)\n- Canada data residency = MOAT\n- Server-side PII-stripped ad tracking\n- Minimize PHI (contact+appt only) 🔵 lawyer","x":-720,"y":-120,"width":320,"height":200,"color":"4"},
+    {"id":"brain","type":"text","text":"## AI BRAIN ✅\n- RAG, NOT fine-tune\n- Knowledge map: Apify→chunk→embed→pgvector\n- Opus (reasoning) + Haiku/Sonnet (voice)\n- Prompt-cache the KB · PHI stays OUT","x":-180,"y":-120,"width":320,"height":200,"color":"4"},
+    {"id":"brand","type":"text","text":"## BRAND / GTM / SEO 🔵\n- One umbrella co + platform\n- One domain + vertical pages\n- One strong social\n- Direct-to-owner, simple onboarding ✅\n- Name = CRM not ERP ✅ · name TBD","x":360,"y":-120,"width":320,"height":200,"color":"5"},
+    {"id":"arch","type":"text","text":"## ARCHITECTURE 🔵\n- Custom build (Claude Code) on rented BAA rails\n- Vertical = CONFIG, never forked\n- Composable SAFE BLOCKS (compliance linter)\n- Modular/typed/tested (avoid ERP fragility)","x":-720,"y":160,"width":320,"height":200,"color":"5"},
+    {"id":"data","type":"text","text":"## DATA 🔵\n- Knowledge layer → GitHub repo (view in Obsidian)\n- Runtime layer → app DB (Supabase, CA region)\n- Leads/calls/transcripts live in OUR CRM\n- Confirmed patient → EMR (once)","x":-180,"y":160,"width":320,"height":200,"color":"3"},
+    {"id":"validation","type":"text","text":"## VALIDATION 🔵\n- 2 owner interviews ✅ (gap+voice)\n- 8–12 interviews + LOIs\n- Jane subscription tests (API write? URL params?)\n- Vertical Bible (immersion research) ⚪","x":360,"y":160,"width":320,"height":200,"color":"3"}
+  ],
+  "edges": [
+    {"id":"e1","fromNode":"center","toNode":"market"},
+    {"id":"e2","fromNode":"center","toNode":"product"},
+    {"id":"e3","fromNode":"center","toNode":"integration"},
+    {"id":"e4","fromNode":"center","toNode":"compliance"},
+    {"id":"e5","fromNode":"center","toNode":"brain"},
+    {"id":"e6","fromNode":"center","toNode":"brand"},
+    {"id":"e7","fromNode":"center","toNode":"arch"},
+    {"id":"e8","fromNode":"center","toNode":"data"},
+    {"id":"e9","fromNode":"center","toNode":"validation"}
+  ]
+}
