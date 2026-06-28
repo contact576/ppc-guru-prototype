@@ -282,8 +282,64 @@ function Dashboard() {
   );
 }
 
-// ── Leads (simple table) ───────────────────────────────────────────
+// ── Lead detail — the full attribution chain on one screen ─────────
+function LeadDetailModal({ lead, onClose }) {
+  if (!lead) return null;
+  const ch = PR.channelById(lead.source_channel_id);
+  const call = PR.callForLead(lead.lead_id);
+  const bk = lead.booking_id ? PR.bookingById(lead.booking_id) : null;
+  const Step = ({ n, title, done, children }) => (
+    <div style={{ display: "flex", gap: 12 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ width: 26, height: 26, borderRadius: "50%", flexShrink: 0, background: done ? "var(--accent)" : "var(--card-2)", color: done ? "#fff" : "var(--ink-3)", border: "1px solid var(--line-2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600 }}>{done ? "✓" : n}</div>
+        {n < 5 && <div style={{ flex: 1, width: 2, background: "var(--line)" }} />}
+      </div>
+      <div style={{ paddingBottom: 16, flex: 1 }}>
+        <div style={{ fontWeight: 600, fontSize: 13 }}>{title}</div>
+        <div style={{ color: "var(--ink-2)", fontSize: 12.5, marginTop: 2 }}>{children}</div>
+      </div>
+    </div>
+  );
+  return (
+    <>
+      <div className="scrim" onClick={onClose} />
+      <div className="modal" style={{ padding: 22 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div>
+            <div className="eyebrow">lead · full attribution chain</div>
+            <div style={{ fontFamily: "var(--serif)", fontSize: 22, marginTop: 3 }}>{lead.name}</div>
+            <div className="muted" style={{ fontSize: 12.5 }}>{lead.discipline} · {lead.new_or_returning}</div>
+          </div>
+          <button className="btn" onClick={onClose}>✕</button>
+        </div>
+        <div style={{ marginTop: 18 }}>
+          <Step n={1} title={`Ad source — ${ch ? ch.label : "—"}`} done>
+            {ch && ch.spend ? "Paid channel — this lead's revenue is attributed here." : "Organic / referral — no ad cost."}
+          </Step>
+          <Step n={2} title={call ? `Call — ${fmtTime(call.datetime)}` : "Web-form lead (no call)"} done={!!call}>
+            {call ? `${call.after_hours ? "After-hours — " : ""}AI answered · ${Math.round(call.duration_sec / 60)}m ${call.duration_sec % 60}s · outcome: ${call.outcome}.` : "Captured via web form, source-tagged on arrival."}
+          </Step>
+          <Step n={3} title="Lead created — in OUR CRM" done>
+            Source-tagged the moment it arrived · {fmtTime(lead.created_at)} · status: {lead.status}.
+          </Step>
+          <Step n={4} title={bk ? `Booking — ${fmtTime(bk.slot_time)}` : "Not booked yet"} done={!!bk}>
+            {bk ? `${bk.service} with ${bk.clinician} · handoff to Jane: ${bk.handoff_state}.` : "Still being worked in the pipeline."}
+          </Step>
+          <Step n={5} title={lead.paying ? "Paying patient ✦" : "Not paying yet"} done={lead.paying}>
+            {lead.paying ? `First-visit revenue ${PR.fmtMoney(lead.first_visit_revenue)} — counts toward ${ch ? ch.platform : "this channel"}'s ROAS.` : lead.lost_reason ? `Lost — ${lead.lost_reason}.` : "Revenue counts only once the trial converts to paying."}
+          </Step>
+        </div>
+        <div className="card" style={{ padding: 12, background: "var(--card-2)", marginTop: 4, fontSize: 12.5, color: "var(--ink-2)" }}>
+          <strong>What Jane shows:</strong> a patient appeared — no idea which ad, no cost, no ROI. <strong>What we show:</strong> the whole line above, ad dollar → booked, paying patient.
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ── Leads (table → drill into the chain) ───────────────────────────
 function Leads() {
+  const [open, setOpen] = useState(null);
   const statusPill = (s) => {
     const m = { won: "ok", booked: "client", qualified: "accent", contacted: "", new: "", lost: "danger" };
     return <span className={`pill ${m[s] || ""}`}>{s}</span>;
@@ -292,7 +348,7 @@ function Leads() {
     <div className="wrap" style={{ maxWidth: 1180, paddingTop: 24, paddingBottom: 60 }}>
       <div className="eyebrow">Module B · pipeline</div>
       <div className="h1">Leads <em>by source</em></div>
-      <div className="sub">Every lead carries the channel that produced it — the join Jane has no field for.</div>
+      <div className="sub">Every lead carries the channel that produced it — the join Jane has no field for. <strong>Click any lead</strong> to see its full ad→revenue chain.</div>
       <div className="card" style={{ marginTop: 18, overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
@@ -304,7 +360,7 @@ function Leads() {
             {PR.leads.map(l => {
               const ch = PR.channelById(l.source_channel_id);
               return (
-                <tr key={l.lead_id} style={{ borderTop: "1px solid var(--line)" }}>
+                <tr key={l.lead_id} onClick={() => setOpen(l)} style={{ borderTop: "1px solid var(--line)", cursor: "pointer" }}>
                   <td style={{ padding: "9px 16px", fontWeight: 500 }}>{l.name}</td>
                   <td style={{ padding: "9px 16px" }} className="muted">{l.discipline}</td>
                   <td style={{ padding: "9px 16px" }}><span className="pill">{ch ? ch.platform : "—"}</span></td>
@@ -316,6 +372,7 @@ function Leads() {
           </tbody>
         </table>
       </div>
+      {open && <LeadDetailModal lead={open} onClose={() => setOpen(null)} />}
     </div>
   );
 }
