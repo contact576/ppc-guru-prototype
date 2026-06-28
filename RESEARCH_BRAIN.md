@@ -107,6 +107,9 @@ Jane owns the middle (booking/charting/billing/reminders) — **don't compete th
 - Flow: A captures → B converts → C proves ROI. Fast-follow: D rebooking nudges, E reactivation engine (insurance-reset trigger). Deprioritize: intake/insurance (Jane's strength), standalone reviews (ClinicSense et al.).
 - ⚠️ Stats are vendor-sourced [MED] — re-validate against the founder's own clinic data before anchoring pricing.
 
+### 8d. VERTICAL SCOPE REFINED (founder insight — confirmed)
+**Beachhead = the multi-disciplinary ALLIED-HEALTH CLINIC (physio + chiro + massage/RMT), not "physio" alone.** In Canada these disciplines routinely share ONE office + ONE software (Jane's core market is exactly physio/chiro/massage/RMT). So physio/chiro/massage are **the SAME product** (one clinic, one Jane, overlapping workflows — our own Rehab Clinic search data already mixed physio+massage+RMT). **Dental is a SEPARATE vertical** (standalone offices, different software — Dentrix/ClearDent/Tracker, different workflows/insurance) → a later config, not day-1. So "vertical = config" day-1 product covers the allied-health clinic; dental is the first *true* expansion (Phase 3). This is a better beachhead than physio-only: bigger coherent unit, same integration target.
+
 ### 9. OPEN QUESTIONS (the honest gaps)
 - Which **vertical** is the real first wedge — physio, realtors, contractors, psychology? (Run each through the funnel; don't assume.)
 - Is the bet a **billion-$ venture** or a strong **$1–5M lifestyle** business? Be honest per idea.

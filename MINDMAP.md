@@ -1,74 +1,121 @@
-# Decision Mind-Map — where we've thought, where we haven't
+# Decision Mind-Map — readable views
 
-*Visual of the whole project. Renders on GitHub (Mermaid). Status: ✅ decided/validated · 🔵 leaning / in-progress · ⚪ open / not yet thought through. Also viewable as an interactive mind-map in Markmap (markmap.js.org), Obsidian, or by pasting into Mermaid Live (mermaid.live). Text source of truth = `RESEARCH_BRAIN.md`.*
+*Status: ✅ decided/validated · 🔵 leaning · ⚪ open. Two formats below — pick whichever reads best. Text source of truth = `RESEARCH_BRAIN.md`.*
+
+> **How to view / sync (your tools):**
+> - **GitHub:** open this file → the Mermaid diagrams auto-render.
+> - **Obsidian:** paste a ```` ```mermaid ```` block into a note (Obsidian renders Mermaid `mindmap`). For the collapsible outline, just paste the bullet list — Obsidian's outline/mind-map plugins fold it.
+> - **Markmap** (markmap.js.org) — best interactive one-frame mind-map: paste the **nested bullet outline** (View 2).
+> - **draw.io:** it can open files **directly from GitHub** — in draw.io, *File → Open from → GitHub*, authorize, pick this repo/branch/file. Then *File → Open* again after I push to pull the latest (closest to "auto-sync" without custom automation). Or import the Mermaid via *Arrange → Insert → Mermaid*.
+> - **Auto-sync:** true live auto-sync needs a GitHub Action/webhook into your tool; not worth it. Practical path = the draw.io "Open from GitHub" above (re-open to refresh), or just refresh the GitHub page.
+
+---
+
+## View 1 — Mermaid mind-map (radial, fits one frame; the "Obsidian way")
 
 ```mermaid
-graph TD
-    ROOT[Billion-$ Practitioner Growth Platform<br/>physio beachhead → multi-vertical]
-
-    ROOT --> MK[MARKET]
-    MK --> MK1[Gap: no clinic-native ad→booked CRM ✅]
-    MK --> MK2[44.5% run ads — measured ✅]
-    MK --> MK3[Beachhead: physio, Canada ✅]
-    MK --> MK4[Billion-$ roadmap / numbers ⚪]
-
-    ROOT --> PR[PRODUCT V1 — beside Jane]
-    PR --> PRA[A. Missed-call/after-hours capture ✅]
-    PR --> PRB[B. Speed-to-lead pipeline CRM ✅]
-    PR --> PRC[C. Ad→patient attribution + dashboard ✅ = moat]
-    PR --> PRD[D/E. Rebooking + reactivation 🔵]
-    PR --> PRF[Market/neighbourhood benchmark ✅ concept · cold-start 🔵]
-
-    ROOT --> INT[INTEGRATION w/ Jane]
-    INT --> INT1[Jane has NO open API ✅ fact]
-    INT --> INT2[Own-the-funnel: capture lead+book in OUR system, push to Jane ✅ approach]
-    INT --> INT3[Google Calendar bridge 🔵 fallback]
-    INT --> INT4[Jane vetted-partner API ⚪ apply]
-    INT --> INT5[Founder's own stack idea ⚪ study when shared]
-
-    ROOT --> CMP[COMPLIANCE]
-    CMP --> CMP1[Verified BAA stack ✅]
-    CMP --> CMP2[Canada data-residency = moat ✅]
-    CMP --> CMP3[Server-side PII-stripped ad tracking ✅ why-we-own-funnel]
-
-    ROOT --> BR[BRAND / GTM / SEO]
-    BR --> BR1[One umbrella co + platform ✅]
-    BR --> BR2[One domain + vertical landing pages 🔵 recommend]
-    BR --> BR3[One strong social, niche content lanes 🔵 recommend]
-    BR --> BR4[Direct-to-owner, simple onboarding ✅ primary]
-    BR --> BR5[Agency-enablement / training ⚪ Phase-2 lever]
-    BR --> BR6[Name: CRM not ERP ✅ · SEO target = job terms 🔵]
-
-    ROOT --> ARCH[ARCHITECTURE]
-    ARCH --> ARCH1[Modular, multi-tenant, vertical=config not fork 🔵 principle]
-    ARCH --> ARCH2[Typed + tested boundaries — avoid ERP fragility 🔵]
-    ARCH --> ARCH3[Stack choice — score alternatives ⚪ after founder shares his]
-
-    ROOT --> TEAM[TEAM / EXECUTION]
-    TEAM --> TEAM1[Founder + dev + AI + PPC Guru team ✅]
-    TEAM --> TEAM2[Co-founder — open ⚪]
-    TEAM --> TEAM3[Physio advisors 🔵]
-    TEAM --> TEAM4[Brainstorm-first, then build ✅ working style]
-
-    ROOT --> VAL[VALIDATION]
-    VAL --> VAL1[2 physio-owner interviews ✅ confirm gap+voice]
-    VAL --> VAL2[8–12 interviews + price + LOIs 🔵 in progress]
-    VAL --> VAL3[Jane walkthrough brief ⚪ founder to provide]
-
-    classDef done fill:#d4edda,stroke:#28a745,color:#155724;
-    classDef lean fill:#cce5ff,stroke:#0066cc,color:#004085;
-    classDef open fill:#fff3cd,stroke:#ffc107,color:#856404;
-
-    class MK1,MK2,MK3,PRA,PRB,PRC,INT1,INT2,CMP1,CMP2,CMP3,BR1,BR4,BR6,TEAM1,TEAM4,VAL1 done;
-    class PRD,PRF,INT3,BR2,BR3,ARCH1,ARCH2,TEAM3,VAL2 lean;
-    class MK4,INT4,INT5,BR5,ARCH3,TEAM2,VAL3 open;
+mindmap
+  root((Practitioner<br/>Growth Platform))
+    MARKET
+      Gap confirmed ✅
+      44.5% run ads ✅
+      Beachhead = allied-health clinic / Canada ✅
+      $1B roadmap drafted ✅
+    PRODUCT V1 _beside Jane_
+      A · Missed-call & after-hours capture ✅
+      B · Speed-to-lead pipeline CRM ✅
+      C · Ad→patient attribution + dashboard ✅ MOAT
+      D/E · Rebooking + reactivation 🔵
+      Neighbourhood benchmark ✅concept 🔵cold-start
+    INTEGRATION
+      Jane has NO open API ✅
+      Own-the-funnel approach ✅
+      Google Calendar bridge 🔵
+      Jane partner API ⚪
+      Founder's stack idea ⚪
+    COMPLIANCE
+      Verified BAA stack ✅
+      Canada residency = moat ✅
+      Server-side PII-stripped tracking ✅
+      Minimize PHI _name+email+service_ 🔵lawyer-check
+    BRAND / GTM / SEO
+      One umbrella co + platform ✅
+      One domain + vertical pages 🔵
+      One strong social 🔵
+      Direct-to-owner + simple onboarding ✅
+      Agency-enablement ⚪ Phase-2
+      Name = CRM not ERP ✅
+    ARCHITECTURE
+      Modular · vertical = config not fork 🔵
+      Typed + tested boundaries 🔵
+      Stack choice ⚪ score-after-you-share
+    TEAM
+      You + dev + AI + PPC Guru ✅
+      Co-founder ⚪
+      Physio advisors 🔵
+      Brainstorm-then-build ✅ style
+    VALIDATION
+      2 owner interviews ✅
+      8-12 interviews + LOIs 🔵
+      Jane walkthrough brief ⚪
 ```
 
-## The 7 open ⚪ fronts we still owe a deep, alternatives-scored answer
-1. **Billion-$ roadmap + numbers** (physio→dental→practitioners→local-service; staged ARR math).
-2. **Jane integration options** — full teardown of every path (own-funnel / GCal / partner API / founder's stack), scored for data-fidelity + scale.
-3. **The build stack** — score alternatives for fast-start + easy-scale (after you share your stack).
-4. **Agency-enablement** as a Phase-2 distribution lever.
-5. **Co-founder** decision.
-6. **Jane walkthrough brief** (you provide → I study for 100% ground truth).
-7. **Final brand/domain/social structure** (lean = one domain; confirm).
+---
+
+## View 2 — Nested outline (most readable as text; paste into Markmap/Obsidian)
+
+- **Practitioner Growth Platform** — physio/chiro/massage clinic → multi-vertical
+  - **Market**
+    - ✅ Gap confirmed (no clinic-native ad→booked CRM)
+    - ✅ 44.5% run ads (measured)
+    - ✅ Beachhead = multi-disciplinary allied-health clinic, Canada
+    - ✅ $1B roadmap drafted
+  - **Product V1 (beside Jane)**
+    - ✅ A — Missed-call & after-hours capture *(wedge)*
+    - ✅ B — Speed-to-lead pipeline (clinic-native CRM)
+    - ✅ C — Ad→patient attribution + owner dashboard *(MOAT)*
+    - 🔵 D/E — Rebooking nudges + reactivation engine
+    - 🔵 Neighbourhood benchmark (concept ✅, cold-start to solve)
+  - **Integration with Jane**
+    - ✅ Jane has no open API (fact)
+    - ✅ Own-the-funnel (attribution is ours, Jane-independent)
+    - 🔵 Google Calendar bridge (fallback for the calendar write)
+    - ⚪ Jane vetted-partner API (apply)
+    - ⚪ Founder's own stack idea (study when shared)
+  - **Compliance**
+    - ✅ Verified BAA stack (Retell/SendGrid/Notifyre/Xano…)
+    - ✅ Canada data-residency = the structural moat
+    - ✅ Server-side, PII-stripped ad tracking
+    - 🔵 Minimize PHI to name+email+service (reduces, not eliminates — lawyer sign-off)
+  - **Brand / GTM / SEO**
+    - ✅ One umbrella company + platform
+    - 🔵 One domain + vertical landing pages (SEO concentration)
+    - 🔵 One strong social, niche content lanes
+    - ✅ Direct-to-owner, dead-simple onboarding (primary motion)
+    - ⚪ Agency-enablement (Phase-2 distribution lever)
+    - ✅ Call it a CRM, not ERP; SEO-target job terms
+  - **Architecture**
+    - 🔵 Modular; a vertical is CONFIG, never forked code
+    - 🔵 Typed + tested module boundaries (avoid the ERP fragility)
+    - ⚪ Stack choice — score alternatives after you share your stack
+  - **Team / Execution**
+    - ✅ You + dev + AI executors + PPC-Guru distribution
+    - ⚪ Co-founder (open)
+    - 🔵 Physio advisors
+    - ✅ Brainstorm-then-build (your working style)
+  - **Validation**
+    - ✅ 2 physio-owner interviews (gap + voice confirmed)
+    - 🔵 8–12 interviews + price + LOIs
+    - ⚪ Jane walkthrough brief (you provide)
+
+---
+
+## Open ⚪ fronts still owed a deep, alternatives-scored answer
+1. Jane integration options (research running → `JANE_INTEGRATION.md`)
+2. Build stack (after you share yours)
+3. Agency-enablement (Phase-2)
+4. Co-founder
+5. ★ Product name + domains *(deferred to after product design — REMINDER)*
+6. Social structure (after naming)
+7. PHI vs non-PHI data-flow map
+8. Vertical-immersion research (mine Jane's content + forums — proposed)
