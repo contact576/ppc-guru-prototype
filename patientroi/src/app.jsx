@@ -22,7 +22,7 @@ const Money = ({ n }) => <span className="mono">{PR.fmtMoney(n)}</span>;
 
 // ── top bar ────────────────────────────────────────────────────────
 function TopBar({ screen, setScreen }) {
-  const tabs = [["calls", "Call Inbox"], ["dashboard", "Dashboard"], ["leads", "Leads"]];
+  const tabs = [["onboard", "Onboard"], ["calls", "Call Inbox"], ["dashboard", "Dashboard"], ["leads", "Leads"]];
   return (
     <div className="topbar wrap" style={{ maxWidth: 1180 }}>
       <div className="brand">Patient<em>ROI</em><span className="dot">.</span></div>
@@ -377,11 +377,134 @@ function Leads() {
   );
 }
 
+// ── Onboarding — paste 2 URLs, we build the clinic + its AI front desk ─
+const OB_FIELD = { width: "100%", padding: "10px 12px", border: "1px solid var(--line-2)", borderRadius: "var(--r-2)", fontFamily: "var(--sans)", fontSize: 14, background: "var(--card)", color: "var(--ink)" };
+function Onboarding({ goTo }) {
+  const [phase, setPhase] = useState("input");      // input | scanning | review | data | done
+  const [gbp, setGbp] = useState("g.page/riverbend-health");
+  const [site, setSite] = useState("riverbendhealth.ca");
+  const [step, setStep] = useState(0);
+  // the auto-discovered profile (synthetic; real version = Apify GMB/IG/site crawl + LLM)
+  const [p, setP] = useState({
+    name: "Riverbend Health Collective", city: "Hamilton, ON",
+    disciplines: "Physiotherapy · Chiropractic · Massage / RMT",
+    hours: "Mon–Fri 8:00–7:00 · Sat 9:00–2:00",
+    team: "Dana W. (PT) · Dr. Singh (DC) · Jordan (RMT) +2",
+    phone: "(905) 555-0100", insurers: "Sun Life · Manulife · Canada Life · Blue Cross",
+    voice: "Warm, unhurried, community-first — patients call you “the calm clinic.”",
+  });
+  const SCAN = [
+    ["Reading your website", site],
+    ["Pulling your Google Business Profile", "4.8★ · 142 reviews"],
+    ["Scanning Instagram", "@riverbendhealth · 1.2k followers"],
+    ["Detecting services, hours & team", "3 disciplines · 5 practitioners"],
+    ["Learning your brand voice from reviews", "“warm, never rushed”"],
+    ["Configuring your AI receptionist", "insurers, scripts, escalation"],
+  ];
+  useEffect(() => {
+    if (phase !== "scanning") return;
+    if (step < SCAN.length) { const t = setTimeout(() => setStep(s => s + 1), 850); return () => clearTimeout(t); }
+    const t = setTimeout(() => setPhase("review"), 650); return () => clearTimeout(t);
+  }, [phase, step]);
+
+  const Field = ({ label, k }) => (
+    <div style={{ marginBottom: 12 }}>
+      <div className="muted" style={{ fontSize: 11.5, marginBottom: 4 }}>{label}</div>
+      <input style={OB_FIELD} value={p[k]} onChange={e => setP({ ...p, [k]: e.target.value })} />
+    </div>
+  );
+
+  return (
+    <div className="wrap" style={{ maxWidth: 740, paddingTop: 30, paddingBottom: 60 }}>
+      <div className="eyebrow">Onboarding · 90 seconds</div>
+      <div className="h1">Your front desk, <em>built for you</em></div>
+      <div className="sub">Paste two links. We read your website, Google Business Profile, Instagram and reviews — and stand up your AI receptionist, pre-loaded with your services, hours, team and the insurers you bill. Edit anything.</div>
+
+      {phase === "input" && (
+        <div className="card" style={{ padding: 22, marginTop: 22 }}>
+          <div style={{ marginBottom: 14 }}>
+            <div className="muted" style={{ fontSize: 11.5, marginBottom: 4 }}>Google Business Profile URL</div>
+            <input style={OB_FIELD} value={gbp} onChange={e => setGbp(e.target.value)} placeholder="g.page/your-clinic" />
+          </div>
+          <div style={{ marginBottom: 18 }}>
+            <div className="muted" style={{ fontSize: 11.5, marginBottom: 4 }}>Website URL</div>
+            <input style={OB_FIELD} value={site} onChange={e => setSite(e.target.value)} placeholder="yourclinic.ca" />
+          </div>
+          <button className="btn primary" style={{ width: "100%", padding: 12 }} onClick={() => { setStep(0); setPhase("scanning"); }}>✨ Build my front desk</button>
+          <div className="muted" style={{ fontSize: 11.5, textAlign: "center", marginTop: 10 }}>No forms. We pull it all from your public profiles.</div>
+        </div>
+      )}
+
+      {phase === "scanning" && (
+        <div className="card" style={{ padding: 22, marginTop: 22 }}>
+          {SCAN.map(([label, detail], i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "9px 0", opacity: i <= step ? 1 : 0.35, borderBottom: i < SCAN.length - 1 ? "1px solid var(--line)" : "none" }}>
+              <div style={{ width: 22, height: 22, flexShrink: 0, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, background: i < step ? "var(--accent)" : "var(--card-2)", color: i < step ? "#fff" : "var(--ink-3)", border: "1px solid var(--line-2)" }}>{i < step ? "✓" : i === step ? "◌" : ""}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 600, fontSize: 13 }}>{label}</div>
+                {i <= step && <div className="muted" style={{ fontSize: 12 }}>{detail}</div>}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {phase === "review" && (
+        <div style={{ marginTop: 22 }}>
+          <div className="card" style={{ padding: 14, background: "var(--ok-tint)", border: "1px solid transparent", marginBottom: 14 }}>
+            <strong style={{ color: "var(--ok)" }}>✓ Built from your public profiles.</strong> <span style={{ color: "var(--ink-2)", fontSize: 13 }}>Everything below is editable — fix anything we got wrong.</span>
+          </div>
+          <div className="card" style={{ padding: 22 }}>
+            <Field label="Clinic name" k="name" />
+            <div style={{ display: "flex", gap: 12 }}><div style={{ flex: 1 }}><Field label="Location" k="city" /></div><div style={{ flex: 1 }}><Field label="Phone" k="phone" /></div></div>
+            <Field label="Services / disciplines" k="disciplines" />
+            <Field label="Hours" k="hours" />
+            <Field label="Team" k="team" />
+            <Field label="Insurers we direct-bill (detected)" k="insurers" />
+            <Field label="Your brand voice (learned from reviews)" k="voice" />
+            <button className="btn primary" style={{ width: "100%", padding: 12, marginTop: 6 }} onClick={() => setPhase("data")}>Looks right →</button>
+          </div>
+        </div>
+      )}
+
+      {phase === "data" && (
+        <div style={{ marginTop: 22 }}>
+          <div className="card" style={{ padding: 22 }}>
+            <div style={{ fontWeight: 600, marginBottom: 4 }}>Add your own data <span className="muted" style={{ fontWeight: 400 }}>(optional)</span></div>
+            <div className="muted" style={{ fontSize: 13, marginBottom: 16 }}>Upload your patient list and a few past reception calls — your agent learns <em>your</em> clinic's voice and never sounds generic. (PHI stays in your private, Canadian, BAA-covered space.)</div>
+            {[["Patient list", "CSV / export from Jane", "📇"], ["Past reception calls", "audio — we de-identify them", "🎧"]].map(([t, s, ic]) => (
+              <div key={t} className="card" style={{ padding: 16, marginBottom: 10, background: "var(--card-2)", borderStyle: "dashed", display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ fontSize: 22 }}>{ic}</div>
+                <div style={{ flex: 1 }}><div style={{ fontWeight: 600, fontSize: 13 }}>{t}</div><div className="muted" style={{ fontSize: 12 }}>{s}</div></div>
+                <button className="btn">Upload</button>
+              </div>
+            ))}
+            <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
+              <button className="btn" style={{ flex: 1 }} onClick={() => setPhase("done")}>Skip for now</button>
+              <button className="btn primary" style={{ flex: 1 }} onClick={() => setPhase("done")}>Finish setup →</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {phase === "done" && (
+        <div className="card" style={{ padding: 26, marginTop: 22, textAlign: "center" }}>
+          <div style={{ fontSize: 40 }}>✅</div>
+          <div style={{ fontFamily: "var(--serif)", fontSize: 24, marginTop: 6 }}>Your AI receptionist is live</div>
+          <div className="muted" style={{ fontSize: 13, maxWidth: 46 + "ch", margin: "8px auto 0" }}>{p.name} · answering every missed and after-hours call, booking into your pipeline, and tagging each one to the ad that drove it.</div>
+          <button className="btn primary" style={{ marginTop: 18, padding: "11px 20px" }} onClick={() => goTo("calls")}>See it answer calls →</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function App() {
-  const [screen, setScreen] = useState("calls");
+  const [screen, setScreen] = useState("onboard");
   return (
     <div>
       <TopBar screen={screen} setScreen={setScreen} />
+      {screen === "onboard" && <Onboarding goTo={setScreen} />}
       {screen === "calls" && <CallInbox />}
       {screen === "dashboard" && <Dashboard />}
       {screen === "leads" && <Leads />}
