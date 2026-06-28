@@ -51,6 +51,25 @@ The vision: one central brain → deploy voice agents to many clinics → collec
 
 **So:** the brain learns from *patterns* ("what works"), not raw patient data. Each clinic's agent uses the shared brain; its patient data stays walled in its tenant. ~90% of the self-improving-fleet dream, fully compliant. *(The "central brain" = the RAG knowledge base in [[PROJECT_BRIEF_v2]], made operational; seeded by the [[VERTICAL_BIBLE]].)*
 
+## 3b. The LEAN path — you do NOT need $30–70k to start
+The $30–70k was the fully-buffered launch (legal program + runway). The real **minimum to begin is ~$1–3k**, because the compliance *baseline* is mostly free/cheap:
+| Item | Cost | Note |
+|---|---|---|
+| Vendor BAAs (Retell, Notifyre, AWS, Supabase) | **FREE** | just sign them |
+| Canadian-region hosting | ~$25–100/mo | cheap |
+| Minimal-PHI schema (name+email+service only) | $0 | shrinks the whole scope |
+| PHIPA lawyer — focused 1–2 hr consult | ~$500–1,000 | NOT a $5k program |
+| Vanta/Drata audit | **$0 — skip** | until a customer requires SOC-2 |
+| **Minimum to run a real own-clinic pilot** | **~$1–3k one-time + ~$200–700/mo** | spend scales with revenue |
+
+→ **Synthetic validation now (~$100–500), cheap baseline only when a real patient is involved.** Scale spend as revenue arrives.
+
+## 3c. "Can we skip compliance and plead ignorance until we have money?" — honest answer: NO (and you don't need to)
+- **"We didn't know" is not a defense** under PHIPA/HIPAA. Regulators/courts don't accept it.
+- A breach of **real patient health data** = fines + lawsuits + damage to **your own clinics'** reputation/standing. Catastrophic, uninsurable by an apology.
+- **Skipping it saves almost nothing** — the baseline IS the free/cheap part (BAAs + CA hosting + minimal PHI). The expensive bits (audit, full legal) are *already* deferrable. So you'd take catastrophic risk to save ~$1–2k. Bad trade.
+- **The correct frame:** "move fast" applies to the PRODUCT (validate on synthetic data, zero risk); it does NOT apply to PHI handling. Flip the cheap baseline the moment a real patient is involved — including at your own clinics.
+
 ## 4. So, day-1 build posture
 - Build **multi-tenant + PHI-siloed + minimal-PHI** from line one (architecture, not afterthought).
 - Validate on **synthetic data** (no compliance spend) → demo → LOIs.

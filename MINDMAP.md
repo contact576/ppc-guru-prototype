@@ -119,3 +119,29 @@ mindmap
 6. Social structure (after naming)
 7. PHI vs non-PHI data-flow map
 8. Vertical-immersion research (mine Jane's content + forums — proposed)
+
+---
+
+## View 3 — EXECUTION STAGES (build → ship → scale; spend scales WITH revenue)
+
+```mermaid
+flowchart TD
+  S0["Stage 0 · Build MVP1 on SYNTHETIC data<br/>A→B→C loop · ~$100-500 · NO PHI, no compliance"] --> S1
+  S1["Stage 1 · Demo to your clinics + warm clients<br/>collect LOIs / 'I'd pay $X' (still synthetic)"] --> S2
+  S2["Stage 2 · Flip the CHEAP compliant baseline (~$1-3k)<br/>BAAs + CA hosting + minimal PHI + quick lawyer<br/>REAL pilot in 1-2 of your own clinics"] --> S3
+  S3["Stage 3 · Iterate from real usage · harden modules<br/>★ first EXTERNAL clinic PAYS (the kill-criterion)"] --> S4
+  S4["Stage 4 · Go heavier · 5-15 paying clinics<br/>add B (pipeline) + C (attribution)"] --> S5
+  S5["Stage 5 · Bulk + marketing triggers<br/>content / SEO / YouTube · self-serve onboarding"] --> S6
+  S6["Stage 6 · Robust sales + automation<br/>sales system · agency-enablement channel"] --> S7
+  S7["Stage 7 · Modules + DB compound<br/>de-identified fleet-learning · benchmark on · dental/US"]
+```
+
+## NEXT STEPS — per area (the ⚪→🔵→✅ to-do)
+- **Market / Validation:** finish 8–12 owner interviews + **collect LOIs**; **validate $249–399 pricing** vs the $59 Kickcall anchor on your clients.
+- **Product:** build **MVP1 (A→B→C on synthetic data)**; spec **Module C (attribution — the moat)** next; draft the **voice-agent script + ad/landing copy**.
+- **Integration:** the 2 **Jane-subscription tests** (API write? booking-URL params?); build the **EMR adapter layer** — Cliniko + Juvonno (open API) first, Jane via own-funnel.
+- **Compliance:** sign **vendor BAAs** (free); pick **Canadian region**; design the **minimal-PHI schema**; **1-hr PHIPA lawyer consult** before any real patient.
+- **Brand / GTM:** defer name+domains to post-MVP (reminder logged); draft copy now.
+- **Architecture:** scaffold **multi-tenant + safe-blocks + vertical=config** from line one.
+- **Data / Brain:** stand up the **RAG KB** (Bible → vector); design **de-identified fleet-learning**.
+- **Team:** decide **co-founder**; line up **1–2 physio advisors**.
