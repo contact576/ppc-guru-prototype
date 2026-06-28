@@ -2,6 +2,26 @@
 
 *Read this first in any new session (esp. the fresh session scoped to the migrated repo `allied-health-saas`). It captures live state + the approved plan so work continues without re-deriving context. Companion: `RESEARCH_BRAIN.md` (full memory), `HOME.md` (Obsidian map), `DATA_SPINE.md`, `JANE_TEARDOWN.md`, `knowledge/README.md`.*
 
+## ★ LATEST — continue here (end of session 1)
+
+**New working rules the founder set (HONOR THESE):**
+1. **Spec-each-module-first.** Before writing ANY CRM/demo code for a module, design it WITH the founder first — he tells you exactly how he wants it, you build only then. No autonomous CRM building.
+2. **Pre-screen before paid scraping.** Before any scrape that costs money, first pull only the titles/sources, judge relevance yourself, DROP ads/promos/off-topic, then scrape only the keepers. (The first YouTube run wasted ~13 of 30 on junk — don't repeat.)
+
+**Demo state (`patientroi/`, all on `main`):** 5 screens — **Onboard** (paste GBP+website → animated auto-discovery → editable clinic profile → upload step → "receptionist live"; default tab) · **Today** (while-you-were-closed recap + Start-here + callbacks + upcoming) · **Call Inbox** (recovered calls + transcript + sim) · **Dashboard** (CPA/ROAS by channel) · **Leads** (+ lead-detail drill-in = full ad→call→booking→revenue chain). In-browser React/Babel, no build step.
+
+**Knowledge scraped & tagged (live Apify, ~$0.35 of a $10 budget):**
+- `knowledge/universal/receptionist-skills/call-handling-playbook.md` + `booking-skills/care-first-booking.md` (from `supreme_coder/youtube-transcript-scraper`, $0.0005/transcript).
+- `knowledge/regional/CA-ON/regulatory/advertising-consent-records.md` (CMTO solid; **PT + chiro thin, WSIB 404 — RE-FETCH**) + `insurance/provincial-rails.md` (OHIP) — via `apify/website-content-crawler` (free actor + compute).
+- `knowledge/regional/CA-ON/insurance/direct-billing.md` (Telus eClaims net, Sun Life own-portal since 2022, ProviderConnect, Medavie/Pacific BC; no-coverage-$ rule encoded) — via `apify/rag-web-browser`.
+Raw in `research/{frontdesk_training,regulatory_ca,insurance_ca}/`. **Apify is connected to session 1 via MCP — verify the new session has it (+ Vercel, GitHub) connected.**
+
+**PENDING — Onboarding module spec (do this FIRST in the new session, spec-then-build):** founder wants onboarding to also let owners **upload ANY files/documents/their database** → feeds **agent learning** directly. Open spec questions for him: (1) which auto-pull sources to add (FB? GMB reviews?); (2) upload file types + does "agent learning" happen instantly or after review; (3) which fields he must confirm vs never type; (4) end-state/landing + the feeling. Get his answers, then rebuild onboarding.
+
+**Migration (the reason for this new session):** new repo `allied-health-saas` = imported from `ppc-guru-prototype` (main is current). REORG TASK: agency ERP (`prototype/ src/ netlify/` + agency CLAUDE.md) → `legacy/`; AlliedHealth at root; clean README; `.obsidian` ignore for `legacy/`+raw `research/`. Vercel: new project on `allied-health-saas`, **Root Directory = `patientroi`**, team "JP's projects" → the single clean production URL.
+
+**Data wave remaining (with pre-screen rule):** re-fetch PT+chiro college standards + WSIB; Ontario clinic pricing → `CA-ON/pricing`; Instagram/GMB later (propose cost first).
+
 ## Where we are (June 2026)
 Research phase essentially complete: Jane fully torn down (+ confirmed NOT entering our space), vertical voice captured (`vertical/VOICE_OF_CUSTOMER.md`), **data spine locked** (`DATA_SPINE.md`), **Module A spec'd + scripted** (`product/MODULE_A_voice.md` + `MODULE_A_script.md`), and the **synthetic PatientROI demo built** (`patientroi/`, live on Vercel). Knowledge-base architecture locked (`knowledge/`). Now: **build the knowledge base via Apify MCP + extend the demo.**
 
