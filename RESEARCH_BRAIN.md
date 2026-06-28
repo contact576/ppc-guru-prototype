@@ -2,6 +2,8 @@
 
 *One place that holds how we've thought through every dimension of "what billion-dollar, AI-native, vertical business should Jaydeep build?" — so nothing evaporates and every direction is visible at once. This is the table of contents for the whole brain. Each node carries: where our thinking stands · the evidence doc · what's still open. We are NOT married to any single idea — AI voice is candidate #1, not the answer.*
 
+> **★ FOUNDER WORKING STYLE (locked — apply in every chat):** For EVERY recommendation, research ALL the alternatives, score each for **(a) fast-start now** and **(b) easy-to-scale later**, then **pick ONE** with the reasoning — don't make him re-research afterward. Start fast, but architect so future scaling doesn't force a rewrite. Be decisive, minimize back-and-forth/rework. **Brainstorm thoroughly BEFORE building** (avoid the ERP mistake: one module changed → everything broke → build modular). Visual map = `MINDMAP.md`.
+>
 > **Decision system:** see `OPPORTUNITY_FRAMEWORK.md` (the 7-gate funnel). This file is the MEMORY; that file is the METHOD. Skills `/market-census`, `/demand-scan`, `/pain-mine`, `/opportunity-score`, `/research-brain` execute and update both.
 
 ---
