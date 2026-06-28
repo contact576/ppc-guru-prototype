@@ -75,4 +75,4 @@ Every candidate was scored 0–10 on 8 weighted parameters (sum /100, bar = 70):
 
 **Build PatientROI (physio) first** — attribution-first MVP, on the open systems-of-record (Juvonno/Cliniko Tier 1–2, Jane read-only). **Jane integration workaround:** Jane syncs appointments to Google Calendar → our tool reads booking events via the Google Calendar API (Tier 1–2), bypassing Jane's gated Tier-3 API (the booking event IS the "did it convert" signal). Verify GCal feed detail + PHIPA on patient data through Google. Validated on the 7 owned clinics, then sold to one external clinic. **Construction (JobROI) is the proven expansion** — same engine, once the physio attribution stitch works.
 
-*Evidence base: `physio_concepts.md`, `construction_concepts.md`, `matrix_*.md`, `score_*.md`, `demand_physio_rehabclinic.md`, `SaaS_Gap_Research_DATA_BIBLE.xlsx`. Method: `OPPORTUNITY_FRAMEWORK.md`. Living memory: `RESEARCH_BRAIN.md`.*
+*Evidence base: `Physio_Product_Concepts.md`, `Construction_Product_Concepts.md`, `matrix_*.md`, `score_*.md`, `Demand_Physio_RealData.md`, `SaaS_Gap_Research_DATA_BIBLE.xlsx`. Method: `OPPORTUNITY_FRAMEWORK.md`. Living memory: `RESEARCH_BRAIN.md`.*

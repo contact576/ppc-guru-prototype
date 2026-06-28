@@ -1,6 +1,6 @@
 # Clinic CRM Gap — adversarial teardown verdict
 
-*Tested the founder's claim: "All physio/clinic platforms are EMR/clinical only — none is a real sales/marketing/automation CRM that captures and converts NEW leads." We tried hard to disprove it. Detail in `clinic_crm_teardown_A.md` (EMR-first) + `clinic_crm_teardown_B.md` (patient-engagement/growth). Live vendor-site research, June 2026; some pages 403'd → medium-high confidence on the decisive columns.*
+*Tested the founder's claim: "All physio/clinic platforms are EMR/clinical only — none is a real sales/marketing/automation CRM that captures and converts NEW leads." We tried hard to disprove it. Detail in `Competitor_Teardown_A_EMRs.md` (EMR-first) + `Competitor_Teardown_B_Engagement.md` (patient-engagement/growth). Live vendor-site research, June 2026; some pages 403'd → medium-high confidence on the decisive columns.*
 
 ## Verdict: not 100% absolute (Pabau breaks it), but the *true* gap is real and sharper than first thought.
 
@@ -37,7 +37,7 @@ That is a precise, defensible wedge, and it maps exactly onto Jaydeep's assets:
 
 ## Round 2 — PT-specific platforms + aesthetics CRMs (17 more checked)
 
-Checked the clusters we'd missed: big US PT platforms (WebPT, Prompt, Raintree, Clinicient/Net Health, PtEverywhere, TheraOffice, HENO…) and aesthetics/med-spa growth CRMs (Zenoti, Boulevard, Mangomint, PatientNow, Aesthetic Record, Mindbody, Symplast…). Detail in `clinic_crm_teardown_C.md`.
+Checked the clusters we'd missed: big US PT platforms (WebPT, Prompt, Raintree, Clinicient/Net Health, PtEverywhere, TheraOffice, HENO…) and aesthetics/med-spa growth CRMs (Zenoti, Boulevard, Mangomint, PatientNow, Aesthetic Record, Mindbody, Symplast…). Detail in `Competitor_Teardown_C_PT_Aesthetics.md`.
 
 **No new true counterexample.** The same diagonal gap holds across all 17: a platform is either **PT-native *without* ad-ROI**, or does **real ad-ROI but in aesthetics/salon**, or gets ad-ROI **only via integration**. Nobody does *PT-native × native-automatic-ad-spend→confirmed-booking ROI.* The wedge is still unoccupied.
 

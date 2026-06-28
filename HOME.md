@@ -11,7 +11,7 @@
 ## 📊 Market & validation
 - [[MARKET_SIZE]] · [[ADOPTION_FUNNEL]] · [[PRACTITIONER_AD_SCRAPE]] (44.5% run ads)
 - [[CUSTOMER_DISCOVERY]] — real owner interviews
-- [[CLINIC_CRM_GAP]] · [[SCORECARD]] — the gap + competitor scoring
+- [[CLINIC_CRM_GAP]] · [[Competitor_Scorecard]] — the gap + competitor scoring
 
 ## 🛠️ Product & build
 - [[PROJECT_BRIEF_v2]] — locked decisions (supersedes [[PROJECT_BRIEF]])

@@ -1,6 +1,6 @@
 # Consolidated Opportunity Scorecard — All Scored Candidates
 
-**Built from:** `score_aivoice_physio.md`, `score_crm.md`, `matrix_construction.md`, `matrix_clinics.md`, `matrix_immigration.md`, `matrix_realtor.md`, `physio_concepts.md`, `construction_concepts.md`.
+**Built from:** `Score_Physio_AIVoice.md`, `Score_Immigration_CRM.md`, `Matrix_Construction_CRMvsVoice.md`, `Matrix_Clinics_CRMvsVoice.md`, `Matrix_Immigration_CRMvsVoice.md`, `Matrix_Realtor_CRMvsVoice.md`, `Physio_Product_Concepts.md`, `Construction_Product_Concepts.md`.
 **Method:** Per-parameter 0–10 scores extracted verbatim where the report states them; the weighted /100 is recomputed and reconciled to each report's stated total. No re-research, no re-scoring.
 
 > ⚠️ **Read with the premise correction (see RESEARCH_BRAIN §0):** the **realtor** rows (incl. "Instant Realtor ISA 84") and **immigration** rows were scored BEFORE we corrected the distribution premise — they leaned on a "10k-realtor distribution" that is actually just *public* data (not a moat) and on verticals where Jaydeep has *no domain expertise*. Re-scored honestly, their **Distribution/data-fit collapses** and those totals fall well below the leaders. **The live leaders are the attribution plays grounded in owned cross-account data: PatientROI (physio ~76) and JobROI (construction ~74).** Treat the realtor/immigration numbers as historical, not current.
